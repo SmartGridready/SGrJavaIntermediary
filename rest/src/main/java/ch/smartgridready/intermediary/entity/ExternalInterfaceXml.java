@@ -4,14 +4,12 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @EqualsAndHashCode
 @ToString
 class ExternalInterfaceXml {
@@ -24,9 +22,7 @@ class ExternalInterfaceXml {
 	@Column(nullable = false, length = 1000000)
 	private String xml;
 
-	ExternalInterfaceXml() {}
-
-	ExternalInterfaceXml(String name, String xml) {
+	public ExternalInterfaceXml(String name, String xml) {
 
 		this.name = name;
 		this.xml = xml;

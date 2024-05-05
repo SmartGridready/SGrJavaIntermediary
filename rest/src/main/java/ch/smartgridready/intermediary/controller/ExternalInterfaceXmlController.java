@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("unused")
 @RestController
 class ExternalInterfaceXmlController {
 

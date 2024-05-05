@@ -7,7 +7,4 @@ import java.util.List;
 interface ExternalInterfaceXmlRepository extends JpaRepository<ExternalInterfaceXml, Long> {
 
     List<ExternalInterfaceXml> findByName(String name);
-
-    void deleteByName(String name);
-
 }

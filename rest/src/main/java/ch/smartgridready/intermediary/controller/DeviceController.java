@@ -3,9 +3,7 @@ package ch.smartgridready.intermediary;
 
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
+@SuppressWarnings("unused")
 @RestController
 public class DeviceController {
 
@@ -33,12 +31,10 @@ public class DeviceController {
         device.setName(deviceDto.getName());
         device.setEiXml(eiXml);
 
-        device.getConfigurationValues().forEach(configValue -> {
-            configurationValueRepository.delete(configValue);
-        });
+        device.getConfigurationValues().forEach(configurationValueRepository::delete);
         device.getConfigurationValues().addAll(deviceDto.getConfigurationValues());
 
-        var deviceRes = this.deviceRepository.save(device);
+        deviceRepository.save(device);
 
         return new DeviceDto(device.getName(), device.getEiXml() != null ? device.getEiXml().getName() : "-", device.getConfigurationValues());
     }
@@ -54,9 +50,7 @@ public class DeviceController {
     void  deleteDevice (@PathVariable("deviceName") String deviceName) {
 
         var device = deviceRepository.findByName(deviceName).stream().findFirst().orElseThrow(() -> new DeviceNotFoundException(deviceName));
-        device.getConfigurationValues().forEach(configValue -> {
-            configurationValueRepository.delete(configValue);
-        });
+        device.getConfigurationValues().forEach(configurationValueRepository::delete);
         deviceRepository.delete(device);
     }
 

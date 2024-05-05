@@ -1,6 +1,5 @@
 package ch.smartgridready.intermediary;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

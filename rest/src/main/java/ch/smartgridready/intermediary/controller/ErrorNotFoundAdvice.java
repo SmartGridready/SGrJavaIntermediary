@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
-class ExtIfNotFoundAdvice {
+class ErrorNotFoundAdvice {
 
 	@ResponseBody
 	@ExceptionHandler({ExtIfXmlNotFoundException.class, DeviceNotFoundException.class})
