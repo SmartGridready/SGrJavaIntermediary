@@ -1,4 +1,4 @@
-package ch.smartgridready.intermediary;
+package ch.smartgridready.intermediary.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-class ExternalInterfaceXml {
+public class ExternalInterfaceXml {
 
 	private @Id @GeneratedValue Long id;
 

@@ -1,4 +1,4 @@
-package ch.smartgridready.intermediary;
+package ch.smartgridready.intermediary.entity;
 
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
@@ -24,6 +24,6 @@ public class Device {
     @ManyToOne(optional = false)
     private ExternalInterfaceXml eiXml;
 
-    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL, mappedBy = "device")
+    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL, mappedBy = "device", orphanRemoval = true)
     private List<ConfigurationValue> configurationValues = new ArrayList<>();
 }

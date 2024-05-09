@@ -1,4 +1,4 @@
-package ch.smartgridready.intermediary;
+package ch.smartgridready.intermediary.exception;
 
 public class DeviceNotFoundException extends RuntimeException {
 

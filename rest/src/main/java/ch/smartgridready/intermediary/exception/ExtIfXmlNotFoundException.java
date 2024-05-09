@@ -1,8 +1,8 @@
-package ch.smartgridready.intermediary;
+package ch.smartgridready.intermediary.exception;
 
-class ExtIfXmlNotFoundException extends RuntimeException {
+public class ExtIfXmlNotFoundException extends RuntimeException {
 
-	ExtIfXmlNotFoundException(String name) {
+	public ExtIfXmlNotFoundException(String name) {
 		super("Could not find externalInterfaceXxml: " + name);
 	}
 }

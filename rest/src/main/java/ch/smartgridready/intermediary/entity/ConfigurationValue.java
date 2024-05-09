@@ -1,5 +1,6 @@
-package ch.smartgridready.intermediary;
+package ch.smartgridready.intermediary.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -21,7 +22,8 @@ public class ConfigurationValue {
     @Column(nullable = false, length = 4096)
     private String val;
 
+    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "device_id")
+    @JoinColumn(name = "DEVICE_ID")
     private Device device;
 }

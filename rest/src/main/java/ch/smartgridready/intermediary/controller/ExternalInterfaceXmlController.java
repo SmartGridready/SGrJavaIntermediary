@@ -1,5 +1,8 @@
-package ch.smartgridready.intermediary;
+package ch.smartgridready.intermediary.controller;
 
+import ch.smartgridready.intermediary.entity.ExternalInterfaceXml;
+import ch.smartgridready.intermediary.exception.ExtIfXmlNotFoundException;
+import ch.smartgridready.intermediary.repository.ExternalInterfaceXmlRepository;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
