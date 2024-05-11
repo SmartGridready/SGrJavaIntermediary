@@ -1,0 +1,271 @@
+{
+	"info": {
+		"_postman_id": "69d5581c-3ab2-4005-a21a-33b491ceb4f4",
+		"name": "Intermediary",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10272785"
+	},
+	"item": [
+		{
+			"name": "POST WAGO EI-XML",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/hans/dev/SmartgridReady/SGrSpecifications/XMLInstances/ExtInterfaces/SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml"
+						},
+						{
+							"key": "fileName",
+							"value": "SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml",
+							"type": "default"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/eiXml/SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"eiXml",
+						"SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST CLEMAP EI-XML",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/hans/dev/SmartgridReady/SGrSpecifications/XMLInstances/ExtInterfaces/SGr_04_mmmm_dddd_CLEMAPEnergyMonitorEIV0.2.1.xml"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/eiXml/SGr_02_0018_CLEMAP_EIcloudEnergyMonitor_V1.0.0.xml",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"eiXml",
+						"SGr_02_0018_CLEMAP_EIcloudEnergyMonitor_V1.0.0.xml"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET EI-XML",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/eiXml/SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"eiXml",
+						"SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET ALL EI-XML",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/eiXml",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"eiXml"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST WAGO device",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Wago-Meter-800\",\n    \"eiXmlName\" : \"SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml\",\n    \"configurationValues\" : [\n        {\n            \"name\" : \"comPort\",\n            \"val\"  : \"COM3\"\n        },\n        {\n            \"name\" : \"par2\",\n            \"val\"  : \"value7\"\n        }  \n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/device",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"device"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST CLEMAP device",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Clemap-1\",\n    \"eiXmlName\" : \"SGr_02_0018_CLEMAP_EIcloudEnergyMonitor_V1.0.0.xml\",\n    \"configurationValues\" : [\n        {\n            \"name\" : \"baseUri\",\n            \"val\" :  \"https://cloud.clemap.com:3032\"\n        },\n        {\n            \"name\" : \"sensor_id\",\n            \"val\"  : \"63343431ecf2cf013a1e5a9f\"\n        },\n        {\n            \"name\" : \"username\",\n            \"val\"  : \"hfurrer@ergonomics.ch\"\n        },\n        {\n            \"name\" : \"password\",\n            \"val\" :  \"Holdrio99\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/device",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"device"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET device",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/device/Wago-Meter-800",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"device",
+						"Wago-Meter-800"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET ALL device",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/device",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"device"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE EI-XML",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/eiXml/SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"eiXml",
+						"SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE device",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/device/Wago-Meter-800",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"device",
+						"Wago-Meter-800"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getVal() PowerACtot",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/value/Clemap-1/ActivePowerAC/ActivePowerACtot",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"value",
+						"Clemap-1",
+						"ActivePowerAC",
+						"ActivePowerACtot"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
