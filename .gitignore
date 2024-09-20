@@ -37,3 +37,6 @@ build/
 /rest/openapi/.openapi-generator/
 /rest/openapi/.openapi-generator-ignore
 /openapi/.openapi-generator-ignore
+/openapi/.openapi-generator/FILES
+/openapi/.openapi-generator/api-docs.yaml-default.sha256
+/openapi/.openapi-generator/VERSION
