@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+  <Appenders>
+    <Console name="Console">
+        <PatternLayout pattern=" %-5level %c - %msg%n"/>
+    </Console>
+    <Console name="ConsoleThreadTstmp">
+        <PatternLayout pattern="[%.4t] %d{mm:ss.SSS} %-5level %c{1.} - %msg%n"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Root level="info">
+      <AppenderRef ref="Console"/>
+    </Root>
+    <Logger name="communicator" level="debug" additivity="false">
+      <AppenderRef ref="Console" />
+    </Logger>
+  </Loggers>
+</Configuration>
+<!--  levels:  
+      "off", 
+      "trace", 
+      "debug", 
+      "info", 
+      "warn", 
+      "error", 
+      "fatal", and "all"
+      
+       https://logging.apache.org/log4j/2.x/manual/configuration.html Configuring Log4j 2      
+-->

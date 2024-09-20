@@ -8,17 +8,20 @@ import ch.smartgridready.intermediary.exception.DeviceOperationFailedException;
 import ch.smartgridready.intermediary.repository.DeviceRepository;
 import com.smartgridready.ns.v0.DeviceFrame;
 import com.smartgridready.ns.v0.InterfaceList;
+import com.smartgridready.ns.v0.MessagingInterface;
 import com.smartgridready.ns.v0.RestApiInterface;
 import communicator.common.api.values.Value;
 import communicator.common.helper.DeviceDescriptionLoader;
 import communicator.common.impl.SGrDeviceBase;
 import communicator.common.runtime.GenDriverException;
+import communicator.messaging.impl.SGrMessagingDevice;
 import communicator.modbus.impl.SGrModbusDevice;
 import communicator.rest.exception.RestApiAuthenticationException;
 import communicator.rest.http.client.ApacheRestServiceClientFactory;
 import communicator.rest.impl.SGrRestApiDevice;
 import de.re.easymodbus.adapter.GenDriverAPI4ModbusRTU;
 import de.re.easymodbus.adapter.GenDriverAPI4ModbusTCP;
+import io.vavr.control.Either;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -31,6 +34,8 @@ public class IntermediaryService {
     private static final Logger LOG = LoggerFactory.getLogger(IntermediaryService.class);
 
     private static final String CONFIG_COM_PORT = "comPort";
+
+    private static final String CONFIG_BAUD_RATE = "baudRate";
 
     private static final String CONFIG_IP_ADDR = "ipAddress";
 
@@ -57,7 +62,7 @@ public class IntermediaryService {
         Properties properties = new Properties();
         device.getConfigurationValues().forEach(configurationValue -> properties.put(configurationValue.getName(), configurationValue.getVal()));
 
-        DeviceFrame deviceFrame = (DeviceFrame) new DeviceDescriptionLoader<>().load(device.getEiXml().getXml(), properties);
+        DeviceFrame deviceFrame = new DeviceDescriptionLoader().load(device.getEiXml().getXml(), properties);
 
         // Handle modbus RTU device
         Optional.ofNullable(deviceFrame.getInterfaceList())
@@ -77,11 +82,22 @@ public class IntermediaryService {
                 .map(RestApiInterface::getRestApiInterfaceDescription)
                 .ifPresent(restApiInterfaceDescription -> addRestApiDevice(device.getName(), deviceFrame) );
 
+        // Handle Messaging device
+        Optional.ofNullable(deviceFrame.getInterfaceList())
+                .map(InterfaceList::getMessagingInterface)
+                .map(MessagingInterface::getMessagingInterfaceDescription)
+                .ifPresent(messagingApiInterfaceDescription -> addMessagingDevice(device.getName(), deviceFrame));
+
     }
 
-    public Value getVal(String deviceName, String functionalProfileName, String dataPointName) throws DeviceOperationFailedException {
+    public Value getVal(String deviceName, String functionalProfileName, String dataPointName) throws DeviceOperationFailedException, GenDriverException {
 
         var device =  findDeviceInRegistries(deviceName);
+
+        if (device instanceof SGrMessagingDevice messagingDevice) {
+            messagingDevice.subscribe(functionalProfileName, dataPointName, this::mqttCallbackFunction);
+        }
+
         try {
             return device.getVal(functionalProfileName, dataPointName);
         } catch (Exception e) {
@@ -131,9 +147,19 @@ public class IntermediaryService {
             return;
         }
 
+        var baudRateProperty = configurationValues.stream()
+                .filter(configurationValue -> CONFIG_BAUD_RATE.equals(configurationValue.getName()))
+                .findFirst();
+
         var deviceDriver = new GenDriverAPI4ModbusRTU();
         try {
-            deviceDriver.initTrspService(comPortProperty.get().getVal());
+            if (baudRateProperty.isPresent()) {
+                deviceDriver.initTrspService(
+                        comPortProperty.get().getVal(),
+                        Integer.parseInt(baudRateProperty.get().getVal()));
+            } else {
+                deviceDriver.initTrspService(comPortProperty.get().getVal());
+            }
         } catch (GenDriverException e) {
             var errorMsg = String.format("Cannot instantiate modbus RTU device named '%s' on COM port '%s' initTrspService threw: %s",
                     deviceName, comPortProperty.get().getVal() ,e.getMessage());
@@ -189,7 +215,20 @@ public class IntermediaryService {
             deviceRegistry.put(deviceName, device);
             LOG.info("Successfully added REST-API device named '{}'.", deviceName);
         } catch (RestApiAuthenticationException e) {
-            var errorMsg = String.format("Cannot instantiate REST APO device named'%s'. Device init threw: %s", deviceName, e.getMessage());
+            var errorMsg = String.format("Cannot instantiate REST API device named'%s'. Device init threw: %s", deviceName, e.getMessage());
+            LOG.error(errorMsg);
+            errorDeviceRegistry.put(deviceName, errorMsg);
+        }
+    }
+
+    @SuppressWarnings("java:S2095")
+    private void addMessagingDevice(String deviceName, DeviceFrame deviceFrame) {
+        try {
+            var device = new SGrMessagingDevice(deviceFrame);
+            device.connect();
+            deviceRegistry.put(deviceName, device);
+        } catch (GenDriverException e) {
+            var errorMsg = String.format("Cannot instantiate Messaging device API named '%s'. Device init threw: %s", deviceName, e.getMessage());
             LOG.error(errorMsg);
             errorDeviceRegistry.put(deviceName, errorMsg);
         }
@@ -207,5 +246,9 @@ public class IntermediaryService {
             }
         }
         return deviceOpt.get();
+    }
+
+    private void mqttCallbackFunction(Either<Throwable, Value> message) {
+        LOG.info("Received value: {}", message);
     }
 }

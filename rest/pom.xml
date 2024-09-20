@@ -4,6 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
+	<parent>
+		<groupId>org.springframework.guides</groupId>
+		<artifactId>intermediary</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
 	<repositories>
 		<repository>
 			<id>smartgridready</id>
@@ -11,12 +17,7 @@
 		</repository>
 	</repositories>
 
-	<parent>
-		<groupId>org.springframework.guides</groupId>
-		<artifactId>intermediary</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</parent>
-
+	<groupId>com.smartgridready</groupId>
 	<artifactId>rest</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
@@ -25,6 +26,13 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+			<version>3.2.7</version>
+			<exclusions>
+				<exclusion> <!-- we configure the log dependencies explicitely -->
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -53,9 +61,15 @@
 		</dependency>
 
 		<dependency>
+			<groupId>io.vavr</groupId>
+			<artifactId>vavr</artifactId>
+			<version>0.10.4</version>
+		</dependency>
+
+		<dependency>
 			<groupId>ch.smartgridready</groupId>
 			<artifactId>commhandler4modbus</artifactId>
-			<version>1.0.2</version>
+			<version>1.1.0</version>
 			<exclusions>
 				<exclusion>
 					<groupId>SGrJava.InterfaceFactory</groupId>
@@ -67,13 +81,13 @@
 		<dependency>
 			<groupId>ch.smartgridready</groupId>
 			<artifactId>easymodbus</artifactId>
-			<version>1.0.1</version>
+			<version>1.1.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>ch.smartgridready</groupId>
 			<artifactId>sgr-driver-api</artifactId>
-			<version>1.0.0</version>
+			<version>1.1.0</version>
 		</dependency>
 
 		<dependency>
@@ -95,27 +109,37 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>2.0.10</version>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.32</version>
+			<scope>provided</scope>
 		</dependency>
 
+
+		<!-- log dependencies for all code jars (common is included by all code
+        projects) -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>2.19.0</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
-			<version>2.19.0</version>
 		</dependency>
-
+		<!-- routing Apache Commons Logging to Log4j 2 -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-jcl</artifactId>
+		</dependency>
+		<!-- routing SLF4J to Log4j 2 -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-slf4j2-impl</artifactId>
-			<version>2.19.0</version>
+		</dependency>
+		<!-- routing Java Util Logging to Log4j 2 -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-jul</artifactId>
 		</dependency>
 
 	</dependencies>

@@ -21,7 +21,11 @@ public class CommunicationsController {
             @PathVariable("functionalProfile") String functionalProfile,
             @PathVariable("dataPoint") String dataPoint) throws DeviceOperationFailedException {
 
-            return intermediaryService.getVal(device, functionalProfile, dataPoint).getString();
+            try {
+                return intermediaryService.getVal(device, functionalProfile, dataPoint).getString();
+            } catch (Exception e) {
+                return e.getMessage();
+            }
     }
 
     @PostMapping("/value/{device}/{functionalProfile}/{dataPoint}")

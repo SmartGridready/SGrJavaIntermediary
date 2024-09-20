@@ -1,5 +1,5 @@
 FROM eclipse-temurin:17-jdk
 ARG JAR_FILE
-COPY ${JAR_FILE} sgr-intermediary.jar
+COPY ./rest/target/rest-0.0.1-SNAPSHOT.jar sgr-intermediary.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "/sgr-intermediary.jar"]
