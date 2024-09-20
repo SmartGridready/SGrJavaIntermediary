@@ -40,7 +40,7 @@ Now your SGrIntermediary is ready to be configured.
 
 Configuration of the SGrIntermediary is done through the web-service API. 
 
-For detailed API documentation see: [OpenAPI doc](openapi/index.html)
+For detailed API documentation see:  <a href="https://github.com/SmartGridready/SGrJavaIntermediary/openapi/index.html" target="_blank">OpenAPI doc</a>
 
 If you have a running SGrIntermediary container on your local machine you open the Swagger doc:  [Swagger doc](http://localhost:8080/swagger-ui.html)
 
