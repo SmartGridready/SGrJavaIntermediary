@@ -1,0 +1,449 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- description: Generated server url
+  url: http://localhost:8080
+paths:
+  /value/{device}/{functionalProfile}/{dataPoint}:
+    get:
+      operationId: getVal
+      parameters:
+      - explode: false
+        in: path
+        name: device
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: functionalProfile
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: dataPoint
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "404":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Not Found
+        "200":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: OK
+      tags:
+      - communications-controller
+      x-accepts:
+      - '*/*'
+      x-tags:
+      - tag: communications-controller
+    post:
+      operationId: setVal
+      parameters:
+      - explode: false
+        in: path
+        name: device
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: functionalProfile
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: dataPoint
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValueDto'
+        required: true
+      responses:
+        "404":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Not Found
+        "200":
+          description: OK
+      tags:
+      - communications-controller
+      x-content-type: application/json
+      x-accepts:
+      - '*/*'
+      x-tags:
+      - tag: communications-controller
+  /eiXml/{fileName}:
+    post:
+      operationId: save
+      parameters:
+      - explode: false
+        in: path
+        name: fileName
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/save_request'
+      responses:
+        "404":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Not Found
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/EntityModelExternalInterfaceXml'
+          description: OK
+      tags:
+      - external-interface-xml-controller
+      x-content-type: application/json
+      x-accepts:
+      - '*/*'
+      x-tags:
+      - tag: external-interface-xml-controller
+  /device:
+    get:
+      operationId: getAll_1
+      responses:
+        "404":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Not Found
+        "200":
+          content:
+            '*/*':
+              schema:
+                items:
+                  $ref: '#/components/schemas/DeviceDto'
+                type: array
+          description: OK
+      tags:
+      - device-controller
+      x-accepts:
+      - '*/*'
+      x-tags:
+      - tag: device-controller
+    post:
+      operationId: insertOrUpdateDevice
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceDto'
+        required: true
+      responses:
+        "404":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Not Found
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/DeviceDto'
+          description: OK
+      tags:
+      - device-controller
+      x-content-type: application/json
+      x-accepts:
+      - '*/*'
+      x-tags:
+      - tag: device-controller
+  /eiXml:
+    get:
+      operationId: getAll
+      responses:
+        "404":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Not Found
+        "200":
+          content:
+            '*/*':
+              schema:
+                items:
+                  $ref: '#/components/schemas/ExternalInterfaceXml'
+                type: array
+          description: OK
+      tags:
+      - external-interface-xml-controller
+      x-accepts:
+      - '*/*'
+      x-tags:
+      - tag: external-interface-xml-controller
+  /eiXml/{name}:
+    delete:
+      operationId: delete
+      parameters:
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "404":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Not Found
+        "200":
+          description: OK
+      tags:
+      - external-interface-xml-controller
+      x-accepts:
+      - '*/*'
+      x-tags:
+      - tag: external-interface-xml-controller
+    get:
+      operationId: externalInterfaceXml
+      parameters:
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "404":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Not Found
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ExternalInterfaceXml'
+          description: OK
+      tags:
+      - external-interface-xml-controller
+      x-accepts:
+      - '*/*'
+      x-tags:
+      - tag: external-interface-xml-controller
+  /device/{deviceName}:
+    delete:
+      operationId: deleteDevice
+      parameters:
+      - explode: false
+        in: path
+        name: deviceName
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "404":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Not Found
+        "200":
+          description: OK
+      tags:
+      - device-controller
+      x-accepts:
+      - '*/*'
+      x-tags:
+      - tag: device-controller
+    get:
+      operationId: getDevice
+      parameters:
+      - explode: false
+        in: path
+        name: deviceName
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "404":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: Not Found
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/DeviceDto'
+          description: OK
+      tags:
+      - device-controller
+      x-accepts:
+      - '*/*'
+      x-tags:
+      - tag: device-controller
+components:
+  schemas:
+    ValueDto:
+      example:
+        value: "{}"
+      properties:
+        value:
+          type: object
+      type: object
+    EntityModelExternalInterfaceXml:
+      example:
+        _links:
+          key:
+            hreflang: hreflang
+            templated: true
+            profile: profile
+            name: name
+            href: href
+            title: title
+            type: type
+            deprecation: deprecation
+        xml: xml
+        name: name
+        id: 0
+      properties:
+        id:
+          format: int64
+          type: integer
+        name:
+          type: string
+        xml:
+          type: string
+        _links:
+          additionalProperties:
+            $ref: '#/components/schemas/Link'
+          type: object
+      type: object
+    ExternalInterfaceXml:
+      example:
+        xml: xml
+        name: name
+        id: 0
+      properties:
+        id:
+          format: int64
+          type: integer
+        name:
+          type: string
+        xml:
+          type: string
+      type: object
+    Links:
+      additionalProperties:
+        $ref: '#/components/schemas/Link'
+      type: object
+    ConfigurationValue:
+      example:
+        val: val
+        name: name
+        id: 0
+      properties:
+        id:
+          format: int64
+          type: integer
+        name:
+          type: string
+        val:
+          type: string
+      type: object
+    DeviceDto:
+      example:
+        name: name
+        eiXmlName: eiXmlName
+        configurationValues:
+        - val: val
+          name: name
+          id: 0
+        - val: val
+          name: name
+          id: 0
+        status: status
+      properties:
+        name:
+          type: string
+        eiXmlName:
+          type: string
+        configurationValues:
+          items:
+            $ref: '#/components/schemas/ConfigurationValue'
+          type: array
+        status:
+          type: string
+      type: object
+    Link:
+      example:
+        hreflang: hreflang
+        templated: true
+        profile: profile
+        name: name
+        href: href
+        title: title
+        type: type
+        deprecation: deprecation
+      properties:
+        href:
+          type: string
+        hreflang:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+        deprecation:
+          type: string
+        profile:
+          type: string
+        name:
+          type: string
+        templated:
+          type: boolean
+      type: object
+    save_request:
+      properties:
+        file:
+          format: binary
+          type: string
+      required:
+      - file
+      type: object

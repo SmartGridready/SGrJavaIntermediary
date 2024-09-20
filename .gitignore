@@ -36,3 +36,4 @@ build/
 *.tgz
 /rest/openapi/.openapi-generator/
 /rest/openapi/.openapi-generator-ignore
+/openapi/.openapi-generator-ignore
