@@ -34,3 +34,5 @@ build/
 
 ### Helmchart
 *.tgz
+/rest/openapi/.openapi-generator/
+/rest/openapi/.openapi-generator-ignore
