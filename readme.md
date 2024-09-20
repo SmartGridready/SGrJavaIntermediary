@@ -40,7 +40,7 @@ Now your SGrIntermediary is ready to be configured.
 
 Configuration of the SGrIntermediary is done through the web-service API. 
 
-For detailed API documentation see: [OpenAPI doc](https:)
+For detailed API documentation see: [OpenAPI doc](openapi/index.html)
 
 If you have a running SGrIntermediary container on your local machine you open the Swagger doc:  [Swagger doc](http://localhost:8080/swagger-ui.html)
 
