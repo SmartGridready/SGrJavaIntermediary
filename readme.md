@@ -100,7 +100,7 @@ Reading a voltage from WAGO-Smartmeter-1:
 The API provides a management API for EI-XML files and devices. You can add, update and delete EI-XML and devices.
 A documentation of the complete API is available as HTML open-api doc within the project sources. See <a href="https://github.com/SmartGridready/SGrJavaIntermediary/tree/master/openapi/index.html" target="_blank">OpenAPI doc</a>
 
-If you have a running SGrIntermediary Docker container or running the intermediar on your local machine you can open 
+If you have a running SGrIntermediary Docker container or running the intermediary on your local machine you can open 
 the Swagger doc: [Swagger doc](http://localhost:8080/swagger-ui.html)
 
 
