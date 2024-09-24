@@ -24,9 +24,10 @@ configuration.
 
 ### Examples:
 
-1. Adding EI-XML for a Wago Smartmeter:
-```json
+Adding an EI-XML for a Wago Smartmeter: 
+
 HTTP POST:  http://localhost:8080/eiXml/SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml
+```json
 
 {
   "file": <fileContent>
@@ -34,8 +35,9 @@ HTTP POST:  http://localhost:8080/eiXml/SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.x
 }
 ```
 Adding a first Wago device:
-```json
+
 HTTP POST: http://localhost:8080/device
+```json
 {
   {
     "name": WAGO-Smartmeter-1,
@@ -58,8 +60,9 @@ HTTP POST: http://localhost:8080/device
 ```
 
 Adding a second Wago device:
-```json
+
 HTTP POST: http://localhost:8080/device
+```json
 {
   {
     "name": WAGO-Smartmeter-2,
