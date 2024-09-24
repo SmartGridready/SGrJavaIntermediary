@@ -30,8 +30,8 @@ HTTP POST:  http://localhost:8080/eiXml/SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.x
 ```json
 
 {
-  "file": <fileContent>
-  "fileName": SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml
+  "file": "(fileContent..)",
+  "fileName": "SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml"
 }
 ```
 Adding a first Wago device:
