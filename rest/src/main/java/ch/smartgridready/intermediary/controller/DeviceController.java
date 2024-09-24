@@ -9,12 +9,16 @@ import ch.smartgridready.intermediary.repository.ConfigurationValueRepository;
 import ch.smartgridready.intermediary.repository.DeviceRepository;
 import ch.smartgridready.intermediary.repository.ExternalInterfaceXmlRepository;
 import ch.smartgridready.intermediary.service.IntermediaryService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @SuppressWarnings("unused")
 @RestController
+@Tag(name = "Device Controller", description = "API to manage devices.")
 public class DeviceController {
 
     private final DeviceRepository deviceRepository;
@@ -34,6 +38,8 @@ public class DeviceController {
         this.intermediaryService = intermediaryService;
     }
 
+    @Operation(description = "Add a new or update an existing device.")
+    @ApiResponse(description = "Device information of added/updated device")
     @PostMapping("/device")
     DeviceDto insertOrUpdateDevice(@RequestBody DeviceDto deviceDto) {
 
@@ -64,7 +70,9 @@ public class DeviceController {
                 intermediaryService.getDeviceStatus(device.getName()));
     }
 
+    @Operation(description = "Get a device by name")
     @GetMapping("/device/{deviceName}")
+    @ApiResponse(description = "All device information.")
     DeviceDto getDevice(@PathVariable("deviceName") String deviceName) {
 
         var device = deviceRepository.findByName(deviceName).stream().findFirst().orElseThrow(() -> new DeviceNotFoundException(deviceName));
@@ -75,7 +83,9 @@ public class DeviceController {
                 intermediaryService.getDeviceStatus(deviceName));
     }
 
+    @Operation(description = "Get a list of all devices.")
     @GetMapping("/device")
+    @ApiResponse(description = "A list with all devices with their device information.")
     List<DeviceDto> getAll() {
         var devices = deviceRepository.findAll();
         return devices.stream()
@@ -87,6 +97,7 @@ public class DeviceController {
                 ))).toList();
     }
 
+    @Operation(description = "Delete a device by name.")
     @DeleteMapping("/device/{deviceName}")
     void  deleteDevice (@PathVariable("deviceName") String deviceName) {
 

@@ -6,20 +6,28 @@ import ch.smartgridready.intermediary.service.IntermediaryService;
 import communicator.common.api.values.Float64Value;
 import communicator.common.api.values.StringValue;
 import communicator.common.api.values.Value;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
 @RestController
+@Tag(name = "Device Communications Controller", description = "Used to write and read values from a device.")
 public class CommunicationsController {
 
     private final IntermediaryService intermediaryService;
 
+    @Operation(description = "Used to read a value from a device data point.")
+    @ApiResponse(description = "The value read from the device.")
     @GetMapping("/value/{device}/{functionalProfile}/{dataPoint}")
+    @SuppressWarnings("unused")
     public String getVal(
-            @PathVariable("device") String device,
-            @PathVariable("functionalProfile") String functionalProfile,
-            @PathVariable("dataPoint") String dataPoint) throws DeviceOperationFailedException {
+            @PathVariable("device") @Parameter(description = "The device name") String device,
+            @PathVariable("functionalProfile") @Parameter(description = "The functional profile name") String functionalProfile,
+            @PathVariable("dataPoint") @Parameter(description = "The data point name") String dataPoint) throws DeviceOperationFailedException {
 
             try {
                 return intermediaryService.getVal(device, functionalProfile, dataPoint).getString();
@@ -28,11 +36,14 @@ public class CommunicationsController {
             }
     }
 
+    @Operation(description = "Used to write a value to the device data point.")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The value to be written to the device.")
     @PostMapping("/value/{device}/{functionalProfile}/{dataPoint}")
+    @SuppressWarnings("unused")
     public void setVal(
-            @PathVariable("device") String device,
-            @PathVariable("functionalProfile") String functionalProfile,
-            @PathVariable("dataPoint") String dataPoint,
+            @PathVariable("device") @Parameter(description = "The device name") String device,
+            @PathVariable("functionalProfile") @Parameter(description = "The functional profile name") String functionalProfile,
+            @PathVariable("dataPoint") @Parameter String dataPoint,
             @RequestBody ValueDto value) throws DeviceOperationFailedException {
 
         Value sgrValue;
