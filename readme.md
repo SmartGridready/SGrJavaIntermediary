@@ -1,7 +1,7 @@
 # SGrJavaIntermediary
 ## Introduction
 
-The SGrJavaIntermediary application allows access to SmarGridready compliant devices through a
+The SGrJavaIntermediary application allows access to SmartGridready compliant devices through a
 WEB-Service API. Developers of SGr communicator applications such as energy-manager applications
 can use the SGrJavaIntermediary instead of integrating a SmartGridready commm-handler library written 
 in Java or Python.
@@ -13,6 +13,93 @@ compliant devices.
 
 This solution is particularly useful for applications written in programming languages that do not have an available 
 SmartGridready commhandler library.
+
+The SGRIntermediary allows a standardized access to arbitrary SGr devices, described by EI-XML files. 
+The EI-XML describes details needed to communicate with the device's specific interface.
+
+Adding a new device follows in two steps:
+1. Add the device specific EI-XML if it does not already exist.
+2. Add the device itself with an arbitrary device name, a reference to the EI-XML and the device specific 
+configuration.
+
+### Examples:
+
+1. Adding EI-XML for a Wago Smartmeter:
+```json
+HTTP POST:  http://localhost:8080/eiXml/SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml
+
+{
+  "file": <fileContent>
+  "fileName": SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml
+}
+```
+Adding a first Wago device:
+```json
+HTTP POST: http://localhost:8080/device
+{
+  {
+    "name": WAGO-Smartmeter-1,
+    "eiXmlName" : "SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml",
+    "configurationValues" : [
+        {
+            "name" : "comPort",
+            "val"  : "COM3"
+        },
+        {
+            "name":"baudRate",
+            "val":19200
+        },
+        {
+            "slaveAddr": 1
+        }
+    ]
+  }
+}
+```
+
+Adding a second Wago device:
+```json
+HTTP POST: http://localhost:8080/device
+{
+  {
+    "name": WAGO-Smartmeter-2,
+    "eiXmlName" : "SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml",
+    "configurationValues" : [
+        {
+            "name" : "comPort",
+            "val"  : "COM3"
+        },
+        {
+            "name":"baudRate",
+            "val":19200
+        },
+        {
+            "slaveAddr": 2
+        }
+    ]
+  }
+}
+```
+
+Reading a voltage from WAGO-Smartmeter-1:
+```
+-- Request format:
+{
+   HTTP GET: http://localhost:8080/value/<deviceName>/<functionlProfileName>/<dataPointName>
+}
+
+-- Example:
+{
+  HTTP GET: http://localhost:8080/value/WAGI-Smartmeter-1/VoltageAC/VoltageL1
+}
+```
+
+The API provides a management API for EI-XML files and devices. You can add, update and delete EI-XML and devices.
+A documentation of the complete API is available as HTML open-api doc within the project sources. See <a href="https://github.com/SmartGridready/SGrJavaIntermediary/tree/master/openapi/index.html" target="_blank">OpenAPI doc</a>
+
+If you have a running SGrIntermediary Docker container or running the intermediar on your local machine you can open 
+the Swagger doc: [Swagger doc](http://localhost:8080/swagger-ui.html)
+
 
 ## Installation
 
@@ -33,27 +120,6 @@ Currently proposed installation variant is to use the SGrIntermediary docker ima
 
 - Check if the 'sgr-intermediary' container is running:
   - `docker container ls -f name=sgr-intermediary`
-
-Now your SGrIntermediary is ready to be configured.
-
-## Configuration
-
-Configuration of the SGrIntermediary is done through the web-service API. 
-
-For detailed API documentation see:  <a href="https://github.com/SmartGridready/SGrJavaIntermediary/tree/master/openapi/index.html" target="_blank">OpenAPI doc</a>
-
-If you have a running SGrIntermediary container on your local machine you open the Swagger doc:  [Swagger doc](http://localhost:8080/swagger-ui.html)
-
-The configuration follows in two steps:
-
-1. Add alle external interface XML (EI-XML) using the `ExternalInterfaceXmlController` API required by your devices.
-
-
-2. Add your devices using the `DeviceController` API. For each device you need to specify the according EI-XML using the 
-EI-XML filename and the device configuration values such as ip-address/port of the device. The configuration values needed
-by a device can be read in the EI-XML within the `<configurationList>` tag. 
-
-
 
 
 
