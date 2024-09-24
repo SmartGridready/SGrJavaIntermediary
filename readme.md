@@ -40,7 +40,7 @@ HTTP POST: http://localhost:8080/device
 ```json
 {
   {
-    "name": WAGO-Smartmeter-1,
+    "name": "WAGO-Smartmeter-1",
     "eiXmlName" : "SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml",
     "configurationValues" : [
         {
@@ -65,7 +65,7 @@ HTTP POST: http://localhost:8080/device
 ```json
 {
   {
-    "name": WAGO-Smartmeter-2,
+    "name": "WAGO-Smartmeter-2",
     "eiXmlName" : "SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml",
     "configurationValues" : [
         {
