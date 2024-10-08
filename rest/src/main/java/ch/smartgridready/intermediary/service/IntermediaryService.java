@@ -10,15 +10,20 @@ import com.smartgridready.ns.v0.DeviceFrame;
 import com.smartgridready.ns.v0.InterfaceList;
 import com.smartgridready.ns.v0.MessagingInterface;
 import com.smartgridready.ns.v0.RestApiInterface;
-import communicator.common.api.values.Value;
-import communicator.common.helper.DeviceDescriptionLoader;
-import communicator.common.impl.SGrDeviceBase;
-import communicator.common.runtime.GenDriverException;
-import communicator.messaging.impl.SGrMessagingDevice;
-import communicator.modbus.impl.SGrModbusDevice;
-import communicator.rest.exception.RestApiAuthenticationException;
-import communicator.rest.http.client.ApacheRestServiceClientFactory;
-import communicator.rest.impl.SGrRestApiDevice;
+import com.smartgridready.communicator.common.api.GenDeviceApi;
+import com.smartgridready.communicator.common.api.values.Value;
+import com.smartgridready.communicator.common.helper.DeviceDescriptionLoader;
+import com.smartgridready.communicator.messaging.client.HiveMqtt5MessagingClientFactory;
+import com.smartgridready.communicator.messaging.impl.SGrMessagingDevice;
+import com.smartgridready.communicator.modbus.impl.SGrModbusDevice;
+import com.smartgridready.communicator.rest.exception.RestApiAuthenticationException;
+import com.smartgridready.communicator.rest.http.client.ApacheHttpRequestFactory;
+import com.smartgridready.communicator.rest.impl.SGrRestApiDevice;
+import com.smartgridready.driver.api.common.GenDriverException;
+import com.smartgridready.driver.api.http.GenHttpRequestFactory;
+import com.smartgridready.driver.api.messaging.GenMessagingClientFactory;
+import com.smartgridready.driver.api.modbus.GenDriverAPI4Modbus;
+
 import de.re.easymodbus.adapter.GenDriverAPI4ModbusRTU;
 import de.re.easymodbus.adapter.GenDriverAPI4ModbusTCP;
 import io.vavr.control.Either;
@@ -43,12 +48,18 @@ public class IntermediaryService {
 
     private final DeviceRepository deviceRepository;
 
-    private final Map<String, SGrDeviceBase<?, ?, ?>> deviceRegistry = new HashMap<>();
+    private final Map<String, GenDeviceApi> deviceRegistry = new HashMap<>();
 
     private final Map<String, String> errorDeviceRegistry = new HashMap<>();
 
+    private final GenHttpRequestFactory httpRequestFactory;
+
+    private final GenMessagingClientFactory messagingClientFactory;
+
     public IntermediaryService(DeviceRepository deviceRepository) {
         this.deviceRepository = deviceRepository;
+        this.httpRequestFactory = new ApacheHttpRequestFactory();
+        this.messagingClientFactory = new HiveMqtt5MessagingClientFactory();
     }
 
     public void loadDevices() {
@@ -92,7 +103,7 @@ public class IntermediaryService {
 
     public Value getVal(String deviceName, String functionalProfileName, String dataPointName) throws DeviceOperationFailedException, GenDriverException {
 
-        var device =  findDeviceInRegistries(deviceName);
+        var device = findDeviceInRegistries(deviceName);
 
         if (device instanceof SGrMessagingDevice messagingDevice) {
             messagingDevice.subscribe(functionalProfileName, dataPointName, this::mqttCallbackFunction);
@@ -151,25 +162,24 @@ public class IntermediaryService {
                 .filter(configurationValue -> CONFIG_BAUD_RATE.equals(configurationValue.getName()))
                 .findFirst();
 
-        var deviceDriver = new GenDriverAPI4ModbusRTU();
         try {
+            GenDriverAPI4Modbus deviceDriver;
             if (baudRateProperty.isPresent()) {
-                deviceDriver.initTrspService(
-                        comPortProperty.get().getVal(),
-                        Integer.parseInt(baudRateProperty.get().getVal()));
+                deviceDriver = new GenDriverAPI4ModbusRTU(comPortProperty.get().getVal(), Integer.parseInt(baudRateProperty.get().getVal()));
             } else {
-                deviceDriver.initTrspService(comPortProperty.get().getVal());
+                deviceDriver = new GenDriverAPI4ModbusRTU(comPortProperty.get().getVal());
             }
+            deviceDriver.connect();
+
+            deviceRegistry.put(deviceName, new SGrModbusDevice(deviceFrame, deviceDriver));
+            LOG.info("Successfully added modbus RTU device named '{}'.", deviceName);
         } catch (GenDriverException e) {
-            var errorMsg = String.format("Cannot instantiate modbus RTU device named '%s' on COM port '%s' initTrspService threw: %s",
+            var errorMsg = String.format("Cannot instantiate modbus RTU device named '%s' on COM port '%s', threw: %s",
                     deviceName, comPortProperty.get().getVal() ,e.getMessage());
             LOG.error(errorMsg);
             errorDeviceRegistry.put(deviceName, errorMsg);
             return;
         }
-
-        deviceRegistry.put(deviceName, new SGrModbusDevice(deviceFrame, deviceDriver));
-        LOG.info("Successfully added modbus RTU device named '{}'.", deviceName);
     }
 
     private void addModbusTcpDevice(String deviceName, List<ConfigurationValue> configurationValues, DeviceFrame deviceFrame) {
@@ -194,24 +204,24 @@ public class IntermediaryService {
             errorDeviceRegistry.put(deviceName, errorMsg);
             return;
         }
-
-        var deviceDriver = new GenDriverAPI4ModbusTCP();
+        
         try {
-            deviceDriver.initDevice(ipAddressProperty.get().getVal(), Integer.parseInt(portProperty.get().getVal()));
+            var deviceDriver = new GenDriverAPI4ModbusTCP(ipAddressProperty.get().getVal(), Integer.parseInt(portProperty.get().getVal()));
+            deviceDriver.connect();
+
+            deviceRegistry.put(deviceName, new SGrModbusDevice(deviceFrame, deviceDriver));
+            LOG.info("Successfully added modbus TCP device named '{}'.", deviceName);
         } catch (Exception e) {
-            var errorMsg = String.format("Cannot instantiate modbus TCP device named '%s'. Device init threw: %s", deviceName, e.getMessage());
+            var errorMsg = String.format("Cannot instantiate modbus TCP device named '%s', threw: %s", deviceName, e.getMessage());
             LOG.error(errorMsg);
             errorDeviceRegistry.put(deviceName, errorMsg);
             return;
         }
-
-        deviceRegistry.put(deviceName, new SGrModbusDevice(deviceFrame, deviceDriver));
-        LOG.info("Successfully added modbus TCP device named '{}'.", deviceName);
     }
 
     private void addRestApiDevice(String deviceName, DeviceFrame deviceFrame) {
         try {
-            var device = new SGrRestApiDevice(deviceFrame, new ApacheRestServiceClientFactory());
+            var device = new SGrRestApiDevice(deviceFrame, httpRequestFactory);
             deviceRegistry.put(deviceName, device);
             LOG.info("Successfully added REST-API device named '{}'.", deviceName);
         } catch (RestApiAuthenticationException e) {
@@ -224,7 +234,7 @@ public class IntermediaryService {
     @SuppressWarnings("java:S2095")
     private void addMessagingDevice(String deviceName, DeviceFrame deviceFrame) {
         try {
-            var device = new SGrMessagingDevice(deviceFrame);
+            var device = new SGrMessagingDevice(deviceFrame, messagingClientFactory);
             device.connect();
             deviceRegistry.put(deviceName, device);
         } catch (GenDriverException e) {
@@ -234,9 +244,9 @@ public class IntermediaryService {
         }
     }
 
-    private SGrDeviceBase<?, ?, ?> findDeviceInRegistries(String deviceName) {
+    private GenDeviceApi findDeviceInRegistries(String deviceName) {
 
-        var deviceOpt =  Optional.ofNullable(deviceRegistry.get(deviceName));
+        var deviceOpt = Optional.ofNullable(deviceRegistry.get(deviceName));
         if (deviceOpt.isEmpty()) {
             var deviceError = Optional.ofNullable(errorDeviceRegistry.get(deviceName));
             if (deviceError.isPresent()) {

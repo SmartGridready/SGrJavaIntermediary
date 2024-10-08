@@ -1,4 +1,5 @@
 # SGrJavaIntermediary
+
 ## Introduction
 
 The SGrJavaIntermediary application allows access to SmartGridready compliant devices through a
