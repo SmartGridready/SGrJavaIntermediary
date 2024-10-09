@@ -6,14 +6,16 @@ import ch.smartgridready.intermediary.exception.DeviceNotFoundException;
 import ch.smartgridready.intermediary.exception.DeviceOperationFailedException;
 import ch.smartgridready.intermediary.repository.DeviceRepository;
 import com.smartgridready.communicator.common.api.SGrDeviceBuilder;
+import com.smartgridready.communicator.modbus.api.ModbusGatewayFactory;
+import com.smartgridready.communicator.modbus.api.ModbusGatewayRegistry;
 import com.smartgridready.communicator.modbus.impl.SGrModbusGatewayRegistry;
 import com.smartgridready.communicator.common.api.GenDeviceApi;
 import com.smartgridready.communicator.common.api.values.Value;
-import com.smartgridready.communicator.messaging.client.HiveMqtt5MessagingClientFactory;
 import com.smartgridready.communicator.messaging.impl.SGrMessagingDevice;
 import com.smartgridready.communicator.rest.exception.RestApiAuthenticationException;
-import com.smartgridready.communicator.rest.http.client.ApacheHttpRequestFactory;
 import com.smartgridready.driver.api.common.GenDriverException;
+import com.smartgridready.driver.api.http.GenHttpRequestFactory;
+import com.smartgridready.driver.api.messaging.GenMessagingClientFactory;
 
 import io.vavr.control.Either;
 import jakarta.annotation.PreDestroy;
@@ -30,12 +32,31 @@ public class IntermediaryService {
 
     private final DeviceRepository deviceRepository;
 
+    private final GenMessagingClientFactory messagingClientFactory;
+
+    private final GenHttpRequestFactory httpRequestFactory;
+
+    private final ModbusGatewayFactory modbusGatewayFactory;
+
+    private final ModbusGatewayRegistry sharedModbusGatewayRegistry;
+
     private final Map<String, GenDeviceApi> deviceRegistry = new HashMap<>();
 
     private final Map<String, String> errorDeviceRegistry = new HashMap<>();
 
-    public IntermediaryService(DeviceRepository deviceRepository) {
+    public IntermediaryService(
+        DeviceRepository deviceRepository,
+        GenMessagingClientFactory messagingClientFactory,
+        GenHttpRequestFactory httpRequestFactory,
+        ModbusGatewayFactory modbusGatewayFactory
+    ) {
         this.deviceRepository = deviceRepository;
+        this.messagingClientFactory = messagingClientFactory;
+        this.httpRequestFactory = httpRequestFactory;
+        this.modbusGatewayFactory = modbusGatewayFactory;
+
+        // should be a single instance
+        this.sharedModbusGatewayRegistry = new SGrModbusGatewayRegistry(this.modbusGatewayFactory);
     }
 
     public void loadDevices() {
@@ -53,9 +74,10 @@ public class IntermediaryService {
             var deviceInstance = new SGrDeviceBuilder()
                     .properties(properties)
                     .eid(device.getEiXml().getXml())
-                    .useMessagingClientFactory(new HiveMqtt5MessagingClientFactory())
-                    .useRestServiceClientFactory(new ApacheHttpRequestFactory())
-                    .useSharedModbusGatewayRegistry(new SGrModbusGatewayRegistry())
+                    .useMessagingClientFactory(messagingClientFactory)
+                    .useRestServiceClientFactory(httpRequestFactory)
+                    .useModbusGatewayFactory(modbusGatewayFactory)
+                    .useSharedModbusGatewayRegistry(sharedModbusGatewayRegistry)
                     .build();
 
             deviceInstance.connect();
