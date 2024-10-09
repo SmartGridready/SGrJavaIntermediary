@@ -16,6 +16,7 @@ import com.smartgridready.communicator.rest.http.client.ApacheHttpRequestFactory
 import com.smartgridready.driver.api.common.GenDriverException;
 
 import io.vavr.control.Either;
+import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -62,7 +63,7 @@ public class IntermediaryService {
             deviceRegistry.put(device.getName(), deviceInstance);
             LOG.info("Successfully loaded device named '{}' with EI-XML {}.", device.getName(), device.getEiXml().getName());
         } catch (GenDriverException | RestApiAuthenticationException e) {
-            LOG.error("Failed to device named {} with EI-XML {}. Error: {}", device.getName(),  device.getEiXml().getName(), e.getMessage());
+            LOG.error("Failed to load device named {} with EI-XML {}. Error: {}", device.getName(),  device.getEiXml().getName(), e.getMessage());
             errorDeviceRegistry.put(device.getName(), e.getMessage());
         }
     }
@@ -127,5 +128,18 @@ public class IntermediaryService {
 
     private void mqttCallbackFunction(Either<Throwable, Value> message) {
         LOG.info("Received value: {}", message);
+    }
+
+    @SuppressWarnings("unused")
+    @PreDestroy
+    void beforeTermination() {
+        deviceRegistry.forEach( (deviceName, deviceApi) -> {
+            try {
+                deviceApi.disconnect();
+                LOG.info("Successfully closed device: {}", deviceName);
+            } catch (Exception e) {
+                LOG.info("Failed to disconnect device: {}, {}", deviceName, e.getMessage());
+            }
+        } );
     }
 }
