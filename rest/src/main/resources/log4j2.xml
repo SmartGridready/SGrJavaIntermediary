@@ -12,7 +12,7 @@
     <Root level="info">
       <AppenderRef ref="Console"/>
     </Root>
-    <Logger name="communicator" level="debug" additivity="false">
+    <Logger name="com.smartgridready" level="debug" additivity="false">
       <AppenderRef ref="Console" />
     </Logger>
   </Loggers>

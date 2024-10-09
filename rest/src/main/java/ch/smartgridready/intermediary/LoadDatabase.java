@@ -17,6 +17,7 @@ class LoadDatabase {
 
 	private final IntermediaryService intermediaryService;
 
+	@SuppressWarnings("unused")
 	@Bean
 	CommandLineRunner initDatabase(ExternalInterfaceXmlRepository repository) {
 		log.info("Going to load devices.");
