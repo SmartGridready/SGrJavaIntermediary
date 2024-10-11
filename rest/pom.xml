@@ -12,8 +12,12 @@
 
 	<repositories>
 		<repository>
-			<id>smartgridready</id>
+			<id>smartgridready-release</id>
 			<url>https://nexus.library.smartgridready.ch/repository/maven-releases/</url>
+		</repository>
+		<repository>
+			<id>smartgridready-snapshots</id>
+			<url>https://nexus.library.smartgridready.ch/repository/maven-snapshots/</url>
 		</repository>
 	</repositories>
 
