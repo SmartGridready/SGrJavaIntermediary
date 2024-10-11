@@ -113,12 +113,27 @@
 			"response": []
 		},
 		{
-			"name": "GET EI-XML",
+			"name": "POST SWISSPOWER EI-XML",
 			"request": {
-				"method": "GET",
+				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "fileName",
+							"value": "SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml",
+							"type": "text"
+						},
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Development/SmartGridready/SmartGridready_v200/SGrSpecifications/XMLInstances/ExtInterfaces/SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml"
+						}
+					]
+				},
 				"url": {
-					"raw": "http://localhost:8080/eiXml/SGr_04_0014_0000_WAGO_SmartMeterV0.2.2.xml",
+					"raw": "http://localhost:8080/eiXml/SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -126,7 +141,62 @@
 					"port": "8080",
 					"path": [
 						"eiXml",
-						"SGr_04_0014_0000_WAGO_SmartMeterV0.2.2.xml"
+						"SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST GROUPE-E EI-XML",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "fileName",
+							"value": "SGr_05_mmmm_dddd_Dynamic_Tariffs_GroupeE_V0.0.1.xml",
+							"type": "text"
+						},
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Development/SmartGridready/SmartGridready_v200/SGrSpecifications/XMLInstances/ExtInterfaces/SGr_05_mmmm_dddd_Dynamic_Tariffs_GroupeE_V0.0.1.xml"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/eiXml/SGr_05_mmmm_dddd_Dynamic_Tariffs_GroupeE_V0.0.1.xml",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"eiXml",
+						"SGr_05_mmmm_dddd_Dynamic_Tariffs_GroupeE_V0.0.1.xml"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET EI-XML",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/eiXml/SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"eiXml",
+						"SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml"
 					]
 				}
 			},
@@ -236,6 +306,62 @@
 			"response": []
 		},
 		{
+			"name": "POST SWISSPOWER device",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Swisspower-Tariff\",\r\n    \"eiXmlName\" : \"SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml\",\r\n    \"configurationValues\" : [\r\n        {\r\n            \"name\" : \"metering_code\",\r\n            \"val\"  : \"CH1018601234500000000000000011642\"\r\n        },\r\n        {\r\n            \"name\":\"start_timestamp\",\r\n            \"val\": \"2024-01-01T00:00:00+02:00\"\r\n        },\r\n        {\r\n            \"name\":\"end_timestamp\",\r\n            \"val\": \"2024-01-01T01:00:00+02:00\"\r\n        },\r\n        {\r\n            \"name\":\"token\",\r\n            \"val\":\"19d6ca0bb9bf4d8b6525440eead80da6\"        \r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/device",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"device"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST GROUPE-E device",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Groupe-E-Tariff\",\r\n    \"eiXmlName\" : \"SGr_05_mmmm_dddd_Dynamic_Tariffs_GroupeE_V0.0.1.xml\",\r\n    \"configurationValues\" : [\r\n        {\r\n            \"name\":\"start_timestamp\",\r\n            \"val\": \"2024-01-01T00:00:00+02:00\"\r\n        },\r\n        {\r\n            \"name\":\"end_timestamp\",\r\n            \"val\": \"2024-01-02T00:00:00+02:00\"\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/device",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"device"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "GET device",
 			"request": {
 				"method": "GET",
@@ -280,7 +406,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/eiXml/SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml",
+					"raw": "http://localhost:8080/eiXml/SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -288,7 +414,7 @@
 					"port": "8080",
 					"path": [
 						"eiXml",
-						"SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml"
+						"SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml"
 					]
 				}
 			},
@@ -300,7 +426,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/device/Wago-Meter-800",
+					"raw": "http://localhost:8080/device/Swisspower-Tariff",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -308,7 +434,7 @@
 					"port": "8080",
 					"path": [
 						"device",
-						"Wago-Meter-800"
+						"Swisspower-Tariff"
 					]
 				}
 			},
@@ -403,7 +529,84 @@
 			"response": []
 		},
 		{
-			"name": "Swisspower ESIT Tariff",
+			"name": "Hive-MQTT setVal() maxCurrentLimit",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"value\":\"{ \\\"limit\\\": \\\"max\\\", \\\"current\\\": 54.2 }\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/value/Hive-MQTT-1/EVSE_Station1/ChargingCurrentMax",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"value",
+						"Hive-MQTT-1",
+						"EVSE_Station1",
+						"ChargingCurrentMax"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getVal() SWISSPOER-TARIFF Intermediary",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/value/Swisspower-Tariff/DynamicTariff/TariffSupply",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"value",
+						"Swisspower-Tariff",
+						"DynamicTariff",
+						"TariffSupply"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getVal() GROUPE-E TARIFF Intermediary",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/Groupe-E-Tariff/DynamicTariff/TariffSupply",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"Groupe-E-Tariff",
+						"DynamicTariff",
+						"TariffSupply"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Swisspower ESIT tariffs directly",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -417,6 +620,10 @@
 				},
 				"method": "GET",
 				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
 				"url": {
 					"raw": "https://esit-test.code-fabrik.ch/api/v1/metering_code?start_timestamp=2024-01-01T00%3A00%3A00%2B02%3A00&end_timestamp=2024-01-01T01%3A59%3A59%2B02%3A00&metering_code=CH1018601234500000000000000011642",
 					"protocol": "https",
@@ -449,31 +656,33 @@
 			"response": []
 		},
 		{
-			"name": "Hive-MQTT setVal() maxCurrentLimit",
+			"name": "GROUPE-E tariffs directly",
 			"request": {
-				"method": "POST",
+				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"value\":\"{ \\\"limit\\\": \\\"max\\\", \\\"current\\\": 54.2 }\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
-					"raw": "http://localhost:8080/value/Hive-MQTT-1/EVSE_Station1/ChargingCurrentMax",
-					"protocol": "http",
+					"raw": "https://api.tariffs.groupe-e.ch/v1/tariffs/vario_grid?start_timestamp=2024-01-01T00:00:00+02:00&end_timestamp=2024-01-02T00:00:00+02:00",
+					"protocol": "https",
 					"host": [
-						"localhost"
+						"api",
+						"tariffs",
+						"groupe-e",
+						"ch"
 					],
-					"port": "8080",
 					"path": [
-						"value",
-						"Hive-MQTT-1",
-						"EVSE_Station1",
-						"ChargingCurrentMax"
+						"v1",
+						"tariffs",
+						"vario_grid"
+					],
+					"query": [
+						{
+							"key": "start_timestamp",
+							"value": "2024-01-01T00:00:00+02:00"
+						},
+						{
+							"key": "end_timestamp",
+							"value": "2024-01-02T00:00:00+02:00"
+						}
 					]
 				}
 			},
