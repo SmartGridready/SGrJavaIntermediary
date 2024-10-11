@@ -17,14 +17,3 @@
     </Logger>
   </Loggers>
 </Configuration>
-<!--  levels:  
-      "off", 
-      "trace", 
-      "debug", 
-      "info", 
-      "warn", 
-      "error", 
-      "fatal", and "all"
-      
-       https://logging.apache.org/log4j/2.x/manual/configuration.html Configuring Log4j 2      
--->
