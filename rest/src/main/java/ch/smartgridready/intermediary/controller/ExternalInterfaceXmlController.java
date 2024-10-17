@@ -39,6 +39,7 @@ class ExternalInterfaceXmlController {
 			final var xml = reader.lines().collect(Collectors.joining(System.lineSeparator()));
 			var eiXmlList = repository.findByName(fileName);
 			var eiXml = eiXmlList.stream().findFirst().orElseGet(() -> new ExternalInterfaceXml(fileName, xml));
+			eiXml.setXml(xml); // overwrite XML
 			return repository.save(eiXml);
 		}
 	}
