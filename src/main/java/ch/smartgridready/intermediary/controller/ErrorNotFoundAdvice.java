@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+@SuppressWarnings("unused")
 @ControllerAdvice
 class ErrorNotFoundAdvice {
 

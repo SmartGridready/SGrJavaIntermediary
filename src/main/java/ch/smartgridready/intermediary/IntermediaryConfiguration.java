@@ -10,6 +10,7 @@ import com.smartgridready.communicator.rest.http.client.ApacheHttpRequestFactory
 import com.smartgridready.driver.api.http.GenHttpRequestFactory;
 import com.smartgridready.driver.api.messaging.GenMessagingClientFactory;
 
+@SuppressWarnings("unused")
 @Configuration
 public class IntermediaryConfiguration {
     
