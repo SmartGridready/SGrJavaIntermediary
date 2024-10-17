@@ -13,6 +13,7 @@ import com.smartgridready.communicator.common.api.GenDeviceApi;
 import com.smartgridready.communicator.common.api.values.Value;
 import com.smartgridready.communicator.messaging.impl.SGrMessagingDevice;
 import com.smartgridready.communicator.rest.exception.RestApiAuthenticationException;
+import com.smartgridready.communicator.rest.impl.SGrRestApiDevice;
 import com.smartgridready.driver.api.common.GenDriverException;
 import com.smartgridready.driver.api.http.GenHttpRequestFactory;
 import com.smartgridready.driver.api.messaging.GenMessagingClientFactory;
@@ -90,7 +91,8 @@ public class IntermediaryService {
         }
     }
 
-    public Value getVal(String deviceName, String functionalProfileName, String dataPointName) throws DeviceOperationFailedException, GenDriverException {
+    public Value getVal(String deviceName, String functionalProfileName, String dataPointName, Properties parameters)
+            throws DeviceOperationFailedException, GenDriverException {
 
         var device = findDeviceInRegistries(deviceName);
 
@@ -99,6 +101,10 @@ public class IntermediaryService {
         }
 
         try {
+            // Rest API devices support query parameters
+            if (device instanceof SGrRestApiDevice restApiDevice) {
+                return restApiDevice.getVal(functionalProfileName, dataPointName, parameters);
+            }
             return device.getVal(functionalProfileName, dataPointName);
         } catch (Exception e) {
             throw new DeviceOperationFailedException(deviceName, e);

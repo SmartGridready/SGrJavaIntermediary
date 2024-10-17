@@ -13,6 +13,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+import java.util.Properties;
+
 @AllArgsConstructor
 @RestController
 @Tag(name = "Device Communications Controller", description = "Used to write and read values from a device.")
@@ -27,10 +30,16 @@ public class CommunicationsController {
     public String getVal(
             @PathVariable("device") @Parameter(description = "The device name") String device,
             @PathVariable("functionalProfile") @Parameter(description = "The functional profile name") String functionalProfile,
-            @PathVariable("dataPoint") @Parameter(description = "The data point name") String dataPoint) throws DeviceOperationFailedException {
+            @PathVariable("dataPoint") @Parameter(description = "The data point name") String dataPoint,
+            @RequestParam(required = false) @Parameter(description = "List of query parameters") Map<String, String> queryParams) throws DeviceOperationFailedException {
 
             try {
-                return intermediaryService.getVal(device, functionalProfile, dataPoint).getString();
+
+                var properties = new Properties();
+                if (queryParams != null) {
+                    properties.putAll(queryParams);
+                }
+                return intermediaryService.getVal(device, functionalProfile, dataPoint, properties).getString();
             } catch (Exception e) {
                 return e.getMessage();
             }

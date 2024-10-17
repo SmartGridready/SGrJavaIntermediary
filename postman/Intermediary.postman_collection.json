@@ -312,7 +312,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"Swisspower-Tariff\",\r\n    \"eiXmlName\" : \"SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml\",\r\n    \"configurationValues\" : [\r\n        {\r\n            \"name\" : \"metering_code\",\r\n            \"val\"  : \"CH1018601234500000000000000011642\"\r\n        },\r\n        {\r\n            \"name\":\"start_timestamp\",\r\n            \"val\": \"2024-01-01T00:00:00+02:00\"\r\n        },\r\n        {\r\n            \"name\":\"end_timestamp\",\r\n            \"val\": \"2024-01-01T01:00:00+02:00\"\r\n        },\r\n        {\r\n            \"name\":\"token\",\r\n            \"val\":\"19d6ca0bb9bf4d8b6525440eead80da6\"        \r\n        }\r\n    ]\r\n}",
+					"raw": "{\r\n    \"name\": \"Swisspower-Tariff\",\r\n    \"eiXmlName\" : \"SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml\",\r\n    \"configurationValues\" : [\r\n        {\r\n            \"name\" : \"metering_code\",\r\n            \"val\"  : \"CH1018601234500000000000000011642\"\r\n        },    \r\n        {\r\n            \"name\":\"token\",\r\n            \"val\":\"19d6ca0bb9bf4d8b6525440eead80da6\"        \r\n        }\r\n    ]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -340,7 +340,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"Groupe-E-Tariff\",\r\n    \"eiXmlName\" : \"SGr_05_mmmm_dddd_Dynamic_Tariffs_GroupeE_V0.0.1.xml\",\r\n    \"configurationValues\" : [\r\n        {\r\n            \"name\":\"start_timestamp\",\r\n            \"val\": \"2024-01-01T00:00:00+02:00\"\r\n        },\r\n        {\r\n            \"name\":\"end_timestamp\",\r\n            \"val\": \"2024-01-02T00:00:00+02:00\"\r\n        }\r\n    ]\r\n}",
+					"raw": "{\r\n    \"name\": \"Groupe-E-Tariff\",\r\n    \"eiXmlName\" : \"SGr_05_mmmm_dddd_Dynamic_Tariffs_GroupeE_V0.0.1.xml\",\r\n    \"configurationValues\" : []\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -565,7 +565,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/value/Swisspower-Tariff/DynamicTariff/TariffSupply",
+					"raw": "http://localhost:8080/value/Swisspower-Tariff/DynamicTariff/TariffSupply?start_timestamp=2024-01-01T00:00:00+02:00&end_timestamp=2024-01-01T01:00:00+02:00",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -576,6 +576,16 @@
 						"Swisspower-Tariff",
 						"DynamicTariff",
 						"TariffSupply"
+					],
+					"query": [
+						{
+							"key": "start_timestamp",
+							"value": "2024-01-01T00:00:00+02:00"
+						},
+						{
+							"key": "end_timestamp",
+							"value": "2024-01-01T01:00:00+02:00"
+						}
 					]
 				}
 			},
@@ -587,16 +597,27 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/Groupe-E-Tariff/DynamicTariff/TariffSupply",
+					"raw": "http://localhost:8080/value/Groupe-E-Tariff/DynamicTariff/TariffSupply?start_timestamp=2024-01-01T00:00:00+02:00&end_timestamp=2024-01-02T00:00:00+02:00",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"value",
 						"Groupe-E-Tariff",
 						"DynamicTariff",
 						"TariffSupply"
+					],
+					"query": [
+						{
+							"key": "start_timestamp",
+							"value": "2024-01-01T00:00:00+02:00"
+						},
+						{
+							"key": "end_timestamp",
+							"value": "2024-01-02T00:00:00+02:00"
+						}
 					]
 				}
 			},
