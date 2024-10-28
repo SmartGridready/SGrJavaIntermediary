@@ -1,4 +1,20 @@
-# Example to use SmartGridready (SGr) Intermediary to retrive dynamic tariffs
+# -----------------------------------------------------------------------------
+# Script Name:    sgr-intermediary-python-example.py
+# Author:         Gino Agbomemewa
+# Date Created:   October 2024
+# Description:    Example to use SGr Intermediary to retrive dynamic tariffs
+# -----------------------------------------------------------------------------
+
+# Version:        1.0
+# Python Version: 3.x
+# License:        refer to https://github.com/SmartGridready 
+
+# -----------------------------------------------------------------------------
+# Change Log:
+# Date        Author              Version     Description
+# ----------  ------------------  ---------   ---------------------------------
+# 2024-10-xx  Gino Agbomemewa     1.0         Initial creation.
+# -----------------------------------------------------------------------------
 
 import requests
 
@@ -23,14 +39,14 @@ device_configuration_parameters = [  # Parameters necessary to initialize the de
             "name": "metering_code",
             "val": "CH1018601234500000000000000011642"
         },
-        {
-            "name": "start_timestamp",
-            "val": "2024-01-01T00:00:00+02:00"
-        },
-        {
-            "name": "end_timestamp",
-            "val": "2024-01-01T01:00:00+02:00"
-        },
+        # {
+        #     "name": "start_timestamp",
+        #     "val": "2024-01-01T00:00:00+02:00"
+        # },
+        # {
+        #     "name": "end_timestamp",
+        #     "val": "2024-01-01T01:00:00+02:00"
+        # },
         {
             "name": "token",
             "val": "19d6ca0bb9bf4d8b6525440eead80da6"        
@@ -41,7 +57,8 @@ device_configuration_parameters = [  # Parameters necessary to initialize the de
 # Tariff supplier) i need to define which datapoint of the DynamicTariff 
 # functional profile i want to read
 sgr_functional_profile = "DynamicTariff"
-sgr_datapoint = "TariffSupply"
+sgr_datapoint = "TariffSupply?start_timestamp=2024-01-01T00:00:00+02:00&\
+end_timestamp=2024-01-01T01:00:00+02:00"
 
 # Create some userful url to GET/Post data with the SGr Intermediary
 url_to_load_xml_in_the_sgr_intermediary = create_url(*[
@@ -52,6 +69,9 @@ url_to_initialize_device = create_url(*[
     sgr_intermediary_url, "device"
 ])
 
+# http://localhost:8080/value/Swisspower-Tariff/DynamicTariff/TariffSupply?\
+# start_timestamp=2024-01-01T00:00:00+02:00&end_timestamp=\
+# 2024-01-01T01:00:00+02:00
 url_to_request_tariff_data = create_url(*[
     sgr_intermediary_url, "value", device_name, sgr_functional_profile, 
     sgr_datapoint])
