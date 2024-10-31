@@ -34,10 +34,12 @@ public class CommunicationsController {
             @RequestParam(required = false) @Parameter(description = "List of query parameters") Map<String, String> queryParams) throws DeviceOperationFailedException {
 
             try {
-
                 var properties = new Properties();
+                // Spring does replace + with space by default. This leads to problems when using
+                // RFC 3339 timestamps like 2024-01-01T00:00:00+02:00 in URL parameters.
+                // To use encode a space in the URL use %20.
                 if (queryParams != null) {
-                    properties.putAll(queryParams);
+                    queryParams.forEach((key, val) -> properties.put(key, val.replace(' ', '+')));
                 }
                 return intermediaryService.getVal(device, functionalProfile, dataPoint, properties).getString();
             } catch (Exception e) {
