@@ -5,6 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/index.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/SmartGridready/SGrJavaIntermediary/issues"
   },
-  "homepage": "https://github.com/SmartGridready/SGrJavaIntermediary#readme"
+  "homepage": "https://github.com/SmartGridready/SGrJavaIntermediary#readme",
+  "dependencies": {
+    "axios": "^1.7.7"
+  }
 }
