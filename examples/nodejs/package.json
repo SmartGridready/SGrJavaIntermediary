@@ -1,0 +1,19 @@
+{
+  "name": "nodejs",
+  "version": "1.0.0",
+  "description": "An node js example app for SGr Java Intermediary",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SmartGridready/SGrJavaIntermediary.git"
+  },
+  "author": "d1msk1y",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SmartGridready/SGrJavaIntermediary/issues"
+  },
+  "homepage": "https://github.com/SmartGridready/SGrJavaIntermediary#readme"
+}
