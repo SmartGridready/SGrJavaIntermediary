@@ -2,6 +2,25 @@
 import fs from 'fs';
 import FormData from 'form-data';
 
+async function fetchData(deviceName, functionProfile, dataPointName) {
+  let config = {
+    method: 'get',
+    maxBodyLength: Infinity,
+    url: `http://localhost:8080/value/${deviceName}/${functionProfile}/${dataPointName}`,
+    headers: { }
+  };
+
+  try {
+    const response = await axios.request(config);
+    console.log("Value Response: ", response.data);
+    return response
+  }
+  catch (e) {
+    console.error("Error occurred when fetching data: ", e);
+  }
+}
+
+
 const filePath = './xml/SGr_00_0016_dddd_Siemens_PAC2200_ModbusTCP_V0.1.xml';
 
 const xmlFormData = new FormData();
@@ -35,7 +54,7 @@ let deviceData = JSON.stringify({
     },
     {
       "name": "tcp_address",
-      "val": "192.168.100.144"
+      "val": "192.168.141.125"
     },
     {
       "name": "slave_id",
@@ -60,3 +79,6 @@ axios.request(addDeviceConfig).then((response) => {
   console.error("Error occurred when adding a device: ", error);
 });
 
+
+const deviceValue = await fetchData("Siemens-PAC2200-1", "VoltageAC", "VoltageACL1_N")
+console.log("Device Value: ", deviceValue.data);
