@@ -17,6 +17,7 @@
 # -----------------------------------------------------------------------------
 
 import requests
+import sys
 
 def create_url(*args):
     # Join the strings with '/' and remove any duplicate slashes
@@ -29,7 +30,7 @@ def create_url(*args):
 # docker container RestAPI address
 sgr_intermediary_url = "http://localhost:8080"
 # GitHub URL where the XML files are hosted
-github_url = "https://raw.githubusercontent.com/SmartGridready/SGrSpecifications/334-adapt-tariff-provider-ei-xml-to-the-current-specification/XMLInstances/ExtInterfaces"
+github_url = "https://github.com/SmartGridready/SGrSpecifications/blob/master/XMLInstances/ExtInterfaces"
 
 # Tariff Configuration parameters
 xml_file_name = "SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml"  # Name of XML File describing the dynamic tariff
@@ -84,6 +85,9 @@ if github_response.status_code == 200:
     files = {'file': github_response.content}
     data = {'fileName': xml_file_name}
     post_response = requests.post(url_to_load_xml_in_the_sgr_intermediary, files=files, data=data)
+else:
+    print("Response status code {}".format(github_response.status_code))
+    sys.exit()
 
 # Check if the POST request was successful
 if post_response.status_code == 200:
@@ -106,6 +110,7 @@ device_response = requests.post(url_to_initialize_device, json=device_payload)
 # Check if the POST request for the device was successful
 if device_response.status_code == 200:
     print("Device added successfully!")
+    print(device_response.text)
 else:
     print(f"Failed to add the device. Status code: {device_response.status_code}")
 

@@ -6,7 +6,6 @@ This project demonstrates how to use the SGr Intermediary to retrieve dynamic ta
 
 - [Docker](https://docs.docker.com/get-docker/) installed.
 - [Python 3.x](https://www.python.org/downloads/) installed.
-- Required Python packages listed in `requirements.txt` (if applicable).
 
 ## Setup
 
@@ -39,9 +38,9 @@ This project demonstrates how to use the SGr Intermediary to retrieve dynamic ta
 
    The script performs the following steps:
    - Downloads an XML file from a GitHub repository describing the dynamic tariff.
-   - Posts the XML data to the intermediary.
-   - Configures a device with the tariff information.
-   - Requests tariff data and displays it.
+   - Posts the XML data to the intermediary, creating a new **device** representing the tariff endpoint.
+   - Configures the device with the tariff information.
+   - Requests tariff data from the device and displays it.
 
 ## Code Overview
 
