@@ -30,7 +30,7 @@ def create_url(*args):
 # docker container RestAPI address
 sgr_intermediary_url = "http://localhost:8080"
 # GitHub URL where the XML files are hosted
-github_url = "https://github.com/SmartGridready/SGrSpecifications/blob/master/XMLInstances/ExtInterfaces"
+github_url = "https://raw.githubusercontent.com/SmartGridready/SGrSpecifications/refs/heads/master/XMLInstances/ExtInterfaces"
 
 # Tariff Configuration parameters
 xml_file_name = "SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml"  # Name of XML File describing the dynamic tariff
