@@ -1,4 +1,4 @@
-package ch.smartgridready.intermediary;
+package com.smartgridready.intermediary;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

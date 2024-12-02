@@ -1,4 +1,4 @@
-package ch.smartgridready.intermediary;
+package com.smartgridready.intermediary;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

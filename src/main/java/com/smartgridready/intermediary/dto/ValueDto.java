@@ -1,4 +1,4 @@
-package ch.smartgridready.intermediary.dto;
+package com.smartgridready.intermediary.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

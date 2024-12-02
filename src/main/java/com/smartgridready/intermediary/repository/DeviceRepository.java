@@ -1,7 +1,8 @@
-package ch.smartgridready.intermediary.repository;
+package com.smartgridready.intermediary.repository;
 
-import ch.smartgridready.intermediary.entity.Device;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.smartgridready.intermediary.entity.Device;
 
 import java.util.List;
 

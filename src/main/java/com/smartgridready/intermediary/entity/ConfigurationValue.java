@@ -1,4 +1,4 @@
-package ch.smartgridready.intermediary.entity;
+package com.smartgridready.intermediary.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

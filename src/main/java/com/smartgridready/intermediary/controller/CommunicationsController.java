@@ -1,11 +1,12 @@
-package ch.smartgridready.intermediary.controller;
+package com.smartgridready.intermediary.controller;
 
-import ch.smartgridready.intermediary.dto.ValueDto;
-import ch.smartgridready.intermediary.exception.DeviceOperationFailedException;
-import ch.smartgridready.intermediary.service.IntermediaryService;
 import com.smartgridready.communicator.common.api.values.Float64Value;
 import com.smartgridready.communicator.common.api.values.StringValue;
 import com.smartgridready.communicator.common.api.values.Value;
+import com.smartgridready.intermediary.dto.ValueDto;
+import com.smartgridready.intermediary.exception.DeviceOperationFailedException;
+import com.smartgridready.intermediary.service.IntermediaryService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

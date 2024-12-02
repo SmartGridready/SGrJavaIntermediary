@@ -1,4 +1,4 @@
-package ch.smartgridready.intermediary.controller;
+package com.smartgridready.intermediary.controller;
 
 import java.io.IOException;
 import java.net.URI;
@@ -15,10 +15,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import ch.smartgridready.intermediary.entity.ExternalInterfaceXml;
-import ch.smartgridready.intermediary.exception.ExtIfXmlNotFoundException;
-import ch.smartgridready.intermediary.repository.ExternalInterfaceXmlRepository;
-import ch.smartgridready.intermediary.service.IntermediaryService;
+import com.smartgridready.intermediary.entity.ExternalInterfaceXml;
+import com.smartgridready.intermediary.exception.ExtIfXmlNotFoundException;
+import com.smartgridready.intermediary.repository.ExternalInterfaceXmlRepository;
+import com.smartgridready.intermediary.service.IntermediaryService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

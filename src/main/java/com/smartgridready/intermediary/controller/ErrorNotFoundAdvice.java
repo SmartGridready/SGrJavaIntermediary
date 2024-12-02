@@ -1,13 +1,14 @@
-package ch.smartgridready.intermediary.controller;
+package com.smartgridready.intermediary.controller;
 
-import ch.smartgridready.intermediary.exception.DeviceNotFoundException;
-import ch.smartgridready.intermediary.exception.DeviceOperationFailedException;
-import ch.smartgridready.intermediary.exception.ExtIfXmlNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import com.smartgridready.intermediary.exception.DeviceNotFoundException;
+import com.smartgridready.intermediary.exception.DeviceOperationFailedException;
+import com.smartgridready.intermediary.exception.ExtIfXmlNotFoundException;
 
 @SuppressWarnings("unused")
 @ControllerAdvice

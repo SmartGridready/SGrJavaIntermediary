@@ -1,18 +1,19 @@
-package ch.smartgridready.intermediary.controller;
+package com.smartgridready.intermediary.controller;
 
 
-import ch.smartgridready.intermediary.dto.DeviceDto;
-import ch.smartgridready.intermediary.entity.Device;
-import ch.smartgridready.intermediary.exception.DeviceNotFoundException;
-import ch.smartgridready.intermediary.exception.ExtIfXmlNotFoundException;
-import ch.smartgridready.intermediary.repository.ConfigurationValueRepository;
-import ch.smartgridready.intermediary.repository.DeviceRepository;
-import ch.smartgridready.intermediary.repository.ExternalInterfaceXmlRepository;
-import ch.smartgridready.intermediary.service.IntermediaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
+
+import com.smartgridready.intermediary.dto.DeviceDto;
+import com.smartgridready.intermediary.entity.Device;
+import com.smartgridready.intermediary.exception.DeviceNotFoundException;
+import com.smartgridready.intermediary.exception.ExtIfXmlNotFoundException;
+import com.smartgridready.intermediary.repository.ConfigurationValueRepository;
+import com.smartgridready.intermediary.repository.DeviceRepository;
+import com.smartgridready.intermediary.repository.ExternalInterfaceXmlRepository;
+import com.smartgridready.intermediary.service.IntermediaryService;
 
 import java.util.List;
 

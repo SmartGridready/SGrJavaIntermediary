@@ -1,4 +1,4 @@
-package ch.smartgridready.intermediary.exception;
+package com.smartgridready.intermediary.exception;
 
 public class ExtIfXmlNotFoundException extends RuntimeException {
 

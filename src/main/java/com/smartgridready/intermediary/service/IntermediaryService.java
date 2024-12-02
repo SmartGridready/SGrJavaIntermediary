@@ -1,4 +1,4 @@
-package ch.smartgridready.intermediary.service;
+package com.smartgridready.intermediary.service;
 
 
 import java.util.HashMap;
@@ -22,11 +22,11 @@ import com.smartgridready.driver.api.common.GenDriverException;
 import com.smartgridready.driver.api.http.GenHttpClientFactory;
 import com.smartgridready.driver.api.messaging.GenMessagingClientFactory;
 import com.smartgridready.driver.api.messaging.model.MessagingPlatformType;
+import com.smartgridready.intermediary.entity.Device;
+import com.smartgridready.intermediary.exception.DeviceNotFoundException;
+import com.smartgridready.intermediary.exception.DeviceOperationFailedException;
+import com.smartgridready.intermediary.repository.DeviceRepository;
 
-import ch.smartgridready.intermediary.entity.Device;
-import ch.smartgridready.intermediary.exception.DeviceNotFoundException;
-import ch.smartgridready.intermediary.exception.DeviceOperationFailedException;
-import ch.smartgridready.intermediary.repository.DeviceRepository;
 import io.vavr.control.Either;
 import jakarta.annotation.PreDestroy;
 
