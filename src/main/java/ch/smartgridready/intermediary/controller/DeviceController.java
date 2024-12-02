@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@SuppressWarnings("unused")
 @RestController
 @Tag(name = "Device Controller", description = "API to manage devices.")
 public class DeviceController {
@@ -61,7 +60,7 @@ public class DeviceController {
 
         deviceRepository.save(device);
 
-        intermediaryService.loadDevices();
+        intermediaryService.loadDevice(device);
 
         return new DeviceDto(
                 device.getName(),

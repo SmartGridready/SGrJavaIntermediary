@@ -60,11 +60,13 @@ public class IntermediaryService {
         this.sharedModbusGatewayRegistry = new SGrModbusGatewayRegistry();
     }
 
-    public void loadDevices() {
+	public void loadDevices() {
+		deviceRepository.findAll().forEach(this::loadDevice);
+	}
 
-        var devices = deviceRepository.findAll();
-        devices.forEach(this::loadDevice);
-    }
+	public void loadDevicesBasedOnEiXMl(String eiXmlName) {
+		deviceRepository.findByEiXmlName(eiXmlName).forEach(device -> loadDevice(device));
+	}
 
     public void loadDevice(Device device) {
 
@@ -72,6 +74,14 @@ public class IntermediaryService {
         device.getConfigurationValues().forEach(configurationValue -> properties.put(configurationValue.getName(), configurationValue.getVal()));
 
         try {
+        	var oldDevice = deviceRegistry.get(device.getName());
+        	
+        	if (oldDevice != null)
+        	{
+        		LOG.info("disconnecting old device named '{}'", device.getName());
+        		oldDevice.disconnect();
+        	}
+        	
             var deviceInstance = new SGrDeviceBuilder()
                     .properties(properties)
                     .eid(device.getEiXml().getXml())
@@ -83,11 +93,12 @@ public class IntermediaryService {
             deviceInstance.connect();
 
             deviceRegistry.put(device.getName(), deviceInstance);
-            LOG.info("Successfully loaded device named '{}' with EI-XML {}.", device.getName(), device.getEiXml().getName());
-        } catch (GenDriverException | RestApiAuthenticationException e) {
-            LOG.error("Failed to load device named {} with EI-XML {}. Error: {}", device.getName(),  device.getEiXml().getName(), e.getMessage());
-            errorDeviceRegistry.put(device.getName(), e.getMessage());
-        }
+            LOG.info("Successfully loaded device named '{}' with EI-XML '{}'.", device.getName(), device.getEiXml().getName());
+		} catch (GenDriverException | RestApiAuthenticationException e) {
+			LOG.error("Failed to load device named '{}' with EI-XML '{}'. Error: {}", device.getName(),
+					device.getEiXml().getName(), e.getMessage());
+			errorDeviceRegistry.put(device.getName(), e.getMessage());
+		}
     }
 
     public Value getVal(String deviceName, String functionalProfileName, String dataPointName, Properties parameters)
@@ -157,7 +168,6 @@ public class IntermediaryService {
         LOG.info("Received value: {}", message);
     }
 
-    @SuppressWarnings("unused")
     @PreDestroy
     void beforeTermination() {
         deviceRegistry.forEach( (deviceName, deviceApi) -> {
