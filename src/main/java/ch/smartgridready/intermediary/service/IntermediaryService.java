@@ -1,30 +1,34 @@
 package ch.smartgridready.intermediary.service;
 
 
-import ch.smartgridready.intermediary.entity.Device;
-import ch.smartgridready.intermediary.exception.DeviceNotFoundException;
-import ch.smartgridready.intermediary.exception.DeviceOperationFailedException;
-import ch.smartgridready.intermediary.repository.DeviceRepository;
-import com.smartgridready.communicator.common.api.SGrDeviceBuilder;
-import com.smartgridready.communicator.modbus.api.ModbusGatewayFactory;
-import com.smartgridready.communicator.modbus.api.ModbusGatewayRegistry;
-import com.smartgridready.communicator.modbus.impl.SGrModbusGatewayRegistry;
-import com.smartgridready.communicator.common.api.GenDeviceApi;
-import com.smartgridready.communicator.common.api.values.Value;
-import com.smartgridready.communicator.messaging.impl.SGrMessagingDevice;
-import com.smartgridready.communicator.rest.exception.RestApiAuthenticationException;
-import com.smartgridready.communicator.rest.impl.SGrRestApiDevice;
-import com.smartgridready.driver.api.common.GenDriverException;
-import com.smartgridready.driver.api.http.GenHttpRequestFactory;
-import com.smartgridready.driver.api.messaging.GenMessagingClientFactory;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
 
-import io.vavr.control.Either;
-import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import com.smartgridready.communicator.common.api.GenDeviceApi;
+import com.smartgridready.communicator.common.api.SGrDeviceBuilder;
+import com.smartgridready.communicator.common.api.values.Value;
+import com.smartgridready.communicator.messaging.impl.SGrMessagingDevice;
+import com.smartgridready.communicator.modbus.api.ModbusGatewayRegistry;
+import com.smartgridready.communicator.modbus.impl.SGrModbusGatewayRegistry;
+import com.smartgridready.communicator.rest.exception.RestApiAuthenticationException;
+import com.smartgridready.communicator.rest.impl.SGrRestApiDevice;
+import com.smartgridready.driver.api.common.GenDriverException;
+import com.smartgridready.driver.api.http.GenHttpClientFactory;
+import com.smartgridready.driver.api.messaging.GenMessagingClientFactory;
+import com.smartgridready.driver.api.messaging.model.MessagingPlatformType;
+
+import ch.smartgridready.intermediary.entity.Device;
+import ch.smartgridready.intermediary.exception.DeviceNotFoundException;
+import ch.smartgridready.intermediary.exception.DeviceOperationFailedException;
+import ch.smartgridready.intermediary.repository.DeviceRepository;
+import io.vavr.control.Either;
+import jakarta.annotation.PreDestroy;
 
 @Service
 public class IntermediaryService {
@@ -35,9 +39,7 @@ public class IntermediaryService {
 
     private final GenMessagingClientFactory messagingClientFactory;
 
-    private final GenHttpRequestFactory httpRequestFactory;
-
-    private final ModbusGatewayFactory modbusGatewayFactory;
+    private final GenHttpClientFactory httpRequestFactory;
 
     private final ModbusGatewayRegistry sharedModbusGatewayRegistry;
 
@@ -48,16 +50,14 @@ public class IntermediaryService {
     public IntermediaryService(
         DeviceRepository deviceRepository,
         GenMessagingClientFactory messagingClientFactory,
-        GenHttpRequestFactory httpRequestFactory,
-        ModbusGatewayFactory modbusGatewayFactory
+        GenHttpClientFactory httpRequestFactory
     ) {
         this.deviceRepository = deviceRepository;
         this.messagingClientFactory = messagingClientFactory;
         this.httpRequestFactory = httpRequestFactory;
-        this.modbusGatewayFactory = modbusGatewayFactory;
 
         // should be a single instance
-        this.sharedModbusGatewayRegistry = new SGrModbusGatewayRegistry(this.modbusGatewayFactory);
+        this.sharedModbusGatewayRegistry = new SGrModbusGatewayRegistry();
     }
 
     public void loadDevices() {
@@ -75,9 +75,8 @@ public class IntermediaryService {
             var deviceInstance = new SGrDeviceBuilder()
                     .properties(properties)
                     .eid(device.getEiXml().getXml())
-                    .useMessagingClientFactory(messagingClientFactory)
+                    .useMessagingClientFactory(messagingClientFactory, MessagingPlatformType.MQTT5)
                     .useRestServiceClientFactory(httpRequestFactory)
-                    .useModbusGatewayFactory(modbusGatewayFactory)
                     .useSharedModbusGatewayRegistry(sharedModbusGatewayRegistry)
                     .build();
 
