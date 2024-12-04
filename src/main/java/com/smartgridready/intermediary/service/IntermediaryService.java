@@ -87,7 +87,13 @@ public class IntermediaryService
         this.httpRequestFactory = httpRequestFactory;
 
         // should be a single instance
-        this.sharedModbusGatewayRegistry = new SGrModbusGatewayRegistry();
+        this.sharedModbusGatewayRegistry = createModbusGatewayRegistry();
+    }
+    
+    // protected for unit test
+    protected ModbusGatewayRegistry createModbusGatewayRegistry()
+    {
+        return new SGrModbusGatewayRegistry();
     }
 
     /**
@@ -133,8 +139,9 @@ public class IntermediaryService
      * @throws InterruptedException
      *         if the operation is interrupted
      */
-    private String loadExternalInterfaceFromGitHub( String fileName ) throws IOException,
-                                                                      InterruptedException
+    // protected for unit test (mocking of HttpClient.newHttpClient() impossible?)
+    protected String loadExternalInterfaceFromGitHub( String fileName ) throws IOException,
+                                                                        InterruptedException
     {
         final var baseUri =
                 "https://raw.githubusercontent.com/SmartGridready/SGrSpecifications/refs/heads/master/XMLInstances/ExtInterfaces/";
@@ -216,11 +223,14 @@ public class IntermediaryService
         {
             disconnectDevice( device.getName(), false );
 
-            var deviceInstance = new SGrDeviceBuilder().properties( properties )
+            var deviceInstance = new SGrDeviceBuilder()
+                    .properties( properties )
                     .eid( device.getEiXml().getXml() )
                     .useMessagingClientFactory( messagingClientFactory, MessagingPlatformType.MQTT5 )
                     .useRestServiceClientFactory( httpRequestFactory )
                     .useSharedModbusGatewayRegistry( sharedModbusGatewayRegistry )
+                    // TODO caling useSharedModbusGatewayRegistry() without calling useSharedModbusRtu(true) makes no sense?
+                    .useSharedModbusRtu( true )
                     .build();
 
             LOG.debug( "connecting new device named '{}'", device.getName() );
