@@ -9,11 +9,16 @@ import java.util.List;
 
 import com.smartgridready.intermediary.entity.ConfigurationValue;
 
+
+/**
+ * DTO for device.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeviceDto {
+public class DeviceDto
+{
     private String name;
     private String eiXmlName;
     private List<ConfigurationValue> configurationValues;

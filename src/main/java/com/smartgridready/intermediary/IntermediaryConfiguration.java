@@ -8,16 +8,23 @@ import com.smartgridready.driver.api.http.GenHttpClientFactory;
 import com.smartgridready.driver.api.messaging.GenMessagingClientFactory;
 import com.smartgridready.driver.hivemq.HiveMqtt5MessagingClientFactory;
 
+
+/**
+ * Configuration for factories. 
+ */
 @Configuration
-public class IntermediaryConfiguration {
-    
+public class IntermediaryConfiguration
+{
+
     @Bean
-    GenHttpClientFactory httpRequestFactory() {
+    GenHttpClientFactory httpRequestFactory()
+    {
         return new ApacheHttpClientFactory();
     }
 
     @Bean
-    GenMessagingClientFactory messagingClientFactory() {
+    GenMessagingClientFactory messagingClientFactory()
+    {
         return new HiveMqtt5MessagingClientFactory();
     }
 }

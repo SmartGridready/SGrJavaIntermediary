@@ -1,8 +1,14 @@
 package com.smartgridready.intermediary.exception;
 
-public class ExtIfXmlNotFoundException extends RuntimeException {
+/**
+ * Exception for EI-XML not found.
+ */
+public class ExtIfXmlNotFoundException extends RuntimeException
+{
+    private static final long serialVersionUID = 1L;
 
-	public ExtIfXmlNotFoundException(String name) {
-		super("Could not find externalInterfaceXxml: " + name);
-	}
+    public ExtIfXmlNotFoundException( String name )
+    {
+        super( "Could not find externalInterfaceXxml: " + name );
+    }
 }

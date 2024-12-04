@@ -6,7 +6,12 @@ import com.smartgridready.intermediary.entity.ExternalInterfaceXml;
 
 import java.util.List;
 
-public interface ExternalInterfaceXmlRepository extends JpaRepository<ExternalInterfaceXml, Long> {
 
-    List<ExternalInterfaceXml> findByName(String name);
+/**
+ * Repository for EI-XML. 
+ */
+public interface ExternalInterfaceXmlRepository extends JpaRepository<ExternalInterfaceXml, Long>
+{
+
+    List<ExternalInterfaceXml> findByName( String name );
 }
