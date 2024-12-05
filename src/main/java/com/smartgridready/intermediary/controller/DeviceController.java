@@ -39,8 +39,7 @@ public class DeviceController
                                                                deviceDto.getEiXmlName(),
                                                                deviceDto.getConfigurationValues() );
         return new DeviceDto( device.getName(),
-                              device.getEiXml() != null ? device.getEiXml().getName() : "-",
-                              // TODO null isn't possible here? (ExtIfXmlNotFoundException)
+                              device.getEiXml().getName(),
                               device.getConfigurationValues(),
                               intermediaryService.getDeviceStatus( device.getName() ) );
     }
@@ -54,8 +53,7 @@ public class DeviceController
     {
         var device = intermediaryService.getDevice( deviceName );
         return new DeviceDto( device.getName(),
-                              device.getEiXml() != null ? device.getEiXml().getName() : "-",
-                              // TODO null isn't possible here? (ExternalInterfaceXml is NOT optional)
+                              device.getEiXml().getName(),
                               device.getConfigurationValues(),
                               intermediaryService.getDeviceStatus( deviceName ) );
     }
@@ -68,10 +66,7 @@ public class DeviceController
         var devices = intermediaryService.getAllDevices();
         return devices.stream()
                 .map( device -> new DeviceDto( device.getName(),
-                                               device.getEiXml() != null ? device.getEiXml().getName()
-                                                                         : "-",
-                                               // TODO null isn't possible here? (ExternalInterfaceXml is
-                                               // NOT optional)
+                                               device.getEiXml().getName(),
                                                device.getConfigurationValues(),
                                                intermediaryService.getDeviceStatus( device.getName() ) ) )
                 .toList();

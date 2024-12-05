@@ -51,27 +51,17 @@ public class CommunicationsController
             @Parameter(description = "List of query parameters")
             Map<String, String> queryParams )
     {
+        var properties = new Properties();
 
-        try
+        // Spring does replace + with space by default. This leads to problems when using
+        // RFC 3339 timestamps like 2024-01-01T00:00:00+02:00 in URL parameters.
+        // To use encode a space in the URL use %20.
+        if ( queryParams != null )
         {
-            var properties = new Properties();
-
-            // Spring does replace + with space by default. This leads to problems when using
-            // RFC 3339 timestamps like 2024-01-01T00:00:00+02:00 in URL parameters.
-            // To use encode a space in the URL use %20.
-            if ( queryParams != null )
-            {
-                queryParams.forEach( ( key, val ) -> properties.put( key, val.replace( ' ', '+' ) ) );
-            }
-
-            return intermediaryService.getVal( device, functionalProfile, dataPoint, properties )
-                    .getString();
-        }
-        catch ( Exception e )
-        {
-            return e.getMessage();
+            queryParams.forEach( ( key, val ) -> properties.put( key, val.replace( ' ', '+' ) ) );
         }
 
+        return intermediaryService.getVal( device, functionalProfile, dataPoint, properties ).getString();
     }
 
     @Operation(description = "Used to write a value to the device data point.")

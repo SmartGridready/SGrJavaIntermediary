@@ -23,10 +23,20 @@ class ErrorNotFoundAdvice
 
     @ResponseBody
     @ExceptionHandler({ ExtIfXmlNotFoundException.class,
-                        DeviceNotFoundException.class,
-                        DeviceOperationFailedException.class })
+                        DeviceNotFoundException.class })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     String exceptionHandler( RuntimeException ex )
+    {
+        LOG.debug( "Handling exception '{}' with message '{}'",
+                   ex.getClass().getSimpleName(),
+                   ex.getMessage() );
+        return ex.getMessage();
+    }
+
+    @ResponseBody
+    @ExceptionHandler({ DeviceOperationFailedException.class })
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    String runTimeExceptionHandler( RuntimeException ex )
     {
         LOG.debug( "Handling exception '{}' with message '{}'",
                    ex.getClass().getSimpleName(),

@@ -14,8 +14,7 @@ public class DeviceOperationFailedException extends RuntimeException
 
     public DeviceOperationFailedException( String deviceName, Throwable cause )
     {
-        super( "Read/write failed for device '" + deviceName
-               + "'. Error: " + cause.getMessage() );
+        super( "Read/write failed for device '" + deviceName + "'.", cause );
     }
 
 }

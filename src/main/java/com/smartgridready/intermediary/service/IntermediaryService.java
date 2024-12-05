@@ -229,7 +229,6 @@ public class IntermediaryService
                     .useMessagingClientFactory( messagingClientFactory, MessagingPlatformType.MQTT5 )
                     .useRestServiceClientFactory( httpRequestFactory )
                     .useSharedModbusGatewayRegistry( sharedModbusGatewayRegistry )
-                    // TODO caling useSharedModbusGatewayRegistry() without calling useSharedModbusRtu(true) makes no sense?
                     .useSharedModbusRtu( true )
                     .build();
 
@@ -427,11 +426,14 @@ public class IntermediaryService
             }
 
             var value = device.getVal( functionalProfileName, dataPointName );
+
+            errorDeviceRegistry.remove( deviceName );
             LOG.debug( "finishing getVal() with value='{}'", value );
             return value;
         }
         catch ( Exception e )
         {
+            errorDeviceRegistry.put( deviceName, e.getMessage() );
             throw new DeviceOperationFailedException( deviceName, e );
         }
 
@@ -490,10 +492,12 @@ public class IntermediaryService
         try
         {
             device.setVal( functionalProfileName, dataPointName, value );
+            errorDeviceRegistry.remove( deviceName );
             LOG.debug( "finishing setVal()" );
         }
         catch ( Exception e )
         {
+            errorDeviceRegistry.put( deviceName, e.getMessage() );
             throw new DeviceOperationFailedException( deviceName, e );
         }
 
