@@ -50,8 +50,8 @@ device_configuration_parameters = [  # Parameters necessary to initialize the de
 # Tariff supplier) i need to define which datapoint of the DynamicTariff 
 # functional profile i want to read
 sgr_functional_profile = "DynamicTariff"
-sgr_datapoint = "TariffSupply?start_timestamp=2024-10-01T00:00:00%2B02:00&\
-end_timestamp=2024-10-02T01:00:00%2B02:00"
+sgr_datapoint = "TariffSupply?start_timestamp=2024-12-01T00:00:00%2B02:00&\
+end_timestamp=2024-12-02T01:00:00%2B02:00"
 
 # Create some userful url to GET/Post data with the SGr Intermediary
 url_to_load_xml_in_the_sgr_intermediary = create_url(*[
