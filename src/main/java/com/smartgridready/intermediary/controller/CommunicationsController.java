@@ -25,7 +25,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @Tag(name = "Device Communications Controller",
-     description = "Used to write and read values from a device.")
+     description = "API to write/read values to/from a device data point.")
 public class CommunicationsController
 {
     private final IntermediaryService intermediaryService;
@@ -35,7 +35,7 @@ public class CommunicationsController
         this.intermediaryService = intermediaryService;
     }
 
-    @Operation(description = "Used to read a value from a device data point.")
+    @Operation(description = "Read a value from a device data point.")
     @ApiResponse(description = "The value read from the device.")
     @GetMapping("/value/{device}/{functionalProfile}/{dataPoint}")
     public String getVal( 
@@ -49,7 +49,6 @@ public class CommunicationsController
             @Parameter(description = "The data point name")
             String dataPoint,
             @RequestParam(required = false)
-            @Parameter(description = "List of query parameters")
             Map<String, String> queryParams )
     {
         var properties = new Properties();
@@ -65,9 +64,9 @@ public class CommunicationsController
         return intermediaryService.getVal( device, functionalProfile, dataPoint, properties ).getString();
     }
 
-    @Operation(description = "Used to write a value to the device data point.")
+    @Operation(description = "Write a value to the device data point.")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            description = "The value to be written to the device.")
+            description = "The value to be written to the device, see ValueDto.")
     @PostMapping("/value/{device}/{functionalProfile}/{dataPoint}")
     public void setVal( 
             @PathVariable("device")
@@ -77,22 +76,22 @@ public class CommunicationsController
             @Parameter(description = "The functional profile name")
             String functionalProfile,
             @PathVariable("dataPoint")
-            @Parameter
+            @Parameter(description = "The data point name")
             String dataPoint,
             @RequestBody
-            @Parameter(description = "value must be Number, String or Boolean")
+            @Parameter(description = "The value must be a Number, a Boolean or a String (which could contain JSON).")
             ValueDto value )
     {
         Value sgrValue;
 
-        if ( value == null )
+        if ( ( value == null ) || ( value.getValue() == null ) )
         {
             throw new IllegalArgumentException( "need parameter value" );
         }
         
-        if ( value.getValue() instanceof Number n )
+        if ( value.getValue() instanceof Number )
         { 
-            // TODO is this correct, test for Number but assume it's a Float64Value?
+            // convert the number to the biggest number, SGr knows: let the concrete implementation convert this again
             sgrValue = Float64Value.of( ( Double ) value.getValue() );
         }
         else
@@ -107,7 +106,8 @@ public class CommunicationsController
         }
         else
         {
-            throw new IllegalArgumentException( "parameter value has invalid type" );
+            throw new IllegalArgumentException( "parameter value has invalid type: "
+                                                + value.getValue().getClass().getSimpleName() );
         }
 
         intermediaryService.setVal( device, functionalProfile, dataPoint, sgrValue );

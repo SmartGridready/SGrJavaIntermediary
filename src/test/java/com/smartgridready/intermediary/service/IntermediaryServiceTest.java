@@ -68,7 +68,7 @@ class IntermediaryServiceTest
     @Mock
     GenDriverAPI4Modbus genDriverAPI4Modbus;
     
-    IntermediaryService testee;
+    IntermediaryServiceProxy testee;
 
     @BeforeEach
     void createTestee()
@@ -85,6 +85,8 @@ class IntermediaryServiceTest
      */
     private class IntermediaryServiceProxy extends IntermediaryService
     {
+        private boolean loadFromGitHubShouldFail;
+        
         public IntermediaryServiceProxy( DeviceRepository deviceRepository,
                                          ExternalInterfaceXmlRepository eiXmlRepository,
                                          ConfigurationValueRepository configurationValueRepository,
@@ -143,9 +145,25 @@ class IntermediaryServiceTest
         protected String loadExternalInterfaceFromGitHub( String fileName ) throws IOException,
                                                                             InterruptedException
         {
+            if ( loadFromGitHubShouldFail )
+            {
+                throw new ExtIfXmlNotFoundException( "UNIT_TEST" );
+            }
+            
             return readEiXml();
         }
         
+        /**
+         * Sets the success of a call to {@link #loadExternalInterfaceFromGitHub(String)}.
+         *  
+         * @param shouldFail
+         *        {@code true}: the method throws {@link ExtIfXmlNotFoundException}
+         *        {@code false}: the methods terminates successfully,
+         */
+        void setLoadFromGitHubShouldFail( boolean shouldFail )
+        {
+            loadFromGitHubShouldFail = shouldFail;
+        }
     }
     
     /**
@@ -221,6 +239,35 @@ class IntermediaryServiceTest
         assertEquals( "OK", testee.getDeviceStatus( DEVICE_NAME ) );
     }
 
+    @Test
+    void testSaveEiXmlWithNewEiXmlNotFound() throws Exception
+    {
+        // set up mocks
+        final var eiXml = new ExternalInterfaceXml( EI_XML_NAME, readEiXml() );
+        Mockito.lenient()
+                .when( eiXmlRepository.findByName( EI_XML_NAME ) )
+                .thenReturn( new ArrayList<ExternalInterfaceXml>() );
+        Mockito.lenient().when( eiXmlRepository.save( eiXml ) ).thenReturn( eiXml );
+        final var device = createDevice( DEVICE_NAME, eiXml );
+        final var deviceList = new ArrayList<Device>();
+        deviceList.add( device );
+        Mockito.lenient()
+                .when( deviceRepository.findByEiXmlName( EI_XML_NAME ) )
+                .thenReturn( deviceList );
+
+        // call testee and check
+        try
+        {
+            testee.setLoadFromGitHubShouldFail( true );
+            assertThrows( ExtIfXmlNotFoundException.class, () -> testee.saveEiXml( EI_XML_NAME ) );
+        }
+        finally
+        {
+            testee.setLoadFromGitHubShouldFail( false );
+        }
+
+    }
+    
     /**
      * Creates a device with the given device name and EI-XML name.
      * 

@@ -25,6 +25,7 @@ import com.smartgridready.communicator.rest.exception.RestApiAuthenticationExcep
 import com.smartgridready.communicator.rest.impl.SGrRestApiDevice;
 import com.smartgridready.driver.api.common.GenDriverException;
 import com.smartgridready.driver.api.http.GenHttpClientFactory;
+import com.smartgridready.driver.api.http.HttpStatus;
 import com.smartgridready.driver.api.messaging.GenMessagingClientFactory;
 import com.smartgridready.driver.api.messaging.model.MessagingPlatformType;
 import com.smartgridready.intermediary.entity.ConfigurationValue;
@@ -150,6 +151,14 @@ public class IntermediaryService
         final var request = HttpRequest.newBuilder().uri( URI.create( uri ) ).build();
         LOG.info( "Loading EI-XML file for file name '{}' from URI '{}'", fileName, uri );
         final var response = client.send( request, HttpResponse.BodyHandlers.ofString() );
+        
+        if ( response.statusCode() != HttpStatus.OK )
+        {
+            throw new ExtIfXmlNotFoundException( "GitHub answered with status code != OK, message is '"
+                                                 + response.body()
+                                                 + "'" );
+        }
+        
         return response.body();
     }
 
@@ -483,10 +492,11 @@ public class IntermediaryService
                         String dataPointName,
                         Value value )
     {
-        LOG.info( "starting setVal() with deviceName='{}', functionalProfileName='{}', dataPointName='{}'",
+        LOG.info( "starting setVal() with deviceName='{}', functionalProfileName='{}', dataPointName='{}', value='{}'",
                   deviceName,
                   functionalProfileName,
-                  dataPointName );
+                  dataPointName,
+                  value);
         final var device = findDeviceInRegistries( deviceName );
 
         try

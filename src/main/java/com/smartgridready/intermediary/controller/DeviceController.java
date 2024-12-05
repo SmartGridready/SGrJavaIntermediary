@@ -13,6 +13,7 @@ import com.smartgridready.intermediary.dto.DeviceDto;
 import com.smartgridready.intermediary.service.IntermediaryService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -28,11 +29,26 @@ public class DeviceController
         this.intermediaryService = intermediaryService;
     }
 
+    @Operation(description = "Get a list of all devices.")
+    @ApiResponse(description = "A list with all devices with their device information.")
+    @GetMapping("/device")
+    List<DeviceDto> getAll()
+    {
+        var devices = intermediaryService.getAllDevices();
+        return devices.stream()
+                .map( device -> new DeviceDto( device.getName(),
+                                               device.getEiXml().getName(),
+                                               device.getConfigurationValues(),
+                                               intermediaryService.getDeviceStatus( device.getName() ) ) )
+                .toList();
+    }
+
     @Operation(description = "Add a new or update an existing device.")
     @ApiResponse(description = "Device information of added/updated device")
     @PostMapping("/device")
     DeviceDto insertOrUpdateDevice( 
             @RequestBody 
+            @Parameter(description = "Device description with device name, EI-XML name and configuration values.")
             DeviceDto deviceDto )
     {
         var device = intermediaryService.insertOrUpdateDevice( deviceDto.getName(),
@@ -45,39 +61,27 @@ public class DeviceController
     }
 
     @Operation(description = "Get a device by name")
-    @GetMapping("/device/{deviceName}")
-    @ApiResponse(description = "All device information.")
+    @ApiResponse(description = "Device information")
+    @GetMapping("/device/{name}")
     DeviceDto getDevice( 
-            @PathVariable("deviceName") 
-            String deviceName )
+            @PathVariable("name") 
+            @Parameter(description = "The device name")
+            String name )
     {
-        var device = intermediaryService.getDevice( deviceName );
+        var device = intermediaryService.getDevice( name );
         return new DeviceDto( device.getName(),
                               device.getEiXml().getName(),
                               device.getConfigurationValues(),
-                              intermediaryService.getDeviceStatus( deviceName ) );
-    }
-
-    @Operation(description = "Get a list of all devices.")
-    @GetMapping("/device")
-    @ApiResponse(description = "A list with all devices with their device information.")
-    List<DeviceDto> getAll()
-    {
-        var devices = intermediaryService.getAllDevices();
-        return devices.stream()
-                .map( device -> new DeviceDto( device.getName(),
-                                               device.getEiXml().getName(),
-                                               device.getConfigurationValues(),
-                                               intermediaryService.getDeviceStatus( device.getName() ) ) )
-                .toList();
+                              intermediaryService.getDeviceStatus( name ) );
     }
 
     @Operation(description = "Delete a device by name.")
-    @DeleteMapping("/device/{deviceName}")
+    @DeleteMapping("/device/{name}")
     void deleteDevice( 
-            @PathVariable("deviceName") 
-            String deviceName )
+            @PathVariable("name") 
+            @Parameter(description = "The device name")
+            String name )
     {
-        intermediaryService.deleteDevice( deviceName );
+        intermediaryService.deleteDevice( name );
     }
 }

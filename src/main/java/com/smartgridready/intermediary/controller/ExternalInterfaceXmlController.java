@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @Tag(name = "External-Interface-XML Controller",
-     description = "Allows the management of the external-interface-xml files (EI-XML)")
+     description = "API to manage the XML files of the external interfaces (EI-XML).")
 class ExternalInterfaceXmlController
 {
     private final IntermediaryService intermediaryService;
@@ -30,30 +30,38 @@ class ExternalInterfaceXmlController
         this.intermediaryService = intermediaryService;
     }
 
-    @Operation(description = "Used to add new EI-XML file")
-    @PostMapping("/eiXml/{fileName}")
-    @ApiResponse(description = "The EI-XML file name")
-    ExternalInterfaceXml save( 
-            @PathVariable("fileName")
-            @Parameter(description = "The filename of the EI-XML")
-            String fileName ) 
-                    throws IOException, InterruptedException
+    @Operation(description = "Get a list of all EI-XMLs.")
+    @ApiResponse(description = "A list of all EI-XMLs with their names and content")
+    @GetMapping("/eiXml")
+    List<ExternalInterfaceXml> getAll()
     {
-        return intermediaryService.saveEiXml( fileName );
+        return intermediaryService.getAllEiXml();
     }
 
-    @Operation(description = "Finds an EI-XML by name.")
-    @ApiResponse(description = "The EI-XML file name and content")
+    @Operation(description = "Add a EI-XML hosted on GitHub.")
+    @ApiResponse(description = "The EI-XML name and its content")
+    @PostMapping("/eiXml/{name}")
+    ExternalInterfaceXml save( 
+            @PathVariable("name")
+            @Parameter(description = "The EI-XML name")
+            String name ) 
+                    throws IOException, InterruptedException
+    {
+        return intermediaryService.saveEiXml( name );
+    }
+
+    @Operation(description = "Get an EI-XML by name.")
+    @ApiResponse(description = "The EI-XML name and its content")
     @GetMapping("/eiXml/{name}")
     ExternalInterfaceXml externalInterfaceXml( 
             @PathVariable("name")
-            @Parameter(description = "The name of the EI-XML file")
+            @Parameter(description = "The EI-XML name")
             String fileName )
     {
         return intermediaryService.getEiXml( fileName );
     }
 
-    @Operation(description = "Deletes an EI-XML")
+    @Operation(description = "Deletes an EI-XML by name")
     @DeleteMapping("/eiXml/{name}")
     void delete( 
             @PathVariable("name")
@@ -61,13 +69,5 @@ class ExternalInterfaceXmlController
             String name )
     {
         intermediaryService.deleteEiXml( name );
-    }
-
-    @Operation(description = "Get a list of all EI-XML")
-    @ApiResponse(description = "A list of all EI-XMLs with their names and content")
-    @GetMapping("/eiXml")
-    List<ExternalInterfaceXml> getAll()
-    {
-        return intermediaryService.getAllEiXml();
     }
 }
