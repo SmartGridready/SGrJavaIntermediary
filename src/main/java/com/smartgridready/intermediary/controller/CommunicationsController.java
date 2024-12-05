@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.smartgridready.communicator.common.api.values.BooleanValue;
 import com.smartgridready.communicator.common.api.values.Float64Value;
 import com.smartgridready.communicator.common.api.values.StringValue;
 import com.smartgridready.communicator.common.api.values.Value;
@@ -79,18 +80,34 @@ public class CommunicationsController
             @Parameter
             String dataPoint,
             @RequestBody
+            @Parameter(description = "value must be Number, String or Boolean")
             ValueDto value )
     {
         Value sgrValue;
 
-        if ( value.getValue() instanceof Number )
+        if ( value == null )
+        {
+            throw new IllegalArgumentException( "need parameter value" );
+        }
+        
+        if ( value.getValue() instanceof Number n )
         { 
             // TODO is this correct, test for Number but assume it's a Float64Value?
             sgrValue = Float64Value.of( ( Double ) value.getValue() );
         }
         else
+        if ( value.getValue() instanceof Boolean b )
         {
-            sgrValue = StringValue.of( ( String ) value.getValue() );
+            sgrValue = BooleanValue.of( b );
+        }
+        else
+        if ( value.getValue() instanceof String s )
+        {
+            sgrValue = StringValue.of( s );
+        }
+        else
+        {
+            throw new IllegalArgumentException( "parameter value has invalid type" );
         }
 
         intermediaryService.setVal( device, functionalProfile, dataPoint, sgrValue );

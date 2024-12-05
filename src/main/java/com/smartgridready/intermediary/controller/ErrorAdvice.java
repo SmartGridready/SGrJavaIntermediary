@@ -17,9 +17,9 @@ import com.smartgridready.intermediary.exception.ExtIfXmlNotFoundException;
  * Exception handler for the runtime exceptions thrown by the service.
  */
 @ControllerAdvice
-class ErrorNotFoundAdvice
+class ErrorAdvice
 {
-    private static final Logger LOG = LoggerFactory.getLogger( ErrorNotFoundAdvice.class );
+    private static final Logger LOG = LoggerFactory.getLogger( ErrorAdvice.class );
 
     @ResponseBody
     @ExceptionHandler({ ExtIfXmlNotFoundException.class,
