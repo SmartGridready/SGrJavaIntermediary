@@ -123,7 +123,7 @@ public class IntermediaryService
         final var newEiXml = eiXmlRepository.save( eiXml );
 
         // reload all devices that are based on this EI-XML file
-        deviceRepository.findByEiXmlName( eiXmlName ).forEach( device -> loadDevice( device ) );
+        deviceRepository.findByEiXmlName( eiXmlName ).forEach( this::loadDevice );
 
         LOG.debug( "finishing saveEiXml() with ExternalInterfaceXml.name='{}'", newEiXml.getName() );
         return newEiXml;
