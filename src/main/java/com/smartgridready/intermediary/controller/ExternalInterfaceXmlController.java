@@ -1,6 +1,5 @@
 package com.smartgridready.intermediary.controller;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,8 +43,7 @@ class ExternalInterfaceXmlController
     ExternalInterfaceXml save( 
             @PathVariable("name")
             @Parameter(description = "The EI-XML name")
-            String name ) 
-                    throws IOException, InterruptedException
+            String name )
     {
         return intermediaryService.saveEiXml( name );
     }

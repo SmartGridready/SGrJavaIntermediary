@@ -11,4 +11,9 @@ public class ExtIfXmlNotFoundException extends RuntimeException
     {
         super( "Could not find externalInterfaceXml: " + name );
     }
+    
+    public ExtIfXmlNotFoundException( Throwable cause )
+    {
+        super( cause );
+    }
 }

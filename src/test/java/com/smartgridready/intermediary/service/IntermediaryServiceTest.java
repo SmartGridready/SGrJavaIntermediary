@@ -8,8 +8,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -19,7 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 
 import com.smartgridready.communicator.common.api.values.Float64Value;
 import com.smartgridready.communicator.modbus.api.ModbusGateway;
@@ -32,7 +32,6 @@ import com.smartgridready.intermediary.entity.ConfigurationValue;
 import com.smartgridready.intermediary.entity.Device;
 import com.smartgridready.intermediary.entity.ExternalInterfaceXml;
 import com.smartgridready.intermediary.exception.DeviceNotFoundException;
-import com.smartgridready.intermediary.exception.DeviceOperationFailedException;
 import com.smartgridready.intermediary.exception.ExtIfXmlNotFoundException;
 import com.smartgridready.intermediary.repository.ConfigurationValueRepository;
 import com.smartgridready.intermediary.repository.DeviceRepository;
@@ -51,129 +50,81 @@ class IntermediaryServiceTest
     private static final String DATA_POINT_NAME = "Voltage-L1-L2-L3";
     
     @Mock
-    DeviceRepository deviceRepository;
+    private DeviceRepository deviceRepository;
     @Mock
-    ExternalInterfaceXmlRepository eiXmlRepository;
+    private ExternalInterfaceXmlRepository eiXmlRepository;
     @Mock
-    ConfigurationValueRepository configurationValueRepository;
+    private ConfigurationValueRepository configurationValueRepository;
     @Mock
-    GenMessagingClientFactory messagingClientFactory;
+    private GenMessagingClientFactory messagingClientFactory;
     @Mock
-    GenHttpClientFactory httpRequestFactory;
-
+    private GenHttpClientFactory httpRequestFactory;
     @Mock
-    ModbusGatewayRegistry modbusGatewayRegistry;
+    private ModbusGatewayRegistry modbusGatewayRegistry;
     @Mock
-    ModbusGateway modbusGateway;
+    private ModbusGateway modbusGateway;
     @Mock
-    GenDriverAPI4Modbus genDriverAPI4Modbus;
+    private GenDriverAPI4Modbus genDriverAPI4Modbus;
+    @Mock 
+    private GitHubLoader gitHubLoader;
     
-    IntermediaryServiceProxy testee;
+    private boolean loadFromGitHubShouldFail;
+    
+    private IntermediaryService testee;
 
     @BeforeEach
-    void createTestee()
+    void createTestee() throws Exception
     {
-        testee = new IntermediaryServiceProxy( deviceRepository,
-                                               eiXmlRepository,
-                                               configurationValueRepository,
-                                               messagingClientFactory,
-                                               httpRequestFactory );
-    }
-    
-    /**
-     * We test against this proxy, as here we override 2 methods to returns our test stubs. 
-     */
-    private class IntermediaryServiceProxy extends IntermediaryService
-    {
-        private boolean loadFromGitHubShouldFail;
-        
-        public IntermediaryServiceProxy( DeviceRepository deviceRepository,
-                                         ExternalInterfaceXmlRepository eiXmlRepository,
-                                         ConfigurationValueRepository configurationValueRepository,
-                                         GenMessagingClientFactory messagingClientFactory,
-                                         GenHttpClientFactory httpRequestFactory )
-        {
-            super( deviceRepository,
-                   eiXmlRepository,
-                   configurationValueRepository,
-                   messagingClientFactory,
-                   httpRequestFactory );
-        }
-
-        /**
-         * Overridden to set up ModBus mocks.
-         */
-        @Override
-        protected ModbusGatewayRegistry createModbusGatewayRegistry()
-        {
-            try
-            {
+        Mockito.lenient()
                 /*
                  * The register values here are read from DATA_POINT_NAME of FUNCTIONAL_PROFILE_NAME of
-                 * DEVICE_NAME in EI_XML_FILE_NAME in the resources.
-                 * The return value is not checked, but must be long enough that the tests work.
+                 * DEVICE_NAME in EI_XML_FILE_NAME in the resources. The return value is not checked, but
+                 * must be long enough that the tests work.
                  */
-                Mockito.lenient()
-                        .when( genDriverAPI4Modbus.ReadHoldingRegisters( 20482, 6 ) )
-                        .thenReturn( new int[] { 1, 2, 3, 4, 5, 6 } );
-            }
-            catch ( Exception e )
-            {
-                throw new DeviceOperationFailedException( "UNIT_TEST", e );
-            }
+                .when( genDriverAPI4Modbus.ReadHoldingRegisters( 20482, 6 ) )
+                .thenReturn( new int[] { 1, 2, 3, 4, 5, 6 } );
 
-            Mockito.lenient().when( modbusGateway.getTransport() ).thenReturn( genDriverAPI4Modbus );
-            
-            try
-            {
-                Mockito.lenient()
-                        .when( modbusGatewayRegistry.attachGateway( any(), any(), any() ) )
-                        .thenReturn( modbusGateway );
-            }
-            catch ( GenDriverException e )
-            {
-                throw new DeviceOperationFailedException( "UNIT_TEST", e );
-            }
-            
-            return modbusGatewayRegistry;
-        }
-
-        /**
-         * Overridden to not access GitHub, but return the test file in the resources.
-         */
-        @Override
-        protected String loadExternalInterfaceFromGitHub( String fileName ) throws IOException,
-                                                                            InterruptedException
-        {
-            if ( loadFromGitHubShouldFail )
-            {
-                throw new ExtIfXmlNotFoundException( "UNIT_TEST" );
-            }
-            
-            return readEiXml();
-        }
+        Mockito.lenient()
+                .when( modbusGateway.getTransport() )
+                .thenReturn( genDriverAPI4Modbus );
         
-        /**
-         * Sets the success of a call to {@link #loadExternalInterfaceFromGitHub(String)}.
-         *  
-         * @param shouldFail
-         *        {@code true}: the method throws {@link ExtIfXmlNotFoundException}
-         *        {@code false}: the methods terminates successfully,
-         */
-        void setLoadFromGitHubShouldFail( boolean shouldFail )
-        {
-            loadFromGitHubShouldFail = shouldFail;
-        }
+        Mockito.lenient()
+                .when( modbusGatewayRegistry.attachGateway( any(), any(), any() ) )
+                .thenReturn( modbusGateway );
+
+        Mockito.lenient()
+                .when( gitHubLoader.loadExternalInterface( EI_XML_NAME ) )
+                .thenAnswer( new Answer<String>()
+                {
+                    public String answer( InvocationOnMock invocation )
+                    {
+                        /*
+                         * Do not access GitHub, but return the test file in the resources.
+                         */
+                        if ( loadFromGitHubShouldFail )
+                        {
+                            throw new ExtIfXmlNotFoundException( "UNIT_TEST" );
+                        }
+                        
+                        return readEiXml();
+                    }
+                } );
+        
+        testee = new IntermediaryService( deviceRepository,
+                                          eiXmlRepository,
+                                          configurationValueRepository,
+                                          messagingClientFactory,
+                                          httpRequestFactory,
+                                          modbusGatewayRegistry,
+                                          gitHubLoader );
     }
     
     /**
      * Reads EI-XML from resource.
      * 
      * @return EI-XML contents
-     * @throws IOException
-     *         when read fails
      */
-    private String readEiXml() throws IOException
+    private String readEiXml()
     {
 
         try
@@ -182,9 +133,9 @@ class IntermediaryServiceTest
             var file = new File( resource.toURI() );
             return Files.readString( file.toPath() );
         }
-        catch ( URISyntaxException e )
+        catch ( Exception e )
         {
-            throw new IOException( e );
+            throw new ExtIfXmlNotFoundException( e );
         }
 
     }
@@ -258,12 +209,12 @@ class IntermediaryServiceTest
         // call testee and check
         try
         {
-            testee.setLoadFromGitHubShouldFail( true );
+            loadFromGitHubShouldFail = true;
             assertThrows( ExtIfXmlNotFoundException.class, () -> testee.saveEiXml( EI_XML_NAME ) );
         }
         finally
         {
-            testee.setLoadFromGitHubShouldFail( false );
+            loadFromGitHubShouldFail = false;
         }
 
     }

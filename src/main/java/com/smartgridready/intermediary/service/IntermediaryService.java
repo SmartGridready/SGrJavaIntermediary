@@ -1,10 +1,5 @@
 package com.smartgridready.intermediary.service;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,12 +15,10 @@ import com.smartgridready.communicator.common.api.SGrDeviceBuilder;
 import com.smartgridready.communicator.common.api.values.Value;
 import com.smartgridready.communicator.messaging.impl.SGrMessagingDevice;
 import com.smartgridready.communicator.modbus.api.ModbusGatewayRegistry;
-import com.smartgridready.communicator.modbus.impl.SGrModbusGatewayRegistry;
 import com.smartgridready.communicator.rest.exception.RestApiAuthenticationException;
 import com.smartgridready.communicator.rest.impl.SGrRestApiDevice;
 import com.smartgridready.driver.api.common.GenDriverException;
 import com.smartgridready.driver.api.http.GenHttpClientFactory;
-import com.smartgridready.driver.api.http.HttpStatus;
 import com.smartgridready.driver.api.messaging.GenMessagingClientFactory;
 import com.smartgridready.driver.api.messaging.model.MessagingPlatformType;
 import com.smartgridready.intermediary.entity.ConfigurationValue;
@@ -54,8 +47,8 @@ public class IntermediaryService
     private final ConfigurationValueRepository configurationValueRepository;
     private final GenMessagingClientFactory messagingClientFactory;
     private final GenHttpClientFactory httpRequestFactory;
-    
     private final ModbusGatewayRegistry sharedModbusGatewayRegistry;
+    private final GitHubLoader gitHubLoader;
     
     /**
      * device registry, key is device name
@@ -79,40 +72,31 @@ public class IntermediaryService
                                 ExternalInterfaceXmlRepository eiXmlRepository,
                                 ConfigurationValueRepository configurationValueRepository,
                                 GenMessagingClientFactory messagingClientFactory,
-                                GenHttpClientFactory httpRequestFactory )
+                                GenHttpClientFactory httpRequestFactory,
+                                ModbusGatewayRegistry modbusGatewayRegistry,
+                                GitHubLoader gitHubLoader)
     {
         this.deviceRepository = deviceRepository;
         this.eiXmlRepository = eiXmlRepository;
         this.configurationValueRepository = configurationValueRepository;
         this.messagingClientFactory = messagingClientFactory;
         this.httpRequestFactory = httpRequestFactory;
-
-        // should be a single instance
-        this.sharedModbusGatewayRegistry = createModbusGatewayRegistry();
+        this.sharedModbusGatewayRegistry = modbusGatewayRegistry;
+        this.gitHubLoader = gitHubLoader;
     }
     
-    // protected for unit test
-    protected ModbusGatewayRegistry createModbusGatewayRegistry()
-    {
-        return new SGrModbusGatewayRegistry();
-    }
-
     /**
      * Saves the given EI-XML by looking it up from GitHub and saving it to the local DB.
      * 
      * @param eiXmlName
      *        EI-XML name
      * @return {@code ExternalInterfaceXml}
-     * @throws IOException
-     *         if an I/O error occurs when sending or receiving
-     * @throws InterruptedException
-     *         if the operation is interrupted
      */
-    public ExternalInterfaceXml saveEiXml( String eiXmlName ) throws IOException, InterruptedException
+    public ExternalInterfaceXml saveEiXml( String eiXmlName )
     {
         LOG.info( "starting saveEiXml() with eiXmlFileName='{}'", eiXmlName );
         // load EI-XML file from GitHub
-        final var eiXmlContents = loadExternalInterfaceFromGitHub( eiXmlName );
+        final var eiXmlContents = gitHubLoader.loadExternalInterface( eiXmlName );
 
         // update or create EI-XML
         final var eiXmlList = eiXmlRepository.findByName( eiXmlName );
@@ -127,39 +111,6 @@ public class IntermediaryService
 
         LOG.debug( "finishing saveEiXml() with ExternalInterfaceXml.name='{}'", newEiXml.getName() );
         return newEiXml;
-    }
-
-    /**
-     * Loads the given EI-XML from GitHub.
-     * 
-     * @param fileName
-     *        name of EI-XML
-     * @return contents of EI-XML
-     * @throws IOException
-     *         if an I/O error occurs when sending or receiving
-     * @throws InterruptedException
-     *         if the operation is interrupted
-     */
-    // protected for unit test (mocking of HttpClient.newHttpClient() impossible?)
-    protected String loadExternalInterfaceFromGitHub( String fileName ) throws IOException,
-                                                                        InterruptedException
-    {
-        final var baseUri =
-                "https://raw.githubusercontent.com/SmartGridready/SGrSpecifications/refs/heads/master/XMLInstances/ExtInterfaces/";
-        final var uri = baseUri + fileName;
-        final var client = HttpClient.newHttpClient();
-        final var request = HttpRequest.newBuilder().uri( URI.create( uri ) ).build();
-        LOG.info( "Loading EI-XML file for file name '{}' from URI '{}'", fileName, uri );
-        final var response = client.send( request, HttpResponse.BodyHandlers.ofString() );
-        
-        if ( response.statusCode() != HttpStatus.OK )
-        {
-            throw new ExtIfXmlNotFoundException( "GitHub answered with status code != OK, message is '"
-                                                 + response.body()
-                                                 + "'" );
-        }
-        
-        return response.body();
     }
 
     /**
