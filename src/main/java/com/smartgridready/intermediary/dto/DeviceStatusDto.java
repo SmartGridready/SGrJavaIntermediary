@@ -5,14 +5,14 @@
  */
 package com.smartgridready.intermediary.dto;
 
+import java.util.List;
+
+import com.smartgridready.intermediary.entity.ConfigurationValue;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
-
-import com.smartgridready.intermediary.entity.ConfigurationValue;
 
 
 /**
@@ -22,9 +22,13 @@ import com.smartgridready.intermediary.entity.ConfigurationValue;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeviceDto
+public class DeviceStatusDto extends DeviceDto
 {
-    private String name;
-    private String eiXmlName;
-    private List<ConfigurationValue> configurationValues;
+    private String status;
+    
+    public DeviceStatusDto( String name, String eiXmlName, List<ConfigurationValue> configurationValues, String status )
+    {
+        super( name, eiXmlName, configurationValues );
+        this.status = status;
+    }
 }
