@@ -26,9 +26,38 @@ configuration.
 
 ## Examples
 
-### Adding an EI-XML for a Wago Smartmeter: 
+You can add EI-XML from different repositories:
+- From official SmartGridready library
+- From an arbitrary WEB resource/URI
+- From a local file
 
-`HTTP POST:  http://localhost:8080/eiXml/SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml`
+### Adding an EI-XML for a Wago Smartmeter from the official SGR-library: 
+
+`HTTP POST:  http://localhost:8080/eiXml/sgr-library`
+
+using the form-data within the request body:
+```
+eiXmlName=SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml
+```
+
+### Adding an EI-XML from a custom URI:
+
+`HTTP POST:  http://localhost:8080/eiXml/web-resource`
+
+using the form-data within the request body:
+```
+  eiXmlName=SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml
+  uri=https://custom.host.name/<path-to-ei-xml>?param1=... 
+```
+
+### Adding an EI-XML using a local file:
+
+`HTTP POST:  http://localhost:8080/eiXml/local-file`
+
+using the form-data body for multipart file upload:
+```
+  file=<MultiPartFile>
+```
 
 ### Adding a first Wago device:
 
@@ -96,6 +125,10 @@ Example:
 
 `HTTP GET: http://localhost:8080/value/WAGI-Smartmeter-1/VoltageAC/VoltageL1`
 
+## Postman collection
+
+Within the <project-root>/postman folder you find a Postman collection that contains 
+samples on on how to use the API described above.
 
 ## More documentation
 
@@ -104,6 +137,7 @@ A documentation of the complete API is available as HTML open-api doc within the
 
 If you have a running SGrIntermediary Docker container or running the intermediary on your local machine you can open 
 the Swagger doc: [Swagger doc](http://localhost:8080/swagger-ui.html)
+
 
 
 ## Installation

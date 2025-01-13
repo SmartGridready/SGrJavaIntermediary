@@ -5,6 +5,7 @@
  */
 package com.smartgridready.intermediary.service;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -17,12 +18,12 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import com.smartgridready.intermediary.entity.ConfigurationValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 
@@ -33,7 +34,6 @@ import com.smartgridready.driver.api.common.GenDriverException;
 import com.smartgridready.driver.api.http.GenHttpClientFactory;
 import com.smartgridready.driver.api.messaging.GenMessagingClientFactory;
 import com.smartgridready.driver.api.modbus.GenDriverAPI4Modbus;
-import com.smartgridready.intermediary.entity.ConfigurationValue;
 import com.smartgridready.intermediary.entity.Device;
 import com.smartgridready.intermediary.entity.ExternalInterfaceXml;
 import com.smartgridready.intermediary.exception.DeviceNotFoundException;
@@ -53,7 +53,10 @@ class IntermediaryServiceTest
     private static final String DEVICE_NAME = "WAGOMeter";
     private static final String FUNCTIONAL_PROFILE_NAME = "VoltageAC";
     private static final String DATA_POINT_NAME = "Voltage-L1-L2-L3";
-    
+
+    private static final String SGR_GITHUB_EI_XML_BASE_URI =
+            "https://raw.githubusercontent.com/SmartGridready/SGrSpecifications/refs/heads/master/XMLInstances/ExtInterfaces/";
+
     @Mock
     private DeviceRepository deviceRepository;
     @Mock
@@ -71,7 +74,7 @@ class IntermediaryServiceTest
     @Mock
     private GenDriverAPI4Modbus genDriverAPI4Modbus;
     @Mock 
-    private GitHubLoader gitHubLoader;
+    private UriLoader uriLoader;
     
     private boolean loadFromGitHubShouldFail;
     
@@ -98,22 +101,18 @@ class IntermediaryServiceTest
                 .thenReturn( modbusGateway );
 
         Mockito.lenient()
-                .when( gitHubLoader.loadExternalInterface( EI_XML_NAME ) )
-                .thenAnswer( new Answer<String>()
-                {
-                    public String answer( InvocationOnMock invocation )
+                .when( uriLoader.loadExternalInterface( SGR_GITHUB_EI_XML_BASE_URI + EI_XML_FILE_NAME ) )
+                .thenAnswer((Answer<String>) invocation -> {
+                    /*
+                     * Do not access GitHub, but return the test file in the resources.
+                     */
+                    if ( loadFromGitHubShouldFail )
                     {
-                        /*
-                         * Do not access GitHub, but return the test file in the resources.
-                         */
-                        if ( loadFromGitHubShouldFail )
-                        {
-                            throw new ExtIfXmlNotFoundException( "UNIT_TEST" );
-                        }
-                        
-                        return readEiXml();
+                        throw new ExtIfXmlNotFoundException( "UNIT_TEST" );
                     }
-                } );
+
+                    return readEiXml();
+                });
         
         testee = new IntermediaryService( deviceRepository,
                                           eiXmlRepository,
@@ -121,7 +120,7 @@ class IntermediaryServiceTest
                                           messagingClientFactory,
                                           httpRequestFactory,
                                           modbusGatewayRegistry,
-                                          gitHubLoader );
+                uriLoader);
     }
     
     /**
@@ -135,6 +134,9 @@ class IntermediaryServiceTest
         try
         {
             var resource = getClass().getClassLoader().getResource( EI_XML_FILE_NAME );
+            if (resource == null) {
+                throw new ExtIfXmlNotFoundException( EI_XML_FILE_NAME );
+            }
             var file = new File( resource.toURI() );
             return Files.readString( file.toPath() );
         }
@@ -146,20 +148,20 @@ class IntermediaryServiceTest
     }
     
     @Test
-    void testSaveEiXmlWithNewEiXmlSuccess() throws Exception
+    void testLoadEiXmlWithNewEiXmlFromGithubSuccess()
     {
         // set up mocks
         final var eiXml = new ExternalInterfaceXml( EI_XML_NAME, readEiXml() );
         when( eiXmlRepository.findByName( EI_XML_NAME ) )
-                .thenReturn( new ArrayList<ExternalInterfaceXml>() );
+                .thenReturn( new ArrayList<>() );
         when( eiXmlRepository.save( eiXml )).thenReturn( eiXml );
-        final var device = createDevice( DEVICE_NAME, eiXml );
+        final var device = createDevice( eiXml );
         final var deviceList = new ArrayList<Device>();
         deviceList.add( device );
         when( deviceRepository.findByEiXmlName( EI_XML_NAME ) ).thenReturn( deviceList );
         
         // call testee
-        final var newEiXml = testee.saveEiXml( EI_XML_NAME );
+        final var newEiXml = testee.loadEiXmlFromUri( EI_XML_NAME, SGR_GITHUB_EI_XML_BASE_URI + EI_XML_FILE_NAME);
         
         // check
         assertEquals( eiXml, newEiXml );
@@ -167,7 +169,7 @@ class IntermediaryServiceTest
     }
     
     @Test
-    void testSaveEiXmlWithExistingEiXmlSuccess() throws Exception
+    void testLoadEiXmlWithExistingEiXmlFromGithubSuccess()
     {
         // set up mocks
         final var eiXml = new ExternalInterfaceXml( EI_XML_NAME, readEiXml() );
@@ -175,20 +177,20 @@ class IntermediaryServiceTest
         eiXmlList.add( eiXml );
         when( eiXmlRepository.findByName( EI_XML_NAME ) ).thenReturn( eiXmlList );
         when( eiXmlRepository.save( eiXml )).thenReturn( eiXml );
-        final var device = createDevice( DEVICE_NAME, eiXml );
+        final var device = createDevice( eiXml );
         final var deviceList = new ArrayList<Device>();
         deviceList.add( device );
         when( deviceRepository.findByEiXmlName( EI_XML_NAME ) ).thenReturn( deviceList );
         
         // call testee
-        var newEiXml = testee.saveEiXml( EI_XML_NAME );
+        var newEiXml = testee.loadEiXmlFromUri( EI_XML_NAME, SGR_GITHUB_EI_XML_BASE_URI + EI_XML_FILE_NAME );
         
         // check
         assertEquals( eiXml, newEiXml);
         assertEquals( "OK", testee.getDeviceStatus( DEVICE_NAME ) );
         
         // call again to test disconnect and re-connect
-        newEiXml = testee.saveEiXml( EI_XML_NAME );
+        newEiXml = testee.loadEiXmlFromUri( EI_XML_NAME, SGR_GITHUB_EI_XML_BASE_URI + EI_XML_FILE_NAME );
         
         // check
         assertEquals( eiXml, newEiXml );
@@ -196,15 +198,15 @@ class IntermediaryServiceTest
     }
 
     @Test
-    void testSaveEiXmlWithNewEiXmlNotFound() throws Exception
+    void testLoadEiXmlWithNewEiXmlFromGithubNotFound()
     {
         // set up mocks
         final var eiXml = new ExternalInterfaceXml( EI_XML_NAME, readEiXml() );
         Mockito.lenient()
                 .when( eiXmlRepository.findByName( EI_XML_NAME ) )
-                .thenReturn( new ArrayList<ExternalInterfaceXml>() );
+                .thenReturn( new ArrayList<>() );
         Mockito.lenient().when( eiXmlRepository.save( eiXml ) ).thenReturn( eiXml );
-        final var device = createDevice( DEVICE_NAME, eiXml );
+        final var device = createDevice( eiXml );
         final var deviceList = new ArrayList<Device>();
         deviceList.add( device );
         Mockito.lenient()
@@ -215,7 +217,7 @@ class IntermediaryServiceTest
         try
         {
             loadFromGitHubShouldFail = true;
-            assertThrows( ExtIfXmlNotFoundException.class, () -> testee.saveEiXml( EI_XML_NAME ) );
+            assertThrows( ExtIfXmlNotFoundException.class, () -> testee.loadEiXmlFromUri( EI_XML_NAME, SGR_GITHUB_EI_XML_BASE_URI + EI_XML_FILE_NAME ) );
         }
         finally
         {
@@ -226,24 +228,22 @@ class IntermediaryServiceTest
     
     /**
      * Creates a device with the given device name and EI-XML name.
-     * 
-     * @param name
-     *        device name
+     *
      * @param eiXml
      *        EI-XML name
      * @return device
      */
-    private Device createDevice( String name, ExternalInterfaceXml eiXml )
+    private Device createDevice(ExternalInterfaceXml eiXml )
     {
         final var device = new Device();
         device.setId( 1 );
-        device.setName( name );
+        device.setName( IntermediaryServiceTest.DEVICE_NAME );
         device.setEiXml( eiXml );
         return device;
     }
 
     @Test
-    void testGetEiXmlSuccess() throws Exception
+    void testGetEiXmlSuccess()
     {
         // set up mocks
         final var eiXml = new ExternalInterfaceXml( EI_XML_NAME, readEiXml() );
@@ -262,14 +262,14 @@ class IntermediaryServiceTest
     void testGetEiXmlNotFound()
     {
         // set up mocks
-        when( eiXmlRepository.findByName( EI_XML_NAME ) ).thenReturn( new ArrayList<ExternalInterfaceXml>() );
+        when( eiXmlRepository.findByName( EI_XML_NAME ) ).thenReturn( new ArrayList<>() );
 
         // call and check
         assertThrows( ExtIfXmlNotFoundException.class, () -> testee.getEiXml( EI_XML_NAME ) );
     }
 
     @Test
-    void testGetAllEiXmlSuccess() throws Exception
+    void testGetAllEiXmlSuccess()
     {
         // set up mocks
         final var eiXml = new ExternalInterfaceXml( EI_XML_NAME, readEiXml() );
@@ -289,7 +289,7 @@ class IntermediaryServiceTest
     void testGetAllEiXmlNoEntries()
     {
         // set up mocks
-        when( eiXmlRepository.findAll() ).thenReturn( new ArrayList<ExternalInterfaceXml>() );
+        when( eiXmlRepository.findAll() ).thenReturn( new ArrayList<>() );
 
         // call testee
         var retrievedEiXmlList = testee.getAllEiXml();
@@ -299,7 +299,7 @@ class IntermediaryServiceTest
     }
 
     @Test
-    void testDeleteEiXmlSuccess() throws Exception
+    void testDeleteEiXmlSuccess()
     {
         // set up mocks
         final var eiXml = new ExternalInterfaceXml( EI_XML_NAME, readEiXml() );
@@ -308,15 +308,15 @@ class IntermediaryServiceTest
         when( eiXmlRepository.findByName( EI_XML_NAME ) ).thenReturn( eiXmlList );
 
         // call testee
-        testee.deleteEiXml( EI_XML_NAME );
+        assertDoesNotThrow(() -> testee.deleteEiXml( EI_XML_NAME ));
     }
 
     @Test
-    void testDeleteEiXmlNotFound() throws Exception
+    void testDeleteEiXmlNotFound()
     {
         // set up mocks
         when( eiXmlRepository.findByName( EI_XML_NAME ) )
-                .thenReturn( new ArrayList<ExternalInterfaceXml>() );
+                .thenReturn( new ArrayList<>() );
 
         // call testee
         assertThrows( ExtIfXmlNotFoundException.class, () -> testee.deleteEiXml( EI_XML_NAME ) );
@@ -326,7 +326,7 @@ class IntermediaryServiceTest
     void testLoadDevicesWithNoDeviceSuccess()
     {
         // set up mocks
-        when( deviceRepository.findAll() ).thenReturn( new ArrayList<Device>() );
+        when( deviceRepository.findAll() ).thenReturn( new ArrayList<>() );
         
         // call testee
         testee.loadDevices();
@@ -336,11 +336,11 @@ class IntermediaryServiceTest
     }
 
     @Test
-    void testLoadDevicesWithDeviceSuccess() throws Exception
+    void testLoadDevicesWithDeviceSuccess()
     {
         // set up mocks
         final var deviceList = new ArrayList<Device>();
-        deviceList.add( createDevice( DEVICE_NAME, new ExternalInterfaceXml( EI_XML_FILE_NAME, readEiXml() ) ) );
+        deviceList.add( createDevice( new ExternalInterfaceXml( EI_XML_FILE_NAME, readEiXml() ) ) );
         when( deviceRepository.findAll() ).thenReturn( deviceList );
         
         // call testee
@@ -355,7 +355,7 @@ class IntermediaryServiceTest
     {
         // set up mocks
         final var deviceList = new ArrayList<Device>();
-        deviceList.add( createDevice( DEVICE_NAME, new ExternalInterfaceXml( EI_XML_FILE_NAME, readEiXml() ) ) );
+        deviceList.add( createDevice( new ExternalInterfaceXml( EI_XML_FILE_NAME, readEiXml() ) ) );
         when( deviceRepository.findAll() ).thenReturn( deviceList );
         final var UNIT_TEST_EXCEPTION_TEXT = "UNIT_TEST_EXCEPTION";
         doThrow( new GenDriverException( UNIT_TEST_EXCEPTION_TEXT ) ).when( modbusGateway ).connect( any() );
@@ -368,7 +368,7 @@ class IntermediaryServiceTest
     }
     
     @Test
-    void testInsertOrUpdateDeviceInsertSuccess() throws Exception
+    void testInsertOrUpdateDeviceInsertSuccess()
     {
         // set up mocks
         final var eiXml = new ExternalInterfaceXml( EI_XML_NAME, readEiXml() );
@@ -376,10 +376,10 @@ class IntermediaryServiceTest
         eiXmlList.add( eiXml );
         when( eiXmlRepository.findByName( EI_XML_NAME ) ).thenReturn( eiXmlList );
         // empty list => insert
-        when( deviceRepository.findByName( DEVICE_NAME ) ).thenReturn( new ArrayList<Device>() );
+        when( deviceRepository.findByName( DEVICE_NAME ) ).thenReturn( new ArrayList<>() );
         
         // call testee
-        var addedDevice = testee.insertOrUpdateDevice( DEVICE_NAME, EI_XML_NAME, new ArrayList<ConfigurationValue>() );
+        var addedDevice = testee.insertOrUpdateDevice( DEVICE_NAME, EI_XML_NAME, new ArrayList<>() );
         
         // check
         assertEquals( DEVICE_NAME, addedDevice.getName() );
@@ -388,7 +388,7 @@ class IntermediaryServiceTest
     }
 
     @Test
-    void testInsertOrUpdateDeviceUpdateSuccess() throws Exception
+    void testInsertOrUpdateDeviceUpdateSuccess()
     {
         // set up mocks
         final var eiXml = new ExternalInterfaceXml( EI_XML_NAME, readEiXml() );
@@ -397,12 +397,12 @@ class IntermediaryServiceTest
         when( eiXmlRepository.findByName( EI_XML_NAME ) ).thenReturn( eiXmlList );
         // non-empty list => update
         final var deviceList = new ArrayList<Device>();
-        final var device = createDevice( DEVICE_NAME, new ExternalInterfaceXml( EI_XML_FILE_NAME, readEiXml() ) );
+        final var device = createDevice( new ExternalInterfaceXml( EI_XML_FILE_NAME, readEiXml() ) );
         deviceList.add( device );
         when( deviceRepository.findByName( DEVICE_NAME ) ).thenReturn( deviceList );
         
         // call testee
-        var addedDevice = testee.insertOrUpdateDevice( DEVICE_NAME, EI_XML_NAME, new ArrayList<ConfigurationValue>() );
+        var addedDevice = testee.insertOrUpdateDevice( DEVICE_NAME, EI_XML_NAME, new ArrayList<>() );
         
         // check
         assertEquals( device, addedDevice );
@@ -413,18 +413,19 @@ class IntermediaryServiceTest
     void testInsertOrUpdateDeviceNoEiXml()
     {
         // call testee and check
+        var arrayList = new ArrayList<ConfigurationValue>();
         assertThrows( ExtIfXmlNotFoundException.class,
                       () -> testee.insertOrUpdateDevice( DEVICE_NAME,
                                                          EI_XML_NAME,
-                                                         new ArrayList<ConfigurationValue>() ) );
+                                                         arrayList ) );
     }
     
     @Test
-    void testGetDeviceSuccess() throws Exception
+    void testGetDeviceSuccess()
     {
         // set up mocks
         final var deviceList = new ArrayList<Device>();
-        var device = createDevice( DEVICE_NAME, new ExternalInterfaceXml( EI_XML_FILE_NAME, readEiXml() ) );
+        var device = createDevice( new ExternalInterfaceXml( EI_XML_FILE_NAME, readEiXml() ) );
         deviceList.add( device );
         when( deviceRepository.findByName( DEVICE_NAME ) ).thenReturn( deviceList );
 
@@ -436,21 +437,21 @@ class IntermediaryServiceTest
     }
 
     @Test
-    void testGetDeviceNotFound() throws Exception
+    void testGetDeviceNotFound()
     {
         // set up mocks
-        when( deviceRepository.findByName( DEVICE_NAME ) ).thenReturn( new ArrayList<Device>() );
+        when( deviceRepository.findByName( DEVICE_NAME ) ).thenReturn( new ArrayList<>() );
 
         // call testee and check
         assertThrows( DeviceNotFoundException.class, () -> testee.getDevice( DEVICE_NAME ) );
     }
 
     @Test
-    void testGetAllDevicesSuccess() throws Exception
+    void testGetAllDevicesSuccess()
     {
         // set up mocks
         final var deviceList = new ArrayList<Device>();
-        var device = createDevice( DEVICE_NAME, new ExternalInterfaceXml( EI_XML_FILE_NAME, readEiXml() ) );
+        var device = createDevice( new ExternalInterfaceXml( EI_XML_FILE_NAME, readEiXml() ) );
         deviceList.add( device );
         when( deviceRepository.findAll() ).thenReturn( deviceList );
         
@@ -466,7 +467,7 @@ class IntermediaryServiceTest
     void testGetAllDevicesNoDeviceSuccess()
     {
         // set up mocks
-        when( deviceRepository.findAll() ).thenReturn( new ArrayList<Device>() );
+        when( deviceRepository.findAll() ).thenReturn( new ArrayList<>() );
         
         // call testee
         var retrievedDeviceList = testee.getAllDevices();
@@ -477,15 +478,16 @@ class IntermediaryServiceTest
 
     @SuppressWarnings("unchecked")  // added for warning on thenReturn() with a list of lists
     @Test
-    void testDeleteDeviceSuccess() throws Exception
+    void testDeleteDeviceSuccess()
     {
-        addDeviceToRegistry();
+        var devadded = addDeviceToRegistry();
+        assertNotNull(devadded);
         
         // set up mocks
         final var deviceList = new ArrayList<Device>();
-        var device = createDevice( DEVICE_NAME, new ExternalInterfaceXml( EI_XML_FILE_NAME, readEiXml() ) );
+        var device = createDevice( new ExternalInterfaceXml( EI_XML_FILE_NAME, readEiXml() ) );
         deviceList.add( device );
-        when( deviceRepository.findByName( DEVICE_NAME ) ).thenReturn( deviceList, new ArrayList<Device>() );
+        when( deviceRepository.findByName( DEVICE_NAME ) ).thenReturn( deviceList, new ArrayList<>() );
         
         // call testee
         testee.deleteDevice( DEVICE_NAME );
@@ -495,10 +497,10 @@ class IntermediaryServiceTest
     }
 
     @Test
-    void testDeleteDeviceNotFound() throws Exception
+    void testDeleteDeviceNotFound()
     {
         // set up mocks
-        when( deviceRepository.findByName( DEVICE_NAME ) ).thenReturn( new ArrayList<Device>() );
+        when( deviceRepository.findByName( DEVICE_NAME ) ).thenReturn( new ArrayList<>() );
 
         // call testee and check
         assertThrows( DeviceNotFoundException.class, () -> testee.deleteDevice( DEVICE_NAME ) );
@@ -511,7 +513,7 @@ class IntermediaryServiceTest
      */
     
     @Test
-    void testGetValSuccess() throws Exception
+    void testGetValSuccess()
     {
         addDeviceToRegistry();
         
@@ -523,18 +525,19 @@ class IntermediaryServiceTest
     }
     
     @Test
-    void testGetValNoDevice() throws Exception
+    void testGetValNoDevice()
     {
         // call testee and check
+        var properties = new Properties();
         assertThrows( DeviceNotFoundException.class,
                       () -> testee.getVal( DEVICE_NAME,
                                            FUNCTIONAL_PROFILE_NAME,
                                            DATA_POINT_NAME,
-                                           new Properties() ) );
+                                           properties ) );
     }
     
     @Test
-    void testSetValSuccess() throws Exception
+    void testSetValSuccess()
     {
         addDeviceToRegistry();
         
@@ -547,34 +550,34 @@ class IntermediaryServiceTest
     }
 
     @Test
-    void testSetValNoDevice() throws Exception
+    void testSetValNoDevice()
     {
         // call testee and check
+        var floatValue =   Float64Value.of( 1.1 );
         assertThrows( DeviceNotFoundException.class,
                       () -> testee.setVal( DEVICE_NAME,
                                            FUNCTIONAL_PROFILE_NAME,
                                            DATA_POINT_NAME,
-                                           Float64Value.of( 1.1 ) ) );
+                                           floatValue ) );
     }
 
     /**
      * Adds the device {@code DEVICE_NAME} to the internal registry.
      * 
      * @return added {@code Device}
-     * @throws Exception
      *         if add fails
      */
-    private Device addDeviceToRegistry() throws Exception
+    private Device addDeviceToRegistry()
     {
         // set up mocks
         final var eiXml = new ExternalInterfaceXml( EI_XML_NAME, readEiXml() );
         final var eiXmlList = new ArrayList<ExternalInterfaceXml>();
         eiXmlList.add( eiXml );
         when( eiXmlRepository.findByName( EI_XML_NAME ) ).thenReturn( eiXmlList );
-        when( deviceRepository.findByName( DEVICE_NAME ) ).thenReturn( new ArrayList<Device>() );
+        when( deviceRepository.findByName( DEVICE_NAME ) ).thenReturn( new ArrayList<>() );
         // call testee
         return testee
-                .insertOrUpdateDevice( DEVICE_NAME, EI_XML_NAME, new ArrayList<ConfigurationValue>() );
+                .insertOrUpdateDevice( DEVICE_NAME, EI_XML_NAME, new ArrayList<>() );
     }
 
     /*
@@ -582,14 +585,12 @@ class IntermediaryServiceTest
      */
     
     @Test
-    void testBeforeTerminationSuccess() throws Exception
+    void testBeforeTerminationSuccess()
     {
         addDeviceToRegistry();
         
         // call testee
-        testee.beforeTermination();
-        
-        // no check possible
+        assertDoesNotThrow(() -> testee.beforeTermination());
     }
 
 }

@@ -14,12 +14,13 @@ import com.smartgridready.driver.apachehttp.ApacheHttpClientFactory;
 import com.smartgridready.driver.api.http.GenHttpClientFactory;
 import com.smartgridready.driver.api.messaging.GenMessagingClientFactory;
 import com.smartgridready.driver.hivemq.HiveMqtt5MessagingClientFactory;
-import com.smartgridready.intermediary.service.GitHubLoader;
+import com.smartgridready.intermediary.service.UriLoader;
 
 
 /**
  * Configuration for factories. 
  */
+@SuppressWarnings("unused")
 @Configuration
 public class IntermediaryConfiguration
 {
@@ -43,8 +44,8 @@ public class IntermediaryConfiguration
     }
     
     @Bean
-    GitHubLoader gitHubLoader()
+    UriLoader gitHubLoader()
     {
-        return new GitHubLoader();
+        return new UriLoader();
     }
 }

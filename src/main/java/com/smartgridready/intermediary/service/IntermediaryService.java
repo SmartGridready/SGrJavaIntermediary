@@ -5,11 +5,15 @@
  */
 package com.smartgridready.intermediary.service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +42,7 @@ import com.smartgridready.intermediary.repository.ExternalInterfaceXmlRepository
 
 import io.vavr.control.Either;
 import jakarta.annotation.PreDestroy;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * This class provides the services for the end points.
@@ -53,7 +58,7 @@ public class IntermediaryService
     private final GenMessagingClientFactory messagingClientFactory;
     private final GenHttpClientFactory httpRequestFactory;
     private final ModbusGatewayRegistry sharedModbusGatewayRegistry;
-    private final GitHubLoader gitHubLoader;
+    private final UriLoader uriLoader;
     
     /**
      * device registry, key is device name
@@ -66,12 +71,6 @@ public class IntermediaryService
 
     /**
      * Constructor with all dependencies.
-     * 
-     * @param deviceRepository
-     * @param eiXmlRepository
-     * @param configurationValueRepository
-     * @param messagingClientFactory
-     * @param httpRequestFactory
      */
     public IntermediaryService( DeviceRepository deviceRepository,
                                 ExternalInterfaceXmlRepository eiXmlRepository,
@@ -79,7 +78,7 @@ public class IntermediaryService
                                 GenMessagingClientFactory messagingClientFactory,
                                 GenHttpClientFactory httpRequestFactory,
                                 ModbusGatewayRegistry modbusGatewayRegistry,
-                                GitHubLoader gitHubLoader)
+                                UriLoader uriLoader)
     {
         this.deviceRepository = deviceRepository;
         this.eiXmlRepository = eiXmlRepository;
@@ -87,21 +86,20 @@ public class IntermediaryService
         this.messagingClientFactory = messagingClientFactory;
         this.httpRequestFactory = httpRequestFactory;
         this.sharedModbusGatewayRegistry = modbusGatewayRegistry;
-        this.gitHubLoader = gitHubLoader;
+        this.uriLoader = uriLoader;
     }
-    
+
+
     /**
-     * Saves the given EI-XML by looking it up from GitHub and saving it to the local DB.
-     * 
-     * @param eiXmlName
-     *        EI-XML name
+     * Saves the given EI-XML by looking it up from any Web resource URI and saves it ib the local DB.
+     * @param eiXmlName The name of the EI-XML (referenced by the device entities)
+     * @param uri The URI of the EI-XML
      * @return {@code ExternalInterfaceXml}
      */
-    public ExternalInterfaceXml saveEiXml( String eiXmlName )
-    {
-        LOG.info( "starting saveEiXml() with eiXmlFileName='{}'", eiXmlName );
+    public ExternalInterfaceXml loadEiXmlFromUri(String eiXmlName, String uri) {
+
         // load EI-XML file from GitHub
-        final var eiXmlContents = gitHubLoader.loadExternalInterface( eiXmlName );
+        final var eiXmlContents = uriLoader.loadExternalInterface( uri );
 
         // update or create EI-XML
         final var eiXmlList = eiXmlRepository.findByName( eiXmlName );
@@ -114,8 +112,32 @@ public class IntermediaryService
         // reload all devices that are based on this EI-XML file
         deviceRepository.findByEiXmlName( eiXmlName ).forEach( this::loadDevice );
 
-        LOG.debug( "finishing saveEiXml() with ExternalInterfaceXml.name='{}'", newEiXml.getName() );
+        LOG.debug( "loadEiXmlFromUri() with ExternalInterfaceXml.name='{}' from uri='{}' done.", newEiXml.getName(), uri );
         return newEiXml;
+    }
+
+    /**
+     * Loads the given EI-XML from a local device and saving it on the local DB.
+     *
+     * @param file
+     *        The file as HTTP multipart file
+     * @return {@code ExternalInterfaceXml}
+     */
+    public ExternalInterfaceXml loadEiXmlFromLocalFile(MultipartFile file) {
+
+        final String fileName = file.getName();
+        LOG.info( "starting loadEiXmlFromGitHub() with eiXmlFileName='{}'", file );
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            final var xml = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+            var eiXmlList = eiXmlRepository.findByName(fileName);
+            var eiXml = eiXmlList.stream().findFirst().orElseGet(() -> new ExternalInterfaceXml(fileName, xml));
+            eiXml.setXml(xml); // overwrite XML
+            return eiXmlRepository.save(eiXml);
+        } catch (IOException e) {
+            LOG.error("Unable to read file: " + fileName, e);
+            throw new ExtIfXmlNotFoundException(fileName);
+        }
     }
 
     /**
@@ -145,7 +167,7 @@ public class IntermediaryService
     {
         LOG.info( "starting getAllEiXml()" );
         var eiXmls = eiXmlRepository.findAll();
-        var eiXmlNames = eiXmls.stream().map( eiXml -> eiXml.getName() ).toList();
+        var eiXmlNames = eiXmls.stream().map(ExternalInterfaceXml::getName).toList();
         LOG.debug( "finishing getAllEiXml() with list of ExternalInterfaceXml.name {}", eiXmlNames );
         return eiXmls;
     }

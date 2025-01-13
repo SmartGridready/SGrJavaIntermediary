@@ -5,12 +5,13 @@
  */
 package com.smartgridready.intermediary.controller;
 
+import com.smartgridready.intermediary.dto.ErrorResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.smartgridready.intermediary.exception.DeviceNotFoundException;
@@ -21,31 +22,46 @@ import com.smartgridready.intermediary.exception.ExtIfXmlNotFoundException;
 /**
  * Exception handler for the runtime exceptions thrown by the service.
  */
+@SuppressWarnings("unused")
 @ControllerAdvice
 class ErrorAdvice
 {
+    private static final String ERROR_MSG = "Handling exception '{}' with message '{}'";
+
     private static final Logger LOG = LoggerFactory.getLogger( ErrorAdvice.class );
 
-    @ResponseBody
     @ExceptionHandler({ ExtIfXmlNotFoundException.class,
-                        DeviceNotFoundException.class })
+                        DeviceNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    String exceptionHandler( RuntimeException ex )
+    ResponseEntity<ErrorResponseDto> exceptionHandler(RuntimeException ex )
     {
-        LOG.debug( "Handling exception '{}' with message '{}'",
-                   ex.getClass().getSimpleName(),
-                   ex.getMessage() );
-        return ex.getMessage();
+        return errorResponse(HttpStatus.NOT_FOUND, ex);
     }
 
-    @ResponseBody
+
+    @ExceptionHandler({
+            UnsupportedOperationException.class,
+            IllegalArgumentException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ResponseEntity<ErrorResponseDto> invalidRequestHandler( RuntimeException ex )
+    {
+        return errorResponse(HttpStatus.BAD_REQUEST, ex);
+    }
+
+
     @ExceptionHandler({ DeviceOperationFailedException.class })
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    String runTimeExceptionHandler( RuntimeException ex )
+    ResponseEntity<ErrorResponseDto> runTimeExceptionHandler( RuntimeException ex )
     {
-        LOG.debug( "Handling exception '{}' with message '{}'",
-                   ex.getClass().getSimpleName(),
-                   ex.getMessage() );
-        return ex.getMessage();
+        return errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex);
+    }
+
+    private static ResponseEntity<ErrorResponseDto> errorResponse(HttpStatus httpStatus, RuntimeException ex) {
+        LOG.debug( ERROR_MSG,
+                ex.getClass().getSimpleName(),
+                ex.getMessage() );
+        return  ResponseEntity
+                .status(httpStatus)
+                .body(new ErrorResponseDto(ex.getClass().getSimpleName(), ex.getMessage()));
     }
 }
