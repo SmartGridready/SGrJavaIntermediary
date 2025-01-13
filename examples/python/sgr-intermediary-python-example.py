@@ -29,8 +29,6 @@ def create_url(*args):
 
 # docker container RestAPI address
 sgr_intermediary_url = "http://localhost:8080"
-# GitHub URL where the XML files are hosted
-github_url = "https://raw.githubusercontent.com/SmartGridready/SGrSpecifications/refs/heads/master/XMLInstances/ExtInterfaces"
 
 # Tariff Configuration parameters
 xml_file_name = "SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml"  # Name of XML File describing the dynamic tariff
@@ -54,8 +52,9 @@ sgr_datapoint = "TariffSupply?start_timestamp=2024-12-01T00:00:00%2B02:00&\
 end_timestamp=2024-12-02T01:00:00%2B02:00"
 
 # Create some userful url to GET/Post data with the SGr Intermediary
+# eiXml/sgr-library retrieves the EI-XML file to be added from the official EI-XML library: https://library.smartgridready.ch/
 url_to_load_xml_in_the_sgr_intermediary = create_url(*[
-    sgr_intermediary_url, "eiXml", xml_file_name
+    sgr_intermediary_url, "eiXml/sgr-library"
 ])
 
 url_to_initialize_device = create_url(*[
@@ -73,21 +72,9 @@ url_to_request_tariff_data = create_url(*[
 ## Execution
 ################################################################################
 
-print("# Step 1: Download the XML file from GitHub (alternatively a local saved XML File can be used)")
-github_xml_file_url = create_url(*[github_url, xml_file_name])
-github_response = requests.get(github_xml_file_url)
-
-# Check if the request was successful
-if github_response.status_code == 200:
-    print("Downloaded XML from GitHub successfully!")
-
-    print("# Step 2: make the XML available to the SGr Intermediary by loading it")
-    files = {'file': github_response.content}
-    data = {'fileName': xml_file_name}
-    post_response = requests.post(url_to_load_xml_in_the_sgr_intermediary, files=files, data=data)
-else:
-    print("Response status code {}".format(github_response.status_code))
-    sys.exit()
+print("# Step 1 make the XML available to the SGr Intermediary by loading it")
+data = {'eiXmlName': xml_file_name}
+post_response = requests.post(url_to_load_xml_in_the_sgr_intermediary, data=data)
 
 # Check if the POST request was successful
 if post_response.status_code == 200:
@@ -95,7 +82,7 @@ if post_response.status_code == 200:
 else:
     print(f"Failed to post the XML file. Status code: {post_response.status_code}")
 
-print("# Step 3: establish a connection to the dynamic tariff server (the server is called a 'device')")
+print("# Step 2: establish a connection to the dynamic tariff server (the server is called a 'device')")
 
 # configuration paramters for device initialisation
 device_payload = {
@@ -114,7 +101,7 @@ if device_response.status_code == 200:
 else:
     print(f"Failed to add the device. Status code: {device_response.status_code}")
 
-print("# Step 4: Request tariff data")
+print("# Step 3: Request tariff data")
 
 tariff_response = requests.get(url_to_request_tariff_data)
 

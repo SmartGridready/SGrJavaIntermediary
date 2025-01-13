@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "f1f4ddb3-ff5e-4a37-8403-6551a8b2bd81",
+		"_postman_id": "dcab32a0-e7f9-40a2-a630-760f13065043",
 		"name": "Intermediary",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "10272785",
-		"_collection_link": "https://winter-shuttle-541099.postman.co/workspace/TCS~df233a73-164b-4125-b022-816271de1e04/collection/10272785-f1f4ddb3-ff5e-4a37-8403-6551a8b2bd81?action=share&source=collection_link&creator=10272785"
+		"_collection_link": "https://winter-shuttle-541099.postman.co/workspace/TCS~df233a73-164b-4125-b022-816271de1e04/collection/10272785-dcab32a0-e7f9-40a2-a630-760f13065043?action=share&source=collection_link&creator=10272785"
 	},
 	"item": [
 		{
@@ -16,14 +16,14 @@
 					"mode": "formdata",
 					"formdata": [
 						{
-							"key": "file",
-							"type": "file",
-							"src": "/C:/Development/SmartGridready/SmartGridready_v200/SGrSpecifications/XMLInstances/ExtInterfaces/SGr_04_0014_0000_WAGO_SmartMeterV0.2.2.xml"
+							"key": "eiXmlName",
+							"value": "SGr_04_0014_0000_WAGO_SmartMeterV0.2.2.xml",
+							"type": "text"
 						}
 					]
 				},
 				"url": {
-					"raw": "http://localhost:8080/eiXml/SGr_04_0014_0000_WAGO_SmartMeterV0.2.2.xml",
+					"raw": "http://localhost:8080/eiXml/sgr-library",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -31,7 +31,7 @@
 					"port": "8080",
 					"path": [
 						"eiXml",
-						"SGr_04_0014_0000_WAGO_SmartMeterV0.2.2.xml"
+						"sgr-library"
 					]
 				}
 			},
@@ -46,14 +46,14 @@
 					"mode": "formdata",
 					"formdata": [
 						{
-							"key": "file",
-							"type": "file",
-							"src": "/Users/hans/dev/SmartgridReady/SGrSpecifications/XMLInstances/ExtInterfaces/SGr_04_mmmm_dddd_CLEMAPEnergyMonitorEIV0.2.1.xml"
+							"key": "eiXmlName",
+							"value": "SGr_02_0018_CLEMAP_EIcloudEnergyMonitor_V1.0.0.xml",
+							"type": "text"
 						}
 					]
 				},
 				"url": {
-					"raw": "http://localhost:8080/eiXml/SGr_02_0018_CLEMAP_EIcloudEnergyMonitor_V1.0.0.xml",
+					"raw": "http://localhost:8080/eiXml/sgr-library",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -61,7 +61,7 @@
 					"port": "8080",
 					"path": [
 						"eiXml",
-						"SGr_02_0018_CLEMAP_EIcloudEnergyMonitor_V1.0.0.xml"
+						"sgr-library"
 					]
 				}
 			},
@@ -78,12 +78,12 @@
 						{
 							"key": "file",
 							"type": "file",
-							"src": "/C:/Development/SmartGridready/SmartGridready_git/SGrJava/CommHandler/src/test/resources/SGr_XX_HiveMQ_MQTT_Cloud.xml"
+							"src": "/C:/Development/SmartGridready/SmartGridready_v200/SGrJava/CommHandler/src/test/resources/SGr_XX_HiveMQ_MQTT_Cloud.xml"
 						}
 					]
 				},
 				"url": {
-					"raw": "http://localhost:8080/eiXml/SGr_XX_HiveMQ_MQTT_Cloud.xml",
+					"raw": "http://localhost:8080/eiXml/local-file",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -91,7 +91,7 @@
 					"port": "8080",
 					"path": [
 						"eiXml",
-						"SGr_XX_HiveMQ_MQTT_Cloud.xml"
+						"local-file"
 					]
 				}
 			},
@@ -106,14 +106,14 @@
 					"mode": "formdata",
 					"formdata": [
 						{
-							"key": "file",
-							"type": "file",
-							"src": "/C:/Development/SmartGridready/SmartGridready_v200/SGrSpecifications/XMLInstances/ExtInterfaces/SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml"
+							"key": "eiXmlName",
+							"value": "SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml",
+							"type": "text"
 						}
 					]
 				},
 				"url": {
-					"raw": "http://localhost:8080/eiXml/SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml",
+					"raw": "http://localhost:8080/eiXml/sgr-library",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -121,7 +121,7 @@
 					"port": "8080",
 					"path": [
 						"eiXml",
-						"SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml"
+						"sgr-library"
 					]
 				}
 			},
@@ -136,14 +136,14 @@
 					"mode": "formdata",
 					"formdata": [
 						{
-							"key": "file",
-							"type": "file",
-							"src": "/C:/Development/SmartGridready/SmartGridready_v200/SGrSpecifications/XMLInstances/ExtInterfaces/SGr_05_mmmm_dddd_Dynamic_Tariffs_GroupeE_V0.0.1.xml"
+							"key": "eiXmlName",
+							"value": "SGr_05_mmmm_dddd_Dynamic_Tariffs_GroupeE_V0.0.1.xml",
+							"type": "text"
 						}
 					]
 				},
 				"url": {
-					"raw": "http://localhost:8080/eiXml/SGr_05_mmmm_dddd_Dynamic_Tariffs_GroupeE_V0.0.1.xml",
+					"raw": "http://localhost:8080/eiXml/sgr-library",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -151,7 +151,45 @@
 					"port": "8080",
 					"path": [
 						"eiXml",
-						"SGr_05_mmmm_dddd_Dynamic_Tariffs_GroupeE_V0.0.1.xml"
+						"sgr-library"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST SHELLY EI-XML",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "eiXmlName",
+							"value": "SGr_00_mmmm_dddd_Shelly_Pro3EM_RestAPICloud_V0.1.xml",
+							"type": "text"
+						},
+						{
+							"key": "uri",
+							"value": "https://firebasestorage.googleapis.com/v0/b/smartchargecontroller-f464a.appspot.com/o/sgrxml%2F354ad2ea-3ec8-4871-8bb9-4837d774201f-SGr_00_mmmm_dddd_Shelly_Pro3EM_RestAPICloud_V0.1.xml?alt=media&token=cad09d83-9ea5-43a5-bd44-314925ca0dff",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/eiXml/web-resource",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"eiXml",
+						"web-resource"
 					]
 				}
 			},

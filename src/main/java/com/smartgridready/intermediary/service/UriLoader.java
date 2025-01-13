@@ -19,34 +19,35 @@ import com.smartgridready.intermediary.exception.ExtIfXmlNotFoundException;
 /**
  * Responsible to load resources from GitHub.
  */
-public class GitHubLoader
+public class UriLoader
 {
-    private static final Logger LOG = LoggerFactory.getLogger( GitHubLoader.class );
-    
-    private static final String EI_XML_BASE_URI =
-            "https://raw.githubusercontent.com/SmartGridready/SGrSpecifications/refs/heads/master/XMLInstances/ExtInterfaces/";
+    private static final Logger LOG = LoggerFactory.getLogger( UriLoader.class );
 
     /**
      * Loads the given EI-XML from GitHub.
      * 
-     * @param eiXmlname
+     * @param eiXmlUri
      *        name of EI-XML
      * @return contents of EI-XML
      * @throws ExtIfXmlNotFoundException
      *         if the EI-XML cannot be loaded from GitHub
      */
-    public String loadExternalInterface( String eiXmlname )
+    public String loadExternalInterface(String eiXmlUri )
     {
-        final var uri = EI_XML_BASE_URI + eiXmlname;
         final var client = HttpClient.newHttpClient();
-        final var request = HttpRequest.newBuilder().uri( URI.create( uri ) ).build();
+        final var request = HttpRequest.newBuilder().uri( URI.create( eiXmlUri ) ).build();
         
-        LOG.info( "Loading EI-XML file for file name '{}' from URI '{}'", eiXmlname, uri );
+        LOG.info( "Loading EI-XML file from URI '{}'", eiXmlUri);
         HttpResponse<String> response;
 
         try
         {
             response = client.send( request, HttpResponse.BodyHandlers.ofString() );
+        }
+        catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOG.error("loadExternalInterface() - Thread interrupted");
+            throw new ExtIfXmlNotFoundException("Thread interrupted while trying to load EI-XML");
         }
         catch ( Exception e )
         {
@@ -55,7 +56,7 @@ public class GitHubLoader
         
         if ( response.statusCode() != HttpStatus.OK )
         {
-            throw new ExtIfXmlNotFoundException( "GitHub answered with status code != OK, message is '"
+            throw new ExtIfXmlNotFoundException( "EI-XML service endpoint answered with status code != OK, message is '"
                                                  + response.body()
                                                  + "'" );
         }
