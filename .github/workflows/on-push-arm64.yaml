@@ -60,4 +60,4 @@ jobs:
 
       - name: Push Docker image
         id: push
-        run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:master-arm64
+        run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
