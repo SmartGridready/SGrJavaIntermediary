@@ -31,18 +31,27 @@ def create_url(*args):
 sgr_intermediary_url = "http://localhost:8080"
 
 # Tariff Configuration parameters
-xml_file_name = "SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml"  # Name of XML File describing the dynamic tariff
-device_name = "Swisspower-Tariff"  # Name of the device which will be created in the SGr intermediary
-device_configuration_parameters = [  # Parameters necessary to initialize the device
-        {
-            "name": "metering_code",
-            "val": "CH1018601234500000000000000011642"
-        },
-        {
-            "name": "token",
-            "val": "19d6ca0bb9bf4d8b6525440eead80da6"
-        }
-    ]
+selection = input('Do you want to test Groupe-E (1) or Swisspower (2) Tariff?[1] ')
+if selection == '2':
+    # Swisspower Tariff
+    xml_file_name = "SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml"  # Name of XML File describing the dynamic tariff
+    device_name = "Swisspower-Tariff"  # Name of the device which will be created in the SGr intermediary
+    device_configuration_parameters = [  # Parameters necessary to initialize the device
+            {
+                "name": "metering_code",
+                "val": "CH1018601234500000000000000011642"
+            },
+            {
+                "name": "token",
+                "val": "19d6ca0bb9bf4d8b6525440eead80da6"
+            }
+        ]
+elif selection in ['1', '']: 
+    # Groupe-E Tariff
+    xml_file_name = "SGr_05_mmmm_dddd_Dynamic_Tariffs_GroupeE_V0.0.1.xml"  # Name of XML File describing the dynamic tariff
+    device_name = "GroupeE-Tariff"  # Name of the device which will be created in the SGr intermediary
+    device_configuration_parameters = [  # Parameters necessary to initialize the device
+        ]
 
 # To receive dynamic tariff informations from a device (= Rest API server of a 
 # Tariff supplier) i need to define which datapoint of the DynamicTariff 
