@@ -31,13 +31,13 @@ You can add EI-XML from different repositories:
 - From an arbitrary WEB resource/URI
 - From a local file
 
-### Adding an EI-XML for a Wago Smartmeter from the official SGR-library: 
+### Adding an EI-XML for a Wago Smartmeter from the official SGR-library:
 
 `HTTP POST:  http://localhost:8080/eiXml/sgr-library`
 
 using the form-data within the request body:
 ```
-eiXmlName=SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml
+eiXmlName=SGr_04_0014_0000_WAGO_SmartMeterV0.2.3.xml
 ```
 
 ### Adding an EI-XML from a custom URI:
@@ -46,7 +46,7 @@ eiXmlName=SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml
 
 using the form-data within the request body:
 ```
-  eiXmlName=SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml
+  eiXmlName=SGr_04_0014_0000_WAGO_SmartMeterV0.2.3.xml
   uri=https://custom.host.name/<path-to-ei-xml>?param1=... 
 ```
 
@@ -59,7 +59,7 @@ using the form-data body for multipart file upload:
   file=<MultiPartFile>
 ```
 
-### Adding a first Wago device:
+### Adding a first WAGO device:
 
 `HTTP POST: http://localhost:8080/device`
 
@@ -67,27 +67,26 @@ with the following JSON in the body:
 
 ```json
 {
-  {
-    "name": "WAGO-Smartmeter-1",
-    "eiXmlName" : "SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml",
-    "configurationValues" : [
-        {
-            "name" : "comPort",
-            "val"  : "COM3"
-        },
-        {
-            "name":"baudRate",
-            "val":19200
-        },
-        {
-            "slaveAddr": 1
-        }
-    ]
-  }
+  "name": "WAGO-Smartmeter-1",
+  "eiXmlName": "SGr_04_0014_0000_WAGO_SmartMeterV0.2.3.xml",
+  "configurationValues": [
+    {
+      "name": "serial_port",
+      "val": "COM3"
+    },
+    {
+      "name":" serial_baudrate",
+      "val": 19200
+    },
+    {
+      "name":" slave_id",
+      "val": 1
+    }
+  ]
 }
 ```
 
-### Adding a second Wago device:
+### Adding a second WAGO device:
 
 `HTTP POST: http://localhost:8080/device`
 
@@ -95,23 +94,22 @@ with the following JSON in the body:
 
 ```json
 {
-  {
-    "name": "WAGO-Smartmeter-2",
-    "eiXmlName" : "SGr_04_0014_0000_WAGO_SmartMeterV0.2.1.xml",
-    "configurationValues" : [
-        {
-            "name" : "comPort",
-            "val"  : "COM3"
-        },
-        {
-            "name":"baudRate",
-            "val":19200
-        },
-        {
-            "slaveAddr": 2
-        }
-    ]
-  }
+  "name": "WAGO-Smartmeter-2",
+  "eiXmlName": "SGr_04_0014_0000_WAGO_SmartMeterV0.2.3.xml",
+  "configurationValues": [
+    {
+      "name": "serial_port",
+      "val": "COM3"
+    },
+    {
+      "name":" serial_baudrate",
+      "val": 19200
+    },
+    {
+      "name":" slave_id",
+      "val": 2
+    }
+  ]
 }
 ```
 
@@ -123,7 +121,7 @@ Request format:
 
 Example:
 
-`HTTP GET: http://localhost:8080/value/WAGI-Smartmeter-1/VoltageAC/VoltageL1`
+`HTTP GET: http://localhost:8080/value/WAGO-Smartmeter-1/VoltageAC/VoltageACL1_N`
 
 ## Postman collection
 
@@ -159,11 +157,3 @@ Currently proposed installation variant is to use the SGrIntermediary docker ima
 
 - Check if the 'sgr-intermediary' container is running:
   - `docker container ls -f name=sgr-intermediary`
-
-
-
-
-
-
-
- 
