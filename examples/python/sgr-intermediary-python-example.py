@@ -40,7 +40,7 @@ device_configuration_parameters = [  # Parameters necessary to initialize the de
         },
         {
             "name": "token",
-            "val": "19d6ca0bb9bf4d8b6525440eead80da6"        
+            "val": "19d6ca0bb9bf4d8b6525440eead80da6"
         }
     ]
 
@@ -48,8 +48,8 @@ device_configuration_parameters = [  # Parameters necessary to initialize the de
 # Tariff supplier) i need to define which datapoint of the DynamicTariff 
 # functional profile i want to read
 sgr_functional_profile = "DynamicTariff"
-sgr_datapoint = "TariffSupply?start_timestamp=2024-12-01T00:00:00%2B02:00&\
-end_timestamp=2024-12-02T01:00:00%2B02:00"
+sgr_datapoint = "TariffSupply?start_timestamp=2025-01-01T00:00:00%2B01:00&\
+end_timestamp=2025-01-02T01:00:00%2B01:00"
 
 # Create some userful url to GET/Post data with the SGr Intermediary
 # eiXml/sgr-library retrieves the EI-XML file to be added from the official EI-XML library: https://library.smartgridready.ch/
@@ -62,8 +62,8 @@ url_to_initialize_device = create_url(*[
 ])
 
 # http://localhost:8080/value/Swisspower-Tariff/DynamicTariff/TariffSupply?\
-# start_timestamp=2024-01-01T00:00:00+02:00&end_timestamp=\
-# 2024-01-01T01:00:00+02:00
+# start_timestamp=2025-01-01T00:00:00+01:00&end_timestamp=\
+# 2025-01-01T01:00:00+01:00
 url_to_request_tariff_data = create_url(*[
     sgr_intermediary_url, "value", device_name, sgr_functional_profile, 
     sgr_datapoint])
