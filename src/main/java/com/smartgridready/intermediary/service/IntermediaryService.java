@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,12 +32,14 @@ import com.smartgridready.driver.api.common.GenDriverException;
 import com.smartgridready.driver.api.http.GenHttpClientFactory;
 import com.smartgridready.driver.api.messaging.GenMessagingClientFactory;
 import com.smartgridready.driver.api.messaging.model.MessagingPlatformType;
+import com.smartgridready.intermediary.dto.DeviceInfoDto;
 import com.smartgridready.intermediary.entity.ConfigurationValue;
 import com.smartgridready.intermediary.entity.Device;
 import com.smartgridready.intermediary.entity.ExternalInterfaceXml;
 import com.smartgridready.intermediary.exception.DeviceNotFoundException;
 import com.smartgridready.intermediary.exception.DeviceOperationFailedException;
 import com.smartgridready.intermediary.exception.ExtIfXmlNotFoundException;
+import com.smartgridready.intermediary.helper.DtoConverter;
 import com.smartgridready.intermediary.repository.ConfigurationValueRepository;
 import com.smartgridready.intermediary.repository.DeviceRepository;
 import com.smartgridready.intermediary.repository.ExternalInterfaceXmlRepository;
@@ -523,6 +526,30 @@ public class IntermediaryService
 
         LOG.info( "finishing getDeviceStatus() with status='{}'", status );
         return status;
+    }
+
+    /**
+     * Retrieves the device information of the given device.
+     * 
+     * @param deviceName
+     *        name of the device
+     * @return device information with functional profiles and data points
+     */
+    public DeviceInfoDto getDeviceInfo( String deviceName )
+    {
+        final var device = findDeviceInRegistries( deviceName );
+
+        try
+        {
+            var info = device.getDeviceInfo();
+            var functionalProfiles = device.getFunctionalProfiles();
+
+            return DtoConverter.deviceInfoDto(info, functionalProfiles);
+        }
+        catch ( Exception e )
+        {
+            throw new DeviceOperationFailedException( deviceName, e );
+        }
     }
 
     @PreDestroy
