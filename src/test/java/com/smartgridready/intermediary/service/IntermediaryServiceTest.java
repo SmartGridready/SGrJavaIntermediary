@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Properties;
 
 import com.smartgridready.intermediary.entity.ConfigurationValue;
@@ -50,6 +51,8 @@ class IntermediaryServiceTest
 {
     private static final String EI_XML_NAME = "WAGOMeterV0.2.1";
     private static final String EI_XML_FILE_NAME = "SGr_04_0014_0000_WAGO_SmartMeterV0.2.1-Arrays.xml";
+    private static final String PROP_NAME = "portName";
+    private static final String PROP_VALUE = "COM3";
     private static final String DEVICE_NAME = "WAGOMeter";
     private static final String FUNCTIONAL_PROFILE_NAME = "VoltageAC";
     private static final String DATA_POINT_NAME = "Voltage-L1-L2-L3";
@@ -89,7 +92,7 @@ class IntermediaryServiceTest
                  * DEVICE_NAME in EI_XML_FILE_NAME in the resources. The return value is not checked, but
                  * must be long enough that the tests work.
                  */
-                .when( genDriverAPI4Modbus.ReadHoldingRegisters( 20482, 6 ) )
+                .when( genDriverAPI4Modbus.readHoldingRegisters( (short) 1, 20482, 6 ) )
                 .thenReturn( new int[] { 1, 2, 3, 4, 5, 6 } );
 
         Mockito.lenient()
@@ -570,6 +573,10 @@ class IntermediaryServiceTest
     private Device addDeviceToRegistry()
     {
         // set up mocks
+        final var cfg = new ConfigurationValue();
+        cfg.setName(PROP_NAME);
+        cfg.setVal(PROP_VALUE);
+
         final var eiXml = new ExternalInterfaceXml( EI_XML_NAME, readEiXml() );
         final var eiXmlList = new ArrayList<ExternalInterfaceXml>();
         eiXmlList.add( eiXml );
@@ -577,7 +584,7 @@ class IntermediaryServiceTest
         when( deviceRepository.findByName( DEVICE_NAME ) ).thenReturn( new ArrayList<>() );
         // call testee
         return testee
-                .insertOrUpdateDevice( DEVICE_NAME, EI_XML_NAME, new ArrayList<>() );
+                .insertOrUpdateDevice( DEVICE_NAME, EI_XML_NAME, Collections.singletonList(cfg) );
     }
 
     /*
