@@ -27,7 +27,7 @@ import lombok.Setter;
 @Entity
 public class ConfigurationValue
 {
-
+    @JsonIgnore
     @Id
     @GeneratedValue
     private Long id;
