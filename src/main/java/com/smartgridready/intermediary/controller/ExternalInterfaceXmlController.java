@@ -5,8 +5,10 @@
  */
 package com.smartgridready.intermediary.controller;
 
+import java.io.IOException;
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -81,13 +83,13 @@ public class ExternalInterfaceXmlController
        return intermediaryService.loadEiXmlFromUri(eiXmlName, uri);
     }
 
-    @Operation(description = "Add an EI-XML from a Web resource URL")
+    @Operation(description = "Add an EI-XML from a local file")
     @ApiResponse(description = "The EI-XML name and its content")
-    @PostMapping("/eiXml/local-file")
+    @PostMapping(path = "/eiXml/local-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ExternalInterfaceXml loadFromLocalFile(
-            @Parameter(description = "The file resource.") @RequestParam MultipartFile file)
+            @RequestParam("file") MultipartFile file) throws IOException
     {
-       return intermediaryService.loadEiXmlFromLocalFile(file);
+       return intermediaryService.loadEiXmlFromLocalFile(file.getOriginalFilename(), file.getInputStream());
     }
 
     @Operation(description = "Get an EI-XML by name.")

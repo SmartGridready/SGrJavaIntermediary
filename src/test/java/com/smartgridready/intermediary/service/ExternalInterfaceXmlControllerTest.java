@@ -31,22 +31,21 @@ class ExternalInterfaceXmlControllerTest {
     @Test
     void serviceCallSuccess() throws Exception {
 
-        when(intermediaryService.loadEiXmlFromLocalFile(any())).thenReturn(
+        when(intermediaryService.loadEiXmlFromLocalFile(any(), any())).thenReturn(
                 new ExternalInterfaceXml(FILE_NAME, TEST_XML));
 
         mockMvc.perform(multipart("/eiXml/local-file")
                 .file("file", TEST_XML.getBytes(StandardCharsets.UTF_8)))
                 .andExpect((status().isOk()))
                 .andExpect(content().json(
-                        "{\"id\" : null, " +
-                                "\"name\":\"" + FILE_NAME + "\"," +
+                        "{\"name\":\"" + FILE_NAME + "\"," +
                                 "\"xml\":\"" + TEST_XML + "\"}"));
     }
 
     @Test
     void serviceCallErrorNotFound() throws Exception {
 
-        when(intermediaryService.loadEiXmlFromLocalFile(any())).thenThrow(new ExtIfXmlNotFoundException(FILE_NAME));
+        when(intermediaryService.loadEiXmlFromLocalFile(any(), any())).thenThrow(new ExtIfXmlNotFoundException(FILE_NAME));
 
         mockMvc.perform(multipart("/eiXml/local-file")
                         .file("file", TEST_XML.getBytes(StandardCharsets.UTF_8)))
@@ -59,7 +58,7 @@ class ExternalInterfaceXmlControllerTest {
     @Test
     void serviceCallErrorBadRequest() throws Exception {
 
-        when(intermediaryService.loadEiXmlFromLocalFile(any())).thenThrow(new IllegalArgumentException("Parameter invalid"));
+        when(intermediaryService.loadEiXmlFromLocalFile(any(), any())).thenThrow(new IllegalArgumentException("Parameter invalid"));
 
         mockMvc.perform(multipart("/eiXml/local-file")
                         .file("file", TEST_XML.getBytes(StandardCharsets.UTF_8)))
