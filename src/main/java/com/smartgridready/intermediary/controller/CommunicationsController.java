@@ -19,6 +19,7 @@ import com.smartgridready.communicator.common.api.values.BooleanValue;
 import com.smartgridready.communicator.common.api.values.Float64Value;
 import com.smartgridready.communicator.common.api.values.StringValue;
 import com.smartgridready.communicator.common.api.values.Value;
+import com.smartgridready.intermediary.dto.DeviceInfoDto;
 import com.smartgridready.intermediary.dto.ValueDto;
 import com.smartgridready.intermediary.service.IntermediaryService;
 
@@ -32,7 +33,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @Tag(name = "Device Communications Controller",
-     description = "API to write/read values to/from a device data point.")
+     description = "API to write/read values to/from a device data point and for introspection.")
 public class CommunicationsController
 {
     private final IntermediaryService intermediaryService;
@@ -40,6 +41,17 @@ public class CommunicationsController
     CommunicationsController( IntermediaryService intermediaryService )
     {
         this.intermediaryService = intermediaryService;
+    }
+
+    @Operation(description = "Gets the device information for introspection.")
+    @ApiResponse(description = "The device information.")
+    @GetMapping("/info/{device}")
+    public DeviceInfoDto getInfo( 
+            @PathVariable("device")
+            @Parameter(description = "The device name")
+            String device )
+    {
+        return intermediaryService.getDeviceInfo( device );
     }
 
     @Operation(
