@@ -76,19 +76,19 @@
 		<dependency>
 			<groupId>com.smartgridready</groupId>
 			<artifactId>sgr-commhandler</artifactId>
-			<version>2.1.2</version>
+			<version>2.3.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.smartgridready</groupId>
-			<artifactId>easymodbus</artifactId>
-			<version>2.1.0</version>
+			<artifactId>sgr-driver-j2mod</artifactId>
+			<version>1.0.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.smartgridready</groupId>
 			<artifactId>sgr-driver-api</artifactId>
-			<version>2.1.0</version>
+			<version>2.2.0</version>
 		</dependency>
 
 		<dependency>
