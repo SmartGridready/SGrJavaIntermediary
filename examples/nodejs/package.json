@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/SmartGridready/SGrJavaIntermediary#readme",
   "dependencies": {
-    "axios": "^1.7.7",
+    "axios": "^1.8.2",
     "form-data": "^4.0.1"
   }
 }
