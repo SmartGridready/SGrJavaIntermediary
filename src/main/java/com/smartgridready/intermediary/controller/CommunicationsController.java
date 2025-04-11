@@ -24,6 +24,8 @@ import com.smartgridready.intermediary.service.IntermediaryService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.Explode;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -40,7 +42,12 @@ public class CommunicationsController
         this.intermediaryService = intermediaryService;
     }
 
-    @Operation(description = "Read a value from a device data point.")
+    @Operation(
+        description = "Read a value from a device data point.",
+        parameters = {
+            @Parameter(name = "queryParams", in = ParameterIn.QUERY, description = "dynamic query parameters", explode = Explode.TRUE)
+        }
+    )
     @ApiResponse(description = "The value read from the device.")
     @GetMapping("/value/{device}/{functionalProfile}/{dataPoint}")
     public String getVal( 
@@ -53,7 +60,7 @@ public class CommunicationsController
             @PathVariable("dataPoint")
             @Parameter(description = "The data point name")
             String dataPoint,
-            @RequestParam(required = false)
+            @RequestParam(defaultValue = "{}")
             Map<String, String> queryParams )
     {
         var properties = new Properties();
