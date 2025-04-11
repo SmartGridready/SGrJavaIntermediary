@@ -8,6 +8,8 @@ package com.smartgridready.intermediary.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,6 +32,7 @@ import lombok.Setter;
 @Entity
 public class Device
 {
+    @JsonIgnore
     @Id
     @GeneratedValue
     private long id;

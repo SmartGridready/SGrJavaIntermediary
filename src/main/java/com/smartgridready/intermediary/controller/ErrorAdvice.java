@@ -6,6 +6,9 @@
 package com.smartgridready.intermediary.controller;
 
 import com.smartgridready.intermediary.dto.ErrorResponseDto;
+
+import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -38,16 +41,15 @@ class ErrorAdvice
         return errorResponse(HttpStatus.NOT_FOUND, ex);
     }
 
-
     @ExceptionHandler({
             UnsupportedOperationException.class,
-            IllegalArgumentException.class})
+            IllegalArgumentException.class,
+            IOException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     ResponseEntity<ErrorResponseDto> invalidRequestHandler( RuntimeException ex )
     {
         return errorResponse(HttpStatus.BAD_REQUEST, ex);
     }
-
 
     @ExceptionHandler({ DeviceOperationFailedException.class })
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -7,6 +7,7 @@ package com.smartgridready.intermediary.service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +43,6 @@ import com.smartgridready.intermediary.repository.ExternalInterfaceXmlRepository
 
 import io.vavr.control.Either;
 import jakarta.annotation.PreDestroy;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * This class provides the services for the end points.
@@ -119,16 +119,17 @@ public class IntermediaryService
     /**
      * Loads the given EI-XML from a local device and saving it on the local DB.
      *
-     * @param file
-     *        The file as HTTP multipart file
+     * @param fileName
+     *        The file name
+     * @param fileInputStream
+     *        The file as input stream
      * @return {@code ExternalInterfaceXml}
      */
-    public ExternalInterfaceXml loadEiXmlFromLocalFile(MultipartFile file) {
+    public ExternalInterfaceXml loadEiXmlFromLocalFile(String fileName, InputStream fileInputStream) {
 
-        final String fileName = file.getName();
-        LOG.info( "starting loadEiXmlFromGitHub() with eiXmlFileName='{}'", file );
+        LOG.info( "starting loadEiXmlFromGitHub() with eiXmlFileName='{}'", fileName );
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(fileInputStream))) {
             final var xml = reader.lines().collect(Collectors.joining(System.lineSeparator()));
             var eiXmlList = eiXmlRepository.findByName(fileName);
             var eiXml = eiXmlList.stream().findFirst().orElseGet(() -> new ExternalInterfaceXml(fileName, xml));

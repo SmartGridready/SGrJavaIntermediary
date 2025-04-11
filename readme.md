@@ -59,6 +59,12 @@ using the form-data body for multipart file upload:
   file=<MultiPartFile>
 ```
 
+Example using _curl_:
+
+```bash
+curl -X POST http://localhost:8080/eiXml/local-file -F "file=@path/to/your/eid.xml"
+```
+
 ### Adding a first WAGO device:
 
 `HTTP POST: http://localhost:8080/device`

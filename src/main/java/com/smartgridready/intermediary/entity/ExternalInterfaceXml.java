@@ -5,6 +5,8 @@
  */
 package com.smartgridready.intermediary.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,7 +25,10 @@ import lombok.*;
 @Entity
 public class ExternalInterfaceXml
 {
-    private @Id @GeneratedValue Long id;
+    @JsonIgnore
+    @Id
+    @GeneratedValue
+    private Long id;
 
     @Column(nullable = false, length = 256, unique = true)
     private String name;
