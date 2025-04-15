@@ -11,11 +11,13 @@ import java.util.stream.Collectors;
 
 import com.smartgridready.intermediary.dto.DataPointDto;
 import com.smartgridready.intermediary.dto.DeviceInfoDto;
+import com.smartgridready.intermediary.dto.DynamicParameterDto;
 import com.smartgridready.intermediary.dto.FunctionalProfileDto;
 import com.smartgridready.intermediary.dto.GenericAttributeDto;
 import com.smartgridready.ns.v0.DataDirectionProduct;
 import com.smartgridready.communicator.common.api.dto.DataPoint;
 import com.smartgridready.communicator.common.api.dto.DeviceInfo;
+import com.smartgridready.communicator.common.api.dto.DynamicRequestParameter;
 import com.smartgridready.communicator.common.api.dto.FunctionalProfile;
 import com.smartgridready.communicator.common.api.dto.GenericAttribute;
 import com.smartgridready.communicator.common.api.values.Value;
@@ -56,7 +58,17 @@ public class DtoConverter {
             isReadable(dp.getPermissions()),
             isWritable(dp.getPermissions()),
             isPersistent(dp.getPermissions()),
-            genericAttributeDtos(dp.getGenericAttributes())
+            genericAttributeDtos(dp.getGenericAttributes()),
+            dynamicParameterDtos(dp)
+        );
+    }
+
+    public static DynamicParameterDto dynamicParameterDto(DynamicRequestParameter param) {
+        return new DynamicParameterDto(
+            param.getName(),
+            param.getDataType().getTypeName(),
+            getRange(param.getDataType().getRange()),
+            param.getDefaultValue()
         );
     }
 
@@ -74,6 +86,10 @@ public class DtoConverter {
                 )
                 .collect(Collectors.toList())
             : null;
+    }
+
+    private static List<DynamicParameterDto> dynamicParameterDtos(DataPoint dp) {
+        return dp.getDynamicRequestParameters().stream().map(DtoConverter::dynamicParameterDto).collect(Collectors.toList());
     }
 
     private static List<String> getRange(List<Value> values) {

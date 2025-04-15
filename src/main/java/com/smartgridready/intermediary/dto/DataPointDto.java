@@ -42,5 +42,8 @@ public record DataPointDto(
     boolean isPersistent,
 
     @Schema(description = "The generic attributes, defined by EID")
-    List<GenericAttributeDto> genericAttributes
+    List<GenericAttributeDto> genericAttributes,
+
+    @Schema(description = "The dynamic parameters, defined by EID")
+    List<DynamicParameterDto> dynamicParameters
 ) {}
