@@ -45,5 +45,5 @@ public record DataPointDto(
     List<GenericAttributeDto> genericAttributes,
 
     @Schema(description = "The dynamic parameters, defined by EID")
-    List<DynamicParameterDto> dynamicParameters
+    List<ParameterDto> dynamicParameters
 ) {}

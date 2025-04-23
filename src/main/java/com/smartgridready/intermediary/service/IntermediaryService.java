@@ -9,7 +9,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +23,7 @@ import org.springframework.stereotype.Service;
 import com.smartgridready.communicator.common.api.GenDeviceApi;
 import com.smartgridready.communicator.common.api.SGrDeviceBuilder;
 import com.smartgridready.communicator.common.api.values.Value;
+import com.smartgridready.communicator.common.helper.DeviceDescriptionLoader;
 import com.smartgridready.communicator.messaging.impl.SGrMessagingDevice;
 import com.smartgridready.communicator.modbus.api.ModbusGatewayRegistry;
 import com.smartgridready.communicator.rest.exception.RestApiAuthenticationException;
@@ -33,6 +33,7 @@ import com.smartgridready.driver.api.http.GenHttpClientFactory;
 import com.smartgridready.driver.api.messaging.GenMessagingClientFactory;
 import com.smartgridready.driver.api.messaging.model.MessagingPlatformType;
 import com.smartgridready.intermediary.dto.DeviceInfoDto;
+import com.smartgridready.intermediary.dto.EidInfoDto;
 import com.smartgridready.intermediary.entity.ConfigurationValue;
 import com.smartgridready.intermediary.entity.Device;
 import com.smartgridready.intermediary.entity.ExternalInterfaceXml;
@@ -40,6 +41,7 @@ import com.smartgridready.intermediary.exception.DeviceNotFoundException;
 import com.smartgridready.intermediary.exception.DeviceOperationFailedException;
 import com.smartgridready.intermediary.exception.ExtIfXmlNotFoundException;
 import com.smartgridready.intermediary.helper.DtoConverter;
+import com.smartgridready.intermediary.helper.EidHelper;
 import com.smartgridready.intermediary.repository.ConfigurationValueRepository;
 import com.smartgridready.intermediary.repository.DeviceRepository;
 import com.smartgridready.intermediary.repository.ExternalInterfaceXmlRepository;
@@ -191,6 +193,27 @@ public class IntermediaryService
                 .orElseThrow( () -> new ExtIfXmlNotFoundException( eiXmlName ) );
         eiXmlRepository.delete( eiXml );
         LOG.debug( "finishing deleteEiXml()" );
+    }
+
+    /**
+     * Retrieves the EI-XML with the given name and its configuration information.
+     * 
+     * @param eiXmlName
+     *        EI-XML name
+     * @return {@code EidInfoDto}
+     */
+    public EidInfoDto getEiXmlInfo( String eiXmlName )
+    {
+        final var eiXml = getEiXml(eiXmlName);
+        final var deviceFrame = new DeviceDescriptionLoader().load(eiXml.getXml());
+
+        deviceFrame.getConfigurationList();
+
+        return new EidInfoDto(
+            eiXmlName,
+            EidHelper.getVersionString(deviceFrame.getDeviceInformation().getVersionNumber()),
+            EidHelper.getConfigurationParameters(deviceFrame).stream().map(DtoConverter::configurationParameterDto).collect(Collectors.toList())
+        );
     }
 
     /**

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.smartgridready.intermediary.dto.EidInfoDto;
 import com.smartgridready.intermediary.entity.ExternalInterfaceXml;
 import com.smartgridready.intermediary.service.IntermediaryService;
 
@@ -111,5 +112,16 @@ public class ExternalInterfaceXmlController
             String name )
     {
         intermediaryService.deleteEiXml( name );
+    }
+
+    @Operation(description = "Get an EI-XML by name and returns its configuration info.")
+    @ApiResponse(description = "The EI-XML info")
+    @GetMapping("/eiXml/info/{name}")
+    EidInfoDto externalInterfaceXmlInfo( 
+            @PathVariable("name")
+            @Parameter(description = "The EI-XML name")
+            String fileName )
+    {
+        return intermediaryService.getEiXmlInfo( fileName );
     }
 }

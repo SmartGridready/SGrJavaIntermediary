@@ -9,17 +9,14 @@ import java.util.List;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Represents a dynamic parameter of a data point.")
-public record DynamicParameterDto(
-    @Schema(description = "The parameter name")
-    String name,
+@Schema(description = "Represents information of an EI-XML.")
+public record EidInfoDto(
+    @Schema(description = "The EI-XML identifier")
+    String identifier,
 
-    @Schema(description = "The parameter data type")
-    String dataType,
+    @Schema(description = "The EI-XML version")
+    String version,
 
     @Schema(description = "The allowed values of the data type (min./max. value for numeric types, a list of allowed values for enum or bitmap types)")
-    List<String> dataTypeValues,
-
-    @Schema(description = "The default parameter value")
-    String defaultValue
+    List<ParameterDto> configurationParameters
 ) {}
