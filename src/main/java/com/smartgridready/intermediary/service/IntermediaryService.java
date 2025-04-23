@@ -209,10 +209,10 @@ public class IntermediaryService
 
         deviceFrame.getConfigurationList();
 
-        return new EidInfoDto(
+        return DtoConverter.eidInfoDto(
             eiXmlName,
             EidHelper.getVersionString(deviceFrame.getDeviceInformation().getVersionNumber()),
-            EidHelper.getConfigurationParameters(deviceFrame).stream().map(DtoConverter::configurationParameterDto).collect(Collectors.toList())
+            EidHelper.getConfigurationParameters(deviceFrame)
         );
     }
 

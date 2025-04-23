@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import com.smartgridready.intermediary.dto.DataPointDto;
 import com.smartgridready.intermediary.dto.DeviceInfoDto;
+import com.smartgridready.intermediary.dto.EidInfoDto;
 import com.smartgridready.intermediary.dto.ParameterDto;
 import com.smartgridready.intermediary.dto.FunctionalProfileDto;
 import com.smartgridready.intermediary.dto.GenericAttributeDto;
@@ -64,6 +65,14 @@ public class DtoConverter {
         );
     }
 
+    public static EidInfoDto eidInfoDto(String identifier, String version, List<ConfigurationValue> configValues) {
+        return new EidInfoDto(
+            identifier,
+            version,
+            configurationParameterDtos(configValues)
+        );
+    }
+
     public static ParameterDto dynamicParameterDto(DynamicRequestParameter param) {
         return new ParameterDto(
             param.getName(),
@@ -100,6 +109,10 @@ public class DtoConverter {
 
     private static List<ParameterDto> dynamicParameterDtos(DataPoint dp) {
         return dp.getDynamicRequestParameters().stream().map(DtoConverter::dynamicParameterDto).collect(Collectors.toList());
+    }
+
+    private static List<ParameterDto> configurationParameterDtos(List<ConfigurationValue> configValues) {
+        return configValues.stream().map(DtoConverter::configurationParameterDto).collect(Collectors.toList());
     }
 
     private static List<String> getRange(List<Value> values) {
