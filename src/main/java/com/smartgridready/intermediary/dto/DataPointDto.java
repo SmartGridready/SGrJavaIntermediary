@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Represents functional profile's data point.")
 public record DataPointDto(
-    @Schema(description = "The data point name, defined by EID")
+    @Schema(description = "The data point name, defined by EI-XML")
     String dataPointName,
 
     @Schema(description = "The data point unit")
@@ -41,9 +41,9 @@ public record DataPointDto(
     @Schema(description = "True if the datapoint is persistent, otherwise false.")
     boolean isPersistent,
 
-    @Schema(description = "The generic attributes, defined by EID")
+    @Schema(description = "The generic attributes, defined by EI-XML")
     List<GenericAttributeDto> genericAttributes,
 
-    @Schema(description = "The dynamic parameters, defined by EID")
+    @Schema(description = "The dynamic parameters, defined by EI-XML")
     List<ParameterDto> dynamicParameters
 ) {}

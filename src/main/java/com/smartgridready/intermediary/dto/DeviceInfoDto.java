@@ -7,12 +7,19 @@ package com.smartgridready.intermediary.dto;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * DTO for device info.
  */
+@Schema(description = "Represents device information for introspection")
 public record DeviceInfoDto(
+    @Schema(description = "The device name")
     String deviceName,
+    @Schema(description = "The device category")
     String deviceCategory,
+    @Schema(description = "The manufacturer name")
     String manufacturerName,
+    @Schema(description = "The functional profiles")
     List<FunctionalProfileDto> functionalProfiles
 ) {}

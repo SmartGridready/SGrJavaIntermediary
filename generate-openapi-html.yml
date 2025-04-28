@@ -1,0 +1,22 @@
+name: openapi
+
+services:
+  intermediary:
+    restart: no
+    build:
+      context: .
+    healthcheck:
+      test: curl --silent --fail http://localhost:8080/swagger-ui/index.html || exit 1
+      timeout: 10s
+      interval: 10s
+      retries: 5
+
+  generator:
+    restart: no
+    image: openapitools/openapi-generator-cli:latest
+    command: generate --skip-validate-spec -g html2 -i http://intermediary:8080/v3/api-docs -o /openapi
+    volumes:
+      - ./openapi:/openapi
+    depends_on:
+      intermediary:
+        condition: service_healthy
