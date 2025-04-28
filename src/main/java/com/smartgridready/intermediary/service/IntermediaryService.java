@@ -207,8 +207,6 @@ public class IntermediaryService
         final var eiXml = getEiXml(eiXmlName);
         final var deviceFrame = new DeviceDescriptionLoader().load(eiXml.getXml());
 
-        deviceFrame.getConfigurationList();
-
         return DtoConverter.eidInfoDto(
             eiXmlName,
             EidHelper.getVersionString(deviceFrame.getDeviceInformation().getVersionNumber()),
@@ -453,7 +451,7 @@ public class IntermediaryService
 
     }
 
-    private GenDeviceApi findDeviceInRegistries( String deviceName )
+    private GenDeviceApi findDeviceInRegistries( String deviceName, boolean ignoreErrorState )
     {
         var deviceOpt = Optional.ofNullable( deviceRegistry.get( deviceName ) );
 
@@ -463,7 +461,10 @@ public class IntermediaryService
 
             if ( deviceError.isPresent() )
             {
-                throw new DeviceOperationFailedException( deviceError.get() );
+                if ( !ignoreErrorState )
+                {
+                    throw new DeviceOperationFailedException( deviceError.get() );
+                }
             }
             else
             {
@@ -473,6 +474,11 @@ public class IntermediaryService
         }
 
         return deviceOpt.get();
+    }
+
+    private GenDeviceApi findDeviceInRegistries( String deviceName )
+    {
+        return findDeviceInRegistries(deviceName, false);
     }
 
     private void mqttCallbackFunction( Either<Throwable, Value> message )
@@ -560,7 +566,7 @@ public class IntermediaryService
      */
     public DeviceInfoDto getDeviceInfo( String deviceName )
     {
-        final var device = findDeviceInRegistries( deviceName );
+        final var device = findDeviceInRegistries( deviceName, true );
 
         try
         {
