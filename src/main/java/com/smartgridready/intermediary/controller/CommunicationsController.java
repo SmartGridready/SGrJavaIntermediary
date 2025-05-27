@@ -17,12 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.smartgridready.communicator.common.api.values.BooleanValue;
-import com.smartgridready.communicator.common.api.values.Float64Value;
-import com.smartgridready.communicator.common.api.values.StringValue;
-import com.smartgridready.communicator.common.api.values.Value;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.smartgridready.intermediary.dto.DeviceInfoDto;
-import com.smartgridready.intermediary.dto.ValueDto;
+import com.smartgridready.intermediary.exception.DeviceOperationFailedException;
 import com.smartgridready.intermediary.service.IntermediaryService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +27,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.Explode;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -79,7 +75,7 @@ public class CommunicationsController
     )
     @ApiResponse(description = "The value read from the device.")
     @GetMapping(path = "/value/{device}/{functionalProfile}/{dataPoint}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> getVal( 
+    public ResponseEntity<JsonNode> getVal( 
             @PathVariable("device")
             String device,
             @PathVariable("functionalProfile")
@@ -99,9 +95,12 @@ public class CommunicationsController
             queryParams.forEach( ( key, val ) -> properties.put( key, val.replace( ' ', '+' ) ) );
         }
 
-        return ResponseEntity.ok(
-            intermediaryService.getVal( device, functionalProfile, dataPoint, properties ).getString()
-        );
+        JsonNode value = intermediaryService.getVal( device, functionalProfile, dataPoint, properties );
+        if (value == null) {
+            throw new DeviceOperationFailedException("Data point value was null");
+        }
+
+        return ResponseEntity.ok(value);
     }
 
     @Operation(
@@ -113,9 +112,9 @@ public class CommunicationsController
             @Parameter(name = "dataPoint", in = ParameterIn.PATH, description = "The data point name", required = true)
         },
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            description = "The value must be a Number, a Boolean or a String (which could contain JSON).",
+            description = "The value must be a JSON value, which can be a simple value such as a string or a number, or an object or array.",
             required = true,
-            content = { @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ValueDto.class))}
+            content = { @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)}
         )
     )
     @PostMapping(path = "/value/{device}/{functionalProfile}/{dataPoint}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -127,37 +126,14 @@ public class CommunicationsController
             @PathVariable("dataPoint")
             String dataPoint,
             @RequestBody
-            ValueDto value )
+            JsonNode value )
     {
-        Value sgrValue;
-
-        if ( ( value == null ) || ( value.getValue() == null ) )
+        if ( value == null )
         {
             throw new IllegalArgumentException( "need parameter value" );
         }
-        
-        if ( value.getValue() instanceof Number )
-        { 
-            // convert the number to the biggest number, SGr knows: let the concrete implementation convert this again
-            sgrValue = Float64Value.of( ( Double ) value.getValue() );
-        }
-        else
-        if ( value.getValue() instanceof Boolean b )
-        {
-            sgrValue = BooleanValue.of( b );
-        }
-        else
-        if ( value.getValue() instanceof String s )
-        {
-            sgrValue = StringValue.of( s );
-        }
-        else
-        {
-            throw new IllegalArgumentException( "parameter value has invalid type: "
-                                                + value.getValue().getClass().getSimpleName() );
-        }
 
-        intermediaryService.setVal( device, functionalProfile, dataPoint, sgrValue );
+        intermediaryService.setVal( device, functionalProfile, dataPoint, value );
 
         return ResponseEntity.noContent().build();
     }
