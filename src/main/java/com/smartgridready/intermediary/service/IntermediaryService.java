@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +21,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.smartgridready.communicator.common.api.GenDeviceApi;
 import com.smartgridready.communicator.common.api.SGrDeviceBuilder;
+import com.smartgridready.communicator.common.api.values.ArrayValue;
 import com.smartgridready.communicator.common.api.values.Value;
 import com.smartgridready.communicator.common.helper.DeviceDescriptionLoader;
 import com.smartgridready.communicator.messaging.impl.SGrMessagingDevice;
@@ -42,6 +46,7 @@ import com.smartgridready.intermediary.exception.DeviceOperationFailedException;
 import com.smartgridready.intermediary.exception.ExtIfXmlNotFoundException;
 import com.smartgridready.intermediary.helper.DtoConverter;
 import com.smartgridready.intermediary.helper.EidHelper;
+import com.smartgridready.intermediary.helper.SGrValueConverter;
 import com.smartgridready.intermediary.repository.ConfigurationValueRepository;
 import com.smartgridready.intermediary.repository.DeviceRepository;
 import com.smartgridready.intermediary.repository.ExternalInterfaceXmlRepository;
@@ -410,7 +415,7 @@ public class IntermediaryService
      *        optional parameters, only supported by REST API devices
      * @return value
      */
-    public Value getVal( String deviceName,
+    public JsonNode getVal( String deviceName,
                          String functionalProfileName,
                          String dataPointName,
                          Properties parameters )
@@ -424,31 +429,33 @@ public class IntermediaryService
 
         try
         {
-
             if ( device instanceof SGrMessagingDevice messagingDevice )
             {
                 messagingDevice
                         .subscribe( functionalProfileName, dataPointName, this::mqttCallbackFunction );
             }
 
+            Value value;
+
             // Rest API devices support query parameters
             if ( device instanceof SGrRestApiDevice restApiDevice )
             {
-                return restApiDevice.getVal( functionalProfileName, dataPointName, parameters );
+                value = restApiDevice.getVal( functionalProfileName, dataPointName, parameters );
             }
-
-            var value = device.getVal( functionalProfileName, dataPointName );
+            else
+            {
+                value = device.getVal( functionalProfileName, dataPointName );
+            }
 
             errorDeviceRegistry.remove( deviceName );
             LOG.debug( "finishing getVal() with value='{}'", value );
-            return value;
+            return (value != null) ? value.getJson() : null;
         }
         catch ( Exception e )
         {
             errorDeviceRegistry.put( deviceName, e.getMessage() );
             throw new DeviceOperationFailedException( deviceName, e );
         }
-
     }
 
     private GenDeviceApi findDeviceInRegistries( String deviceName, boolean ignoreErrorState )
@@ -501,7 +508,7 @@ public class IntermediaryService
     public void setVal( String deviceName,
                         String functionalProfileName,
                         String dataPointName,
-                        Value value )
+                        JsonNode value )
     {
         LOG.info( "starting setVal() with deviceName='{}', functionalProfileName='{}', dataPointName='{}', value='{}'",
                   deviceName,
@@ -512,7 +519,26 @@ public class IntermediaryService
 
         try
         {
-            device.setVal( functionalProfileName, dataPointName, value );
+            /*
+             * The device side MUST receive its data point values as instances of the correct type - or setting value may not work.
+             * The reason is that the commhandler library checks for instance types in some places.
+             */
+            var dp = device.getDataPoint(functionalProfileName, dataPointName);
+            Value deviceValue;
+            if (value.isArray())
+            {
+                // get elements of JSON array as JsonValue instances and convert to ArrayValue
+                ArrayList<Value> arr = new ArrayList<>();
+                for (JsonNode elem : value) {
+                    arr.add(SGrValueConverter.getDeviceValue(dp.getDataType().getType(), elem));
+                }
+                deviceValue = ArrayValue.of(arr.toArray(new Value[0]));
+            }
+            else
+            {
+                deviceValue = SGrValueConverter.getDeviceValue(dp.getDataType().getType(), value);
+            }
+            device.setVal( functionalProfileName, dataPointName, deviceValue );
             errorDeviceRegistry.remove( deviceName );
             LOG.debug( "finishing setVal()" );
         }
@@ -521,7 +547,6 @@ public class IntermediaryService
             errorDeviceRegistry.put( deviceName, e.getMessage() );
             throw new DeviceOperationFailedException( deviceName, e );
         }
-
     }
 
     /**
