@@ -28,7 +28,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 
-import com.smartgridready.communicator.common.api.values.Float64Value;
+import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.smartgridready.communicator.modbus.api.ModbusGateway;
 import com.smartgridready.communicator.modbus.api.ModbusGatewayRegistry;
 import com.smartgridready.driver.api.common.GenDriverException;
@@ -545,7 +545,7 @@ class IntermediaryServiceTest
         addDeviceToRegistry();
         
         // call testee
-        testee.setVal( DEVICE_NAME, FUNCTIONAL_PROFILE_NAME, DATA_POINT_NAME, Float64Value.of( 1.1 ) );
+        testee.setVal( DEVICE_NAME, FUNCTIONAL_PROFILE_NAME, DATA_POINT_NAME, DoubleNode.valueOf( 1.1 ) );
         
         // check
         final var val = testee.getVal( DEVICE_NAME, FUNCTIONAL_PROFILE_NAME, DATA_POINT_NAME, new Properties() );
@@ -556,7 +556,7 @@ class IntermediaryServiceTest
     void testSetValNoDevice()
     {
         // call testee and check
-        var floatValue =   Float64Value.of( 1.1 );
+        var floatValue = DoubleNode.valueOf( 1.1 );
         assertThrows( DeviceNotFoundException.class,
                       () -> testee.setVal( DEVICE_NAME,
                                            FUNCTIONAL_PROFILE_NAME,
