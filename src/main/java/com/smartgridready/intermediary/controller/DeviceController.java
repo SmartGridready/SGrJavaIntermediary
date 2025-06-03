@@ -23,6 +23,7 @@ import com.smartgridready.intermediary.service.IntermediaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -47,9 +48,15 @@ public class DeviceController
         summary = "Get all devices",
         description = "Get a list of all devices."
     )
-    @ApiResponse(description = "A list with all devices with their device information.")
+    @ApiResponse(
+        description = "A list with all devices with their device information.",
+        responseCode = "200",
+        content = @Content(
+            array = @ArraySchema(schema = @Schema(implementation = DeviceStatusDto.class))
+        )
+    )
     @GetMapping(path = "/device", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<DeviceStatusDto>> getAll()
+    public ResponseEntity<List<DeviceStatusDto>> getAllDevices()
     {
         var devices = intermediaryService.getAllDevices();
         return ResponseEntity.ok(
@@ -70,10 +77,16 @@ public class DeviceController
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "Device description with device name, EI-XML name and configuration values.",
             required = true,
-            content = { @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = DeviceDto.class))}
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = DeviceDto.class))
         )
     )
-    @ApiResponse(description = "Device information of added/updated device")
+    @ApiResponse(
+        description = "Device information of added/updated device",
+        responseCode = "200",
+        content = @Content(
+            schema = @Schema(implementation = DeviceStatusDto.class)
+        )
+    )
     @PostMapping(path = "/device", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DeviceStatusDto> insertOrUpdateDevice( 
             @RequestBody 
@@ -97,7 +110,13 @@ public class DeviceController
             @Parameter(name = "name", in = ParameterIn.PATH, description = "The device name", required = true)
         }
     )
-    @ApiResponse(description = "Device information")
+    @ApiResponse(
+        description = "Device information",
+        responseCode = "200",
+        content = @Content(
+            schema = @Schema(implementation = DeviceStatusDto.class)
+        )
+    )
     @GetMapping(path = "/device/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DeviceStatusDto> getDevice( 
             @PathVariable("name")
@@ -118,6 +137,10 @@ public class DeviceController
         parameters = {
             @Parameter(name = "name", in = ParameterIn.PATH, description = "The device name", required = true)
         }
+    )
+    @ApiResponse(
+        description = "Empty response",
+        responseCode = "204"
     )
     @DeleteMapping(path = "/device/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> deleteDevice( 
