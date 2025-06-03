@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:21-jre
 
 ARG JAR_VERSION=0.1.0-SNAPSHOT
 

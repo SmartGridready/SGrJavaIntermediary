@@ -25,7 +25,6 @@ import com.smartgridready.intermediary.exception.ExtIfXmlNotFoundException;
 /**
  * Exception handler for the runtime exceptions thrown by the service.
  */
-@SuppressWarnings("unused")
 @ControllerAdvice
 class ErrorAdvice
 {
