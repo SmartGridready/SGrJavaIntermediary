@@ -27,6 +27,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.Explode;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -52,7 +53,13 @@ public class CommunicationsController
             @Parameter(name = "device", in = ParameterIn.PATH, description = "The device name", required = true)
         }
     )
-    @ApiResponse(description = "The device information.")
+    @ApiResponse(
+        description = "The device information.",
+        responseCode = "200",
+        content = @Content(
+            schema = @Schema(implementation = DeviceInfoDto.class)
+        )
+    )
     @GetMapping(path = "/info/{device}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DeviceInfoDto> getInfo( 
             @PathVariable("device")
@@ -73,9 +80,15 @@ public class CommunicationsController
             @Parameter(name = "queryParams", in = ParameterIn.QUERY, description = "The request-specific query parameters", explode = Explode.TRUE)
         }
     )
-    @ApiResponse(description = "The value read from the device.")
+    @ApiResponse(
+        description = "The value read from the device.",
+        responseCode = "200",
+        content = @Content(
+            schema = @Schema(implementation = JsonNode.class)
+        )
+    )
     @GetMapping(path = "/value/{device}/{functionalProfile}/{dataPoint}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<JsonNode> getVal( 
+    public ResponseEntity<JsonNode> getDataPointValue( 
             @PathVariable("device")
             String device,
             @PathVariable("functionalProfile")
@@ -114,11 +127,15 @@ public class CommunicationsController
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "The value must be a JSON value, which can be a simple value such as a string or a number, or an object or array.",
             required = true,
-            content = { @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)}
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = JsonNode.class))
         )
     )
+    @ApiResponse(
+        description = "Empty response",
+        responseCode = "204"
+    )
     @PostMapping(path = "/value/{device}/{functionalProfile}/{dataPoint}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> setVal( 
+    public ResponseEntity<Void> setDataPointValue( 
             @PathVariable("device")
             String device,
             @PathVariable("functionalProfile")

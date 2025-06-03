@@ -24,7 +24,6 @@ import com.smartgridready.intermediary.service.UriLoader;
 /**
  * Configuration for factories. 
  */
-@SuppressWarnings("unused")
 @Configuration
 public class IntermediaryConfiguration
 {
