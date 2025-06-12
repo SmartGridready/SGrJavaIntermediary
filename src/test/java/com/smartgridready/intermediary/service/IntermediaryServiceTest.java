@@ -123,7 +123,7 @@ class IntermediaryServiceTest
                                           messagingClientFactory,
                                           httpRequestFactory,
                                           modbusGatewayRegistry,
-                uriLoader);
+                                          uriLoader);
     }
     
     /**
