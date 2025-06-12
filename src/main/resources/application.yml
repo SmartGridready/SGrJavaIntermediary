@@ -16,3 +16,6 @@ spring:
 springdoc:
   swagger-ui:
     enabled: true
+
+#intermediary:
+#  cache-lifetime: 3600
