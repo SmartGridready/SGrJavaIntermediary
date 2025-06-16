@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.smartgridready.communicator.common.api.GenDeviceApi;
 import com.smartgridready.communicator.common.api.SGrDeviceBuilder;
+import com.smartgridready.communicator.common.api.dto.DataPoint;
 import com.smartgridready.communicator.common.api.values.ArrayValue;
 import com.smartgridready.communicator.common.api.values.Value;
 import com.smartgridready.communicator.common.helper.DeviceDescriptionLoader;
@@ -481,12 +482,14 @@ public class IntermediaryService
 
         try
         {
+            var dp = device.getDataPoint(functionalProfileName, dataPointName);
+
             var cache = deviceValueCache.get(deviceName);
             var oldest = Instant.now().minusSeconds(deviceValueCacheLifetime);
 
             Value value = null;
 
-            if (device.canSubscribe()) {
+            if (isDataPointPassive(dp)) {
                 // try to get from cache - only for messaging devices currently
                 var cacheValue = cache.get(functionalProfileName, dataPointName);
                 if ((cacheValue != null) && cacheValue.getTimestamp().isAfter(oldest)) {
@@ -503,7 +506,7 @@ public class IntermediaryService
 
             errorDeviceRegistry.remove( deviceName );
             LOG.debug( "finishing getVal() with value='{}'", value );
-            return (value != null) ? value.getJson() : null;
+            return (value != null) ? SGrValueConverter.getIntermediaryValue(dp.getDataType().getType(), value) : null;
         }
         catch ( Exception e )
         {
@@ -540,6 +543,18 @@ public class IntermediaryService
     private GenDeviceApi findDeviceInRegistries( String deviceName )
     {
         return findDeviceInRegistries(deviceName, false);
+    }
+
+    /**
+     * Checks if the data point must be read passively from cache.
+     * @param dp the data point
+     * @return true if passive, false otherwise
+     */
+    private static boolean isDataPointPassive(DataPoint dp) {
+        // device types that cannot subscribe cannot have passive data points, either
+        return dp.canSubscribe();
+
+        // TODO find a way to get information from data point, since device API does not allow that
     }
 
     /**
