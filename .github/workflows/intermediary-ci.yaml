@@ -79,7 +79,7 @@ jobs:
           tags: |
             type=ref,event=branch,enable=${{ (inputs.tag == '') }}
             type=ref,event=tag,enable=${{ (inputs.tag == '') }}
-            type=semver,enable=${{ (inputs.tag != '') }},pattern={{raw}},value=${{ inputs.tag }}
+            type=raw,enable=${{ (inputs.tag != '') }},value=${{ inputs.tag }}
 
       # This step sets up the Docker Buildx system.
       - name: Set up Docker Buildx
