@@ -1,7 +1,17 @@
-# Spring settings
+# Spring settings (DEFAULT)
 spring:
+  application:
+    name: sgr-intermediary
+  profiles:
+    active:
+    default: prod
+    group:
+      dev:
+        - dev
+      prod:
+        - prod
   datasource:
-    url: jdbc:h2:file:~/mydatabase
+    url: jdbc:h2:file:${DB_PATH:~/sgr_intermediary}
     username: sa
     password: password
     driver-class-name: org.h2.Driver
@@ -13,6 +23,19 @@ spring:
     console:
       enabled: true
 
+server:
+  port: ${SERVER_PORT:8080}
+  forward-headers-strategy: framework
+  servlet:
+    context-path: ${SERVER_CONTEXT_PATH:/}
+
 springdoc:
   swagger-ui:
     enabled: true
+
+logging:
+  level:
+    ROOT: ERROR
+    org.springframework.web: ERROR
+    org.hibernate: ERROR
+    com.smartgridready: ${LOG_LEVEL:INFO}
