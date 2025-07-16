@@ -1,10 +1,9 @@
 {
 	"info": {
-		"_postman_id": "dcab32a0-e7f9-40a2-a630-760f13065043",
+		"_postman_id": "ab4f50df-1ff1-4532-a41a-eb8d21745dfa",
 		"name": "Intermediary",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "10272785",
-		"_collection_link": "https://winter-shuttle-541099.postman.co/workspace/TCS~df233a73-164b-4125-b022-816271de1e04/collection/10272785-dcab32a0-e7f9-40a2-a630-760f13065043?action=share&source=collection_link&creator=10272785"
+		"_exporter_id": "13317728"
 	},
 	"item": [
 		{
@@ -17,7 +16,7 @@
 					"formdata": [
 						{
 							"key": "eiXmlName",
-							"value": "SGr_04_0014_0000_WAGO_SmartMeterV0.2.2.xml",
+							"value": "SGr_04_0014_0000_WAGO_SmartMeterV0.2.3.xml",
 							"type": "text"
 						}
 					]
@@ -107,7 +106,7 @@
 					"formdata": [
 						{
 							"key": "eiXmlName",
-							"value": "SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml",
+							"value": "SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V1.0.xml",
 							"type": "text"
 						}
 					]
@@ -137,7 +136,7 @@
 					"formdata": [
 						{
 							"key": "eiXmlName",
-							"value": "SGr_05_mmmm_dddd_Dynamic_Tariffs_GroupeE_V0.0.1.xml",
+							"value": "SGr_05_mmmm_dddd_Dynamic_Tariffs_GroupeE_V1.0.xml",
 							"type": "text"
 						}
 					]
@@ -170,12 +169,12 @@
 					"formdata": [
 						{
 							"key": "eiXmlName",
-							"value": "SGr_00_mmmm_dddd_Shelly_Pro3EM_RestAPICloud_V0.1.xml",
+							"value": "SGr_00_mmmm_dddd_Shelly_Pro3EM_RestAPICloud_V1.0.xml",
 							"type": "text"
 						},
 						{
 							"key": "uri",
-							"value": "https://firebasestorage.googleapis.com/v0/b/smartchargecontroller-f464a.appspot.com/o/sgrxml%2F354ad2ea-3ec8-4871-8bb9-4837d774201f-SGr_00_mmmm_dddd_Shelly_Pro3EM_RestAPICloud_V0.1.xml?alt=media&token=cad09d83-9ea5-43a5-bd44-314925ca0dff",
+							"value": "https://library.smartgridready.ch/SGr_00_mmmm_dddd_Shelly_Pro3EM_RestAPICloud_V1.0.xml?viewDevice",
 							"type": "text"
 						}
 					]
@@ -201,7 +200,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/eiXml/SGr_04_0014_0000_WAGO_SmartMeterV0.2.2.xml",
+					"raw": "http://localhost:8080/eiXml/SGr_04_0014_0000_WAGO_SmartMeterV0.2.3.xml",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -209,7 +208,7 @@
 					"port": "8080",
 					"path": [
 						"eiXml",
-						"SGr_04_0014_0000_WAGO_SmartMeterV0.2.2.xml"
+						"SGr_04_0014_0000_WAGO_SmartMeterV0.2.3.xml"
 					]
 				}
 			},
@@ -241,7 +240,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"Wago-Meter-800\",\n    \"eiXmlName\" : \"SGr_04_0014_0000_WAGO_SmartMeterV0.2.2.xml\",\n    \"configurationValues\" : [\n        {\n            \"name\" : \"serial_port\",\n            \"val\"  : \"COM3\"\n        },\n        {\n            \"name\":\"serial_baudrate\",\n            \"val\":19200\n        },\n        {\n            \"name\":\"slave_id\",\n            \"val\": \"1\"\n        },\n        {\n            \"name\":\"serial_databits\",\n            \"val\":\"8\"        \n        },\n        {\n            \"name\":\"serial_parity\",\n            \"val\": \"EVEN\"\n        },\n        {\n            \"name\":\"serial_stopbits\",\n            \"val\":\"1\"\n        }\n    ]\n}",
+					"raw": "{\n    \"name\": \"Wago-Meter-800\",\n    \"eiXmlName\" : \"SGr_04_0014_0000_WAGO_SmartMeterV0.2.3.xml\",\n    \"configurationValues\" : [\n        {\n            \"name\" : \"serial_port\",\n            \"val\"  : \"COM3\"\n        },\n        {\n            \"name\":\"serial_baudrate\",\n            \"val\":19200\n        },\n        {\n            \"name\":\"slave_id\",\n            \"val\": \"1\"\n        },\n        {\n            \"name\":\"serial_databits\",\n            \"val\":\"8\"        \n        },\n        {\n            \"name\":\"serial_parity\",\n            \"val\": \"EVEN\"\n        },\n        {\n            \"name\":\"serial_stopbits\",\n            \"val\":\"1\"\n        }\n    ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -325,7 +324,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"Swisspower-Tariff\",\r\n    \"eiXmlName\" : \"SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml\",\r\n    \"configurationValues\" : [\r\n        {\r\n            \"name\" : \"metering_code\",\r\n            \"val\"  : \"CH1018601234500000000000000011642\"\r\n        },    \r\n        {\r\n            \"name\":\"token\",\r\n            \"val\":\"19d6ca0bb9bf4d8b6525440eead80da6\"        \r\n        }\r\n    ]\r\n}",
+					"raw": "{\r\n    \"name\": \"Swisspower-Tariff\",\r\n    \"eiXmlName\" : \"SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V1.0.xml\",\r\n    \"configurationValues\" : [\r\n        {\r\n            \"name\" : \"metering_code\",\r\n            \"val\"  : \"CH1018601234500000000000000011642\"\r\n        },    \r\n        {\r\n            \"name\":\"token\",\r\n            \"val\":\"19d6ca0bb9bf4d8b6525440eead80da6\"        \r\n        }\r\n    ]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -353,7 +352,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"Groupe-E-Tariff\",\r\n    \"eiXmlName\" : \"SGr_05_mmmm_dddd_Dynamic_Tariffs_GroupeE_V0.0.1.xml\",\r\n    \"configurationValues\" : []\r\n}",
+					"raw": "{\r\n    \"name\": \"Groupe-E-Tariff\",\r\n    \"eiXmlName\" : \"SGr_05_mmmm_dddd_Dynamic_Tariffs_GroupeE_V1.0.xml\",\r\n    \"configurationValues\" : []\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -419,7 +418,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/eiXml/SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml",
+					"raw": "http://localhost:8080/eiXml/SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V1.0.xml",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -427,7 +426,7 @@
 					"port": "8080",
 					"path": [
 						"eiXml",
-						"SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V0.0.1.xml"
+						"SGr_05_mmmm_dddd_Dynamic_Tariffs_Swisspower_V1.0.xml"
 					]
 				}
 			},
@@ -548,7 +547,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"value\":\"{ \\\"limit\\\": \\\"max\\\", \\\"current\\\": 54.2 }\"\r\n}",
+					"raw": "{ \"limit\": \"max\", \"current\": 54.2 }",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -573,7 +572,7 @@
 			"response": []
 		},
 		{
-			"name": "getVal() SWISSPOER-TARIFF Intermediary",
+			"name": "getVal() SWISSPOWER-TARIFF Intermediary",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -637,7 +636,7 @@
 			"response": []
 		},
 		{
-			"name": "Swisspower ESIT tariffs directly",
+			"name": "SWISSPOWER ESIT tariffs directly",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},

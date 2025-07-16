@@ -1,0 +1,20 @@
+# Example deployment for docker compose
+name: sgr-example
+
+volumes:
+  intermediary-data:
+    driver: local
+
+services:
+  intermediary:
+    image: ghcr.io/smartgridready/sgr-intermediary:master
+    restart: unless-stopped
+    user: "0:0"
+    volumes:
+      - intermediary-data:/data
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      # store DB in /data/sgr_intermediary.mv.db
+      DB_PATH: /data/sgr_intermediary
+    ports:
+      - "127.0.0.1:8080:8080"

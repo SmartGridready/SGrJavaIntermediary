@@ -9,6 +9,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,18 +22,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.smartgridready.communicator.common.api.GenDeviceApi;
 import com.smartgridready.communicator.common.api.SGrDeviceBuilder;
+import com.smartgridready.communicator.common.api.dto.DataPoint;
+import com.smartgridready.communicator.common.api.values.ArrayValue;
 import com.smartgridready.communicator.common.api.values.Value;
 import com.smartgridready.communicator.common.helper.DeviceDescriptionLoader;
-import com.smartgridready.communicator.messaging.impl.SGrMessagingDevice;
 import com.smartgridready.communicator.modbus.api.ModbusGatewayRegistry;
 import com.smartgridready.communicator.rest.exception.RestApiAuthenticationException;
-import com.smartgridready.communicator.rest.impl.SGrRestApiDevice;
 import com.smartgridready.driver.api.common.GenDriverException;
 import com.smartgridready.driver.api.http.GenHttpClientFactory;
 import com.smartgridready.driver.api.messaging.GenMessagingClientFactory;
 import com.smartgridready.driver.api.messaging.model.MessagingPlatformType;
+import com.smartgridready.intermediary.cache.CacheKey;
+import com.smartgridready.intermediary.cache.DataPointValueCache;
+import com.smartgridready.intermediary.cache.DataPointValueConsumer;
 import com.smartgridready.intermediary.dto.DeviceInfoDto;
 import com.smartgridready.intermediary.dto.EidInfoDto;
 import com.smartgridready.intermediary.entity.ConfigurationValue;
@@ -42,11 +48,11 @@ import com.smartgridready.intermediary.exception.DeviceOperationFailedException;
 import com.smartgridready.intermediary.exception.ExtIfXmlNotFoundException;
 import com.smartgridready.intermediary.helper.DtoConverter;
 import com.smartgridready.intermediary.helper.EidHelper;
+import com.smartgridready.intermediary.helper.SGrValueConverter;
 import com.smartgridready.intermediary.repository.ConfigurationValueRepository;
 import com.smartgridready.intermediary.repository.DeviceRepository;
 import com.smartgridready.intermediary.repository.ExternalInterfaceXmlRepository;
 
-import io.vavr.control.Either;
 import jakarta.annotation.PreDestroy;
 
 /**
@@ -73,6 +79,13 @@ public class IntermediaryService
      * device error registry, key is device name
      */
     private final Map<String, String> errorDeviceRegistry = new HashMap<>();
+    /**
+     * cache for device values, key is device name
+     */
+    private final Map<String, DataPointValueCache> deviceValueCache = new HashMap<>();
+
+    @org.springframework.beans.factory.annotation.Value("${intermediary.cache-lifetime:60}")
+    private long deviceValueCacheLifetime;
 
     /**
      * Constructor with all dependencies.
@@ -244,8 +257,17 @@ public class IntermediaryService
                     .useSharedModbusRtu( true )
                     .build();
 
+            deviceValueCache.put(device.getName(), DataPointValueCache.of());
+
             LOG.debug( "connecting new device named '{}'", device.getName() );
             deviceInstance.connect();
+
+            // if device supports subscribe(), subscribe to all readable data points
+            if (deviceInstance.canSubscribe()) {
+                
+                subscribeToReadableDataPoints(device.getName(), deviceInstance);
+            }
+
 
             deviceRegistry.put( device.getName(), deviceInstance );
             errorDeviceRegistry.remove( device.getName() );
@@ -270,6 +292,13 @@ public class IntermediaryService
 
         if ( device != null )
         {
+            if (device.canSubscribe()) {
+                try {
+                    unsubscribeFromReadableDataPoints(device);
+                } catch (GenDriverException e) {
+                    LOG.error("Failed to unsubscribe device named '{}'", deviceName);
+                }
+            }
 
             try
             {
@@ -292,6 +321,35 @@ public class IntermediaryService
 
         }
 
+    }
+
+    private void subscribeToReadableDataPoints(String deviceName, GenDeviceApi deviceApi) throws GenDriverException {
+        var cache = deviceValueCache.get(deviceName);
+        if (cache == null) {
+            LOG.warn("No device value cache found for {}", deviceName);
+            return;
+        }
+
+        deviceApi.getFunctionalProfiles().forEach(fp -> {
+            fp.getDataPoints().stream().filter(dp -> dp.getPermissions().value().contains("R")).forEach(dp -> {
+                var key = CacheKey.of(fp.getName(), dp.getName());
+                try {
+                    dp.subscribe(DataPointValueConsumer.of(key, cache));
+                } catch (GenDriverException e) {
+                    LOG.error("{} failed to subscribe to {}", deviceName, key);
+                }
+            });
+        });
+    }
+
+    private void unsubscribeFromReadableDataPoints(GenDeviceApi deviceApi) throws GenDriverException {
+        deviceApi.getFunctionalProfiles().forEach(fp -> {
+            fp.getDataPoints().stream().filter(dp -> dp.getPermissions().value().contains("R")).forEach(dp -> {
+                try {
+                    dp.unsubscribe();
+                } catch (GenDriverException e) {}
+            });
+        });
     }
 
     /**
@@ -407,10 +465,10 @@ public class IntermediaryService
      * @param dataPointName
      *        name of the data point
      * @param parameters
-     *        optional parameters, only supported by REST API devices
+     *        optional parameters, only supported by REST API and messaging devices
      * @return value
      */
-    public Value getVal( String deviceName,
+    public JsonNode getVal( String deviceName,
                          String functionalProfileName,
                          String dataPointName,
                          Properties parameters )
@@ -424,31 +482,37 @@ public class IntermediaryService
 
         try
         {
+            var dp = device.getDataPoint(functionalProfileName, dataPointName);
 
-            if ( device instanceof SGrMessagingDevice messagingDevice )
-            {
-                messagingDevice
-                        .subscribe( functionalProfileName, dataPointName, this::mqttCallbackFunction );
+            var cache = deviceValueCache.get(deviceName);
+            var oldest = Instant.now().minusSeconds(deviceValueCacheLifetime);
+
+            Value value = null;
+
+            if (isDataPointPassive(dp)) {
+                // try to get from cache - only for messaging devices currently
+                var cacheValue = cache.get(functionalProfileName, dataPointName);
+                if ((cacheValue != null) && cacheValue.getTimestamp().isAfter(oldest)) {
+                    value = cacheValue.getValue();
+                }
             }
 
-            // Rest API devices support query parameters
-            if ( device instanceof SGrRestApiDevice restApiDevice )
-            {
-                return restApiDevice.getVal( functionalProfileName, dataPointName, parameters );
+            if (value == null) {
+                // query parameters are simply ignored if device type does not support them
+                value = device.getVal( functionalProfileName, dataPointName, parameters );
+                
+                cache.put(functionalProfileName, dataPointName, value);
             }
-
-            var value = device.getVal( functionalProfileName, dataPointName );
 
             errorDeviceRegistry.remove( deviceName );
             LOG.debug( "finishing getVal() with value='{}'", value );
-            return value;
+            return (value != null) ? SGrValueConverter.getIntermediaryValue(dp.getDataType().getType(), value) : null;
         }
         catch ( Exception e )
         {
             errorDeviceRegistry.put( deviceName, e.getMessage() );
             throw new DeviceOperationFailedException( deviceName, e );
         }
-
     }
 
     private GenDeviceApi findDeviceInRegistries( String deviceName, boolean ignoreErrorState )
@@ -481,9 +545,16 @@ public class IntermediaryService
         return findDeviceInRegistries(deviceName, false);
     }
 
-    private void mqttCallbackFunction( Either<Throwable, Value> message )
-    {
-        LOG.info( "Received value: {}", message );
+    /**
+     * Checks if the data point must be read passively from cache.
+     * @param dp the data point
+     * @return true if passive, false otherwise
+     */
+    private static boolean isDataPointPassive(DataPoint dp) {
+        // device types that cannot subscribe cannot have passive data points, either
+        return dp.canSubscribe();
+
+        // TODO find a way to get information from data point, since device API does not allow that
     }
 
     /**
@@ -501,7 +572,7 @@ public class IntermediaryService
     public void setVal( String deviceName,
                         String functionalProfileName,
                         String dataPointName,
-                        Value value )
+                        JsonNode value )
     {
         LOG.info( "starting setVal() with deviceName='{}', functionalProfileName='{}', dataPointName='{}', value='{}'",
                   deviceName,
@@ -512,7 +583,26 @@ public class IntermediaryService
 
         try
         {
-            device.setVal( functionalProfileName, dataPointName, value );
+            /*
+             * The device side MUST receive its data point values as instances of the correct type - or setting value may not work.
+             * The reason is that the commhandler library checks for instance types in some places.
+             */
+            var dp = device.getDataPoint(functionalProfileName, dataPointName);
+            Value deviceValue;
+            if (value.isArray())
+            {
+                // get elements of JSON array as JsonValue instances and convert to ArrayValue
+                ArrayList<Value> arr = new ArrayList<>();
+                for (JsonNode elem : value) {
+                    arr.add(SGrValueConverter.getDeviceValue(dp.getDataType().getType(), elem));
+                }
+                deviceValue = ArrayValue.of(arr.toArray(new Value[0]));
+            }
+            else
+            {
+                deviceValue = SGrValueConverter.getDeviceValue(dp.getDataType().getType(), value);
+            }
+            device.setVal( functionalProfileName, dataPointName, deviceValue );
             errorDeviceRegistry.remove( deviceName );
             LOG.debug( "finishing setVal()" );
         }
@@ -521,7 +611,6 @@ public class IntermediaryService
             errorDeviceRegistry.put( deviceName, e.getMessage() );
             throw new DeviceOperationFailedException( deviceName, e );
         }
-
     }
 
     /**
@@ -586,6 +675,11 @@ public class IntermediaryService
     {
         deviceRegistry.forEach( ( deviceName, deviceApi ) ->
             {
+                if (deviceApi.canSubscribe()) {
+                    try {
+                        unsubscribeFromReadableDataPoints(deviceApi);
+                    } catch (GenDriverException e) {}
+                }
 
                 try
                 {

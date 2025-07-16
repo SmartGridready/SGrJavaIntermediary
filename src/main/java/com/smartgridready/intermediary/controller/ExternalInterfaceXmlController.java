@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.smartgridready.intermediary.dto.DeviceStatusDto;
 import com.smartgridready.intermediary.dto.EidInfoDto;
 import com.smartgridready.intermediary.entity.ExternalInterfaceXml;
 import com.smartgridready.intermediary.service.IntermediaryService;
@@ -25,7 +26,9 @@ import com.smartgridready.intermediary.service.IntermediaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.multipart.MultipartFile;
@@ -55,9 +58,15 @@ public class ExternalInterfaceXmlController
         summary = "Get all EI-XMLs",
         description = "Get a list of all EI-XMLs."
     )
-    @ApiResponse(description = "A list of all EI-XMLs with their names and content")
+    @ApiResponse(
+        description = "A list of all EI-XMLs with their names and content",
+        responseCode = "200",
+        content = @Content(
+            array = @ArraySchema(schema = @Schema(implementation = ExternalInterfaceXml.class))
+        )
+    )
     @GetMapping(path = "/eiXml", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ExternalInterfaceXml>> getAll()
+    public ResponseEntity<List<ExternalInterfaceXml>> getAllExternalInterfacesXml()
     {
         return ResponseEntity.ok(
             intermediaryService.getAllEiXml()
@@ -71,7 +80,13 @@ public class ExternalInterfaceXmlController
             @Parameter(name = "eiXmlName", in = ParameterIn.QUERY, description = "The name of the EI-XML", required = true)
         }
     )
-    @ApiResponse(description = "The EI-XML name and its content")
+    @ApiResponse(
+        description = "The EI-XML name and its content",
+        responseCode = "200",
+        content = @Content(
+            schema = @Schema(implementation = ExternalInterfaceXml.class)
+        )
+    )
     @PostMapping(path = "/eiXml/sgr-github", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ExternalInterfaceXml> loadFromGithub(
             @RequestParam("eiXmlName")
@@ -89,7 +104,13 @@ public class ExternalInterfaceXmlController
             @Parameter(name = "eiXmlName", in = ParameterIn.QUERY, description = "The name of the EI-XML", required = true)
         }
     )
-    @ApiResponse(description = "The EI-XML name and its content")
+    @ApiResponse(
+        description = "The EI-XML name and its content",
+        responseCode = "200",
+        content = @Content(
+            schema = @Schema(implementation = ExternalInterfaceXml.class)
+        )
+    )
     @PostMapping(path = "/eiXml/sgr-library", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ExternalInterfaceXml> loadFromSgrLibrary(
             @RequestParam("eiXmlName")
@@ -108,7 +129,13 @@ public class ExternalInterfaceXmlController
             @Parameter(name = "uri", in = ParameterIn.QUERY, description = "The URL of the Web resource", required = true),
         }
     )
-    @ApiResponse(description = "The EI-XML name and its content")
+    @ApiResponse(
+        description = "The EI-XML name and its content",
+        responseCode = "200",
+        content = @Content(
+            schema = @Schema(implementation = ExternalInterfaceXml.class)
+        )
+    )
     @PostMapping(path = "/eiXml/web-resource", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ExternalInterfaceXml> loadFromWebResource(
             @RequestParam("eiXmlName")
@@ -127,10 +154,16 @@ public class ExternalInterfaceXmlController
         description = "Add an EI-XML from a local file",
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "the EI-XML file",
-            content = { @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)}
+            content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
         )
     )
-    @ApiResponse(description = "The EI-XML name and its content")
+    @ApiResponse(
+        description = "The EI-XML name and its content",
+        responseCode = "200",
+        content = @Content(
+            schema = @Schema(implementation = ExternalInterfaceXml.class)
+        )
+    )
     @PostMapping(path = "/eiXml/local-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ExternalInterfaceXml> loadFromLocalFile(
             @RequestPart("file")
@@ -148,9 +181,15 @@ public class ExternalInterfaceXmlController
             @Parameter(name = "name", in = ParameterIn.PATH, description = "The EI-XML name", required = true)
         }
     )
-    @ApiResponse(description = "The EI-XML name and its content")
+    @ApiResponse(
+        description = "The EI-XML name and its content",
+        responseCode = "200",
+        content = @Content(
+            schema = @Schema(implementation = ExternalInterfaceXml.class)
+        )
+    )
     @GetMapping(path = "/eiXml/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ExternalInterfaceXml> externalInterfaceXml( 
+    public ResponseEntity<ExternalInterfaceXml> getExternalInterfaceXml( 
             @PathVariable("name")
             String fileName )
     {
@@ -166,8 +205,12 @@ public class ExternalInterfaceXmlController
             @Parameter(name = "name", in = ParameterIn.PATH, description = "The EI-XML name", required = true)
         }
     )
+    @ApiResponse(
+        description = "Empty response",
+        responseCode = "204"
+    )
     @DeleteMapping(path = "/eiXml/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> delete( 
+    public ResponseEntity<Void> deleteExternalInterfaceXml( 
             @PathVariable("name")
             String name )
     {
@@ -183,9 +226,15 @@ public class ExternalInterfaceXmlController
             @Parameter(name = "name", in = ParameterIn.PATH, description = "The EI-XML name", required = true)
         }
     )
-    @ApiResponse(description = "The EI-XML info")
+    @ApiResponse(
+        description = "The EI-XML info",
+        responseCode = "200",
+        content = @Content(
+            schema = @Schema(implementation = EidInfoDto.class)
+        )
+    )
     @GetMapping(path = "/eiXml/info/{name}",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EidInfoDto> externalInterfaceXmlInfo( 
+    public ResponseEntity<EidInfoDto> getExternalInterfaceXmlInfo( 
             @PathVariable("name")
             String fileName )
     {

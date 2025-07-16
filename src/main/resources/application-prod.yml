@@ -1,0 +1,5 @@
+# Spring settings (PRODUCTION)
+spring:
+  h2:
+    console:
+      enabled: false
