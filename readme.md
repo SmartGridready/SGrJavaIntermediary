@@ -23,7 +23,6 @@ Adding a new device follows in two steps:
 2. Add the device itself with an arbitrary device name, a reference to the EI-XML and the device specific 
 configuration.
 
-
 ## Examples
 
 You can add EI-XML from different repositories:
@@ -74,18 +73,30 @@ with the following JSON in the body:
 ```json
 {
   "name": "WAGO-Smartmeter-1",
-  "eiXmlName": "SGr_04_0014_0000_WAGO_SmartMeterV0.2.3.xml",
+  "eiXmlName": "SGr_00_0014_0000_WAGO_SmartMeter_V0.3.xml",
   "configurationValues": [
     {
       "name": "serial_port",
       "val": "COM3"
     },
     {
-      "name":" serial_baudrate",
+      "name": "serial_baudrate",
       "val": 19200
     },
     {
-      "name":" slave_id",
+      "name": "serial_databits",
+      "val": 8
+    },
+    {
+      "name": "serial_stopbits",
+      "val": 1
+    },
+    {
+      "name": "serial_parity",
+      "val": "EVEN"
+    },
+    {
+      "name": "slave_id",
       "val": 1
     }
   ]
@@ -101,18 +112,30 @@ with the following JSON in the body:
 ```json
 {
   "name": "WAGO-Smartmeter-2",
-  "eiXmlName": "SGr_04_0014_0000_WAGO_SmartMeterV0.2.3.xml",
+  "eiXmlName": "SGr_00_0014_0000_WAGO_SmartMeter_V0.3.xml",
   "configurationValues": [
     {
       "name": "serial_port",
       "val": "COM3"
     },
     {
-      "name":" serial_baudrate",
+      "name": "serial_baudrate",
       "val": 19200
     },
     {
-      "name":" slave_id",
+      "name": "serial_databits",
+      "val": 8
+    },
+    {
+      "name": "serial_stopbits",
+      "val": 1
+    },
+    {
+      "name": "serial_parity",
+      "val": "EVEN"
+    },
+    {
+      "name": "slave_id",
       "val": 2
     }
   ]
@@ -142,8 +165,6 @@ A documentation of the complete API is available as HTML open-api doc within the
 If you have a running SGrIntermediary Docker container or running the intermediary on your local machine you can open 
 the Swagger doc: [Swagger doc](http://localhost:8080/swagger-ui.html)
 
-
-
 ## Installation
 
 Currently proposed installation variant is to use the SGrIntermediary docker image.
@@ -163,3 +184,13 @@ Currently proposed installation variant is to use the SGrIntermediary docker ima
 
 - Check if the 'sgr-intermediary' container is running:
   - `docker container ls -f name=sgr-intermediary`
+
+## Run in development mode
+
+Navigate to the checked out repository and run
+
+```bash
+./mvnw spring-boot:run -D"spring-boot.run.profiles=dev"
+```
+
+This will run the Intermediary locally, using an in-memory database.

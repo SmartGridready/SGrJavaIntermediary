@@ -66,8 +66,5 @@ class ExternalInterfaceXmlControllerTest {
                 .andExpect(content().json(
                         "{ \"className\":\"" + IllegalArgumentException.class.getSimpleName() + "\","
                                 + "\"errorMsg\":\"Parameter invalid\"}"));
-
-
     }
-
 }

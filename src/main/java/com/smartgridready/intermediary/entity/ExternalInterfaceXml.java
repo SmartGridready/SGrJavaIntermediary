@@ -41,4 +41,10 @@ public class ExternalInterfaceXml
         this.name = name;
         this.xml = xml;
     }
+
+    @Override
+    public String toString()
+    {
+        return "db-id='" + id + "', name='" + name + "'";
+    }
 }
