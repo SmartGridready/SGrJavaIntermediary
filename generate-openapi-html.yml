@@ -5,6 +5,8 @@ services:
     restart: no
     build:
       context: .
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
     healthcheck:
       test: curl --silent --fail http://localhost:8080/swagger-ui/index.html || exit 1
       timeout: 10s

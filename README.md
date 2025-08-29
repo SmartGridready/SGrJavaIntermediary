@@ -185,7 +185,9 @@ Currently proposed installation variant is to use the SGrIntermediary docker ima
 - Check if the 'sgr-intermediary' container is running:
   - `docker container ls -f name=sgr-intermediary`
 
-## Run in development mode
+## Development
+
+### Run in development mode
 
 Navigate to the checked out repository and run
 
@@ -194,3 +196,14 @@ Navigate to the checked out repository and run
 ```
 
 This will run the Intermediary locally, using an in-memory database.
+
+### Generate OpenAPI HTML
+
+Navigate to the checked out repository and run
+
+```bash
+./generate-openapi-html.sh
+```
+
+This will build the Intermediary Docker image, start a container and use the openapi-generator Docker image to
+generate HTML from the OpenAPI specification in `./openapi`.
