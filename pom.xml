@@ -67,6 +67,12 @@
 
 		<dependency>
 			<groupId>com.smartgridready</groupId>
+			<artifactId>sgr-specification</artifactId>
+			<version>2.1_2025-09-02</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.smartgridready</groupId>
 			<artifactId>sgr-commhandler</artifactId>
 			<version>2.4.1</version>
 		</dependency>
