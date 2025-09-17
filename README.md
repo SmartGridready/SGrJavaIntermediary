@@ -43,21 +43,33 @@ You can add EI-XML from different repositories:
 
 `HTTP POST:  http://localhost:8080/eiXml/sgr-library`
 
-using the form-data within the request body:
+using the form-data as query parameters:
 
 ```text
 eiXmlName=SGr_00_0014_0000_WAGO_SmartMeter_V0.3.xml
+```
+
+Example using _curl_:
+
+```bash
+curl -X POST http://localhost:8080/eiXml/sgr-library --data-urlencode "eiXmlName=SGr_00_0014_0000_WAGO_SmartMeter_V0.3.xml"
 ```
 
 ### Adding an EI-XML from a custom URI
 
 `HTTP POST:  http://localhost:8080/eiXml/web-resource`
 
-using the form-data within the request body:
+using the form-data as query parameters:
 
 ```text
   eiXmlName=SGr_00_0014_0000_WAGO_SmartMeter_V0.3.xml
   uri=https://custom.host.name/<path-to-ei-xml>?param1=... 
+```
+
+Example using _curl_:
+
+```bash
+curl -X POST http://localhost:8080/eiXml/web-resource --data-urlencode "eiXmlName=SGr_00_0014_0000_WAGO_SmartMeter_V0.3.xml" --data-urlencode "uri=https://raw.githubusercontent.com/SmartGridready/SGrSpecifications/refs/heads/master/XMLInstances/ExtInterfaces/SGr_00_0014_0000_WAGO_SmartMeter_V0.3.xml"
 ```
 
 ### Adding an EI-XML from a local file
