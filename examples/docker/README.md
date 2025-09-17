@@ -11,6 +11,7 @@ This project demonstrates how to run the SGr Intermediary using Docker (Compose)
 ### Get the image
 
 **Pull the Docker image**:
+
 ```bash
 docker pull ghcr.io/smartgridready/sgr-intermediary:master
 ```
@@ -18,6 +19,7 @@ docker pull ghcr.io/smartgridready/sgr-intermediary:master
 ### Run
 
 **Run the Docker container** on port 8080:
+
 ```bash
 docker run -d -p 8080:8080 --name sgr-intermediary ghcr.io/smartgridready/sgr-intermediary:master
 ```
@@ -27,6 +29,7 @@ The SGr Intermediary service will be accessible at `http://localhost:8080`.
 ### Run with persistent volume
 
 **Run the Docker container** on port 8080 with a persistent volume:
+
 ```bash
 docker volume create sgr-intermediary-data
 docker run -d -p 8080:8080 -v sgr-intermediary-data:/data:rw -e DB_PATH=/data/sgr_intermediary --name sgr-intermediary ghcr.io/smartgridready/sgr-intermediary:master
@@ -38,6 +41,7 @@ Setting it to a path where the persistent volume is mounted allows you to keep t
 ### Stop
 
 **Stop the Docker container**:
+
 ```bash
 docker stop sgr-intermediary
 docker container rm sgr-intermediary
@@ -60,6 +64,7 @@ docker compose -f docker-compose.yml up -d
 Docker compose automatically pulls images and creates volumes.
 
 **Stop the Docker container** and cleans up the compose stack:
+
 ```bash
 docker compose -f docker-compose.yml down
 ```

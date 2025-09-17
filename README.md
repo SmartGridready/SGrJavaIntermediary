@@ -5,7 +5,7 @@
 - [Introduction](#introduction)
 - [Examples](#examples)
 - [Postman Collection](#postman-collection)
-- [More Documentation](#more-documentation)
+- [API Documentation](#api-documentation)
 - [Installation and Operation](#installation-and-operation)
 - [Development](#development)
 
@@ -46,7 +46,7 @@ You can add EI-XML from different repositories:
 using the form-data within the request body:
 
 ```text
-eiXmlName=SGr_00_0014_0000_WAGO_SmartMeterV0.3.xml
+eiXmlName=SGr_00_0014_0000_WAGO_SmartMeter_V0.3.xml
 ```
 
 ### Adding an EI-XML from a custom URI
@@ -56,7 +56,7 @@ eiXmlName=SGr_00_0014_0000_WAGO_SmartMeterV0.3.xml
 using the form-data within the request body:
 
 ```text
-  eiXmlName=SGr_00_0014_0000_WAGO_SmartMeterV0.3.xml
+  eiXmlName=SGr_00_0014_0000_WAGO_SmartMeter_V0.3.xml
   uri=https://custom.host.name/<path-to-ei-xml>?param1=... 
 ```
 
@@ -172,6 +172,7 @@ samples on on how to use the API described above.
 See [Postman](https://www.postman.com/downloads/) to get it.
 
 **Instructions**:
+
 1. Make sure the _Intermediary_ is running on port 8080.
 2. Open Postman.
 3. Create a new workspace.
@@ -179,19 +180,20 @@ See [Postman](https://www.postman.com/downloads/) to get it.
 5. Duplicate a request and modify it according to your needs.
 6. Execute the request.
 
-## More Documentation
+## API Documentation
 
-The API provides a management API for EI-XML files and devices. You can add, update and delete EI-XML and devices.
-A documentation of the complete API is available as HTML open-api doc within the project sources. See [OpenAPI doc](https://github.com/SmartGridready/SGrJavaIntermediary/tree/master/openapi/index.html)
+The REST API provides a management API for EI-XML files and devices. You can add, update and delete EI-XML and devices.
+A documentation of the complete REST API is available as OpenAPI-based HTML documentation within the project sources.
+See [OpenAPI Docs](./openapi/index.html)
 
 If you have a running a Docker container or running the _Intermediary_ on your local machine you can open
-the Swagger doc: [Swagger doc](http://localhost:8080/swagger-ui.html)
+the Swagger UI to get documentation test the API: [Swagger Docs](http://localhost:8080/swagger-ui.html)
 
 ## Installation and Operation
 
 The recommended installation method is to use the `sgr-intermediary` Docker image.
 
-- Install Docker e.g. Docker desktop on your machine. 
+- Install Docker e.g. Docker desktop on your machine.
   - see [Docker Desktop Windows](https://docs.docker.com/desktop/install/windows-install/)
   - see [Docker Desktop Mac](https://docs.docker.com/desktop/install/mac-install/)
   - see [Docker Desktop Linux](https://docs.docker.com/desktop/install/linux/)

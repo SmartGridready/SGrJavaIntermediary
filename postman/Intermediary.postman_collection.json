@@ -16,7 +16,7 @@
 					"formdata": [
 						{
 							"key": "eiXmlName",
-							"value": "SGr_00_0014_0000_WAGO_SmartMeterV0.3.xml",
+							"value": "SGr_00_0014_0000_WAGO_SmartMeter_V0.3.xml",
 							"type": "text"
 						}
 					]
@@ -200,7 +200,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/eiXml/SGr_00_0014_0000_WAGO_SmartMeterV0.3.xml",
+					"raw": "http://localhost:8080/eiXml/SGr_00_0014_0000_WAGO_SmartMeter_V0.3.xml",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -208,7 +208,7 @@
 					"port": "8080",
 					"path": [
 						"eiXml",
-						"SGr_00_0014_0000_WAGO_SmartMeterV0.3.xml"
+						"SGr_00_0014_0000_WAGO_SmartMeter_V0.3.xml"
 					]
 				}
 			},
@@ -240,7 +240,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"Wago-Meter-800\",\n    \"eiXmlName\" : \"SGr_00_0014_0000_WAGO_SmartMeterV0.3.xml\",\n    \"configurationValues\" : [\n        {\n            \"name\" : \"serial_port\",\n            \"val\"  : \"COM3\"\n        },\n        {\n            \"name\":\"serial_baudrate\",\n            \"val\":19200\n        },\n        {\n            \"name\":\"slave_id\",\n            \"val\": \"1\"\n        },\n        {\n            \"name\":\"serial_databits\",\n            \"val\":\"8\"        \n        },\n        {\n            \"name\":\"serial_parity\",\n            \"val\": \"EVEN\"\n        },\n        {\n            \"name\":\"serial_stopbits\",\n            \"val\":\"1\"\n        }\n    ]\n}",
+					"raw": "{\n    \"name\": \"Wago-Meter-800\",\n    \"eiXmlName\" : \"SGr_00_0014_0000_WAGO_SmartMeter_V0.3.xml\",\n    \"configurationValues\" : [\n        {\n            \"name\" : \"serial_port\",\n            \"val\"  : \"COM3\"\n        },\n        {\n            \"name\":\"serial_baudrate\",\n            \"val\":19200\n        },\n        {\n            \"name\":\"slave_id\",\n            \"val\": \"1\"\n        },\n        {\n            \"name\":\"serial_databits\",\n            \"val\":\"8\"        \n        },\n        {\n            \"name\":\"serial_parity\",\n            \"val\": \"EVEN\"\n        },\n        {\n            \"name\":\"serial_stopbits\",\n            \"val\":\"1\"\n        }\n    ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"

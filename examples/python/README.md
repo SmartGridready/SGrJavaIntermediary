@@ -12,11 +12,13 @@ This project demonstrates how to use the SGr Intermediary to retrieve dynamic ta
 ### Step 1: Start the Docker Container
 
 1. **Pull the Docker image**:
+
    ```bash
    docker pull ghcr.io/smartgridready/sgr-intermediary:master
    ```
 
 2. **Run the Docker container** on port 8080:
+
    ```bash
    docker run -d -p 8080:8080 --name sgr-intermediary ghcr.io/smartgridready/sgr-intermediary:master
    ```
@@ -26,12 +28,14 @@ This project demonstrates how to use the SGr Intermediary to retrieve dynamic ta
 ### Step 2: Clone the Repository and Run the Python Script
 
 1. Clone this repository:
+
    ```bash
    git clone https://github.com/SmartGridready/SGrJavaIntermediary.git
    cd SGrJavaIntermediary/examples/python
    ```
 
 2. **Run the Python script** to retrieve the dynamic tariffs:
+
    ```bash
    python sgr-intermediary-python-example.py
    ```
