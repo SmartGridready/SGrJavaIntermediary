@@ -1,12 +1,13 @@
 ﻿import axios from 'axios';
-import fs from 'fs';
-import FormData from 'form-data';
 
-async function fetchData(deviceName, functionProfile, dataPointName) {
-  let config = {
+const baseURL = 'http://localhost:8080';
+const eidXmlName = 'SGr_00_0016_dddd_Siemens_PAC2200_ModbusTCP_V0.1.xml';
+
+async function fetchData(deviceName, functionalProfileName, dataPointName) {
+  const config = {
     method: 'get',
     maxBodyLength: Infinity,
-    url: `http://localhost:8080/value/${deviceName}/${functionProfile}/${dataPointName}`,
+    url: `${baseURL}/value/${deviceName}/${functionalProfileName}/${dataPointName}`,
     headers: { }
   };
 
@@ -21,20 +22,18 @@ async function fetchData(deviceName, functionProfile, dataPointName) {
 }
 
 async function addXmlFile() {
-  const filePath = './xml/SGr_00_0016_dddd_Siemens_PAC2200_ModbusTCP_V0.1.xml';
-
-  const xmlFormData = new FormData();
-  xmlFormData.append('file', fs.createReadStream(filePath));
-  xmlFormData.append('fileName', 'SGr_00_0016_dddd_Siemens_PAC2200_ModbusTCP_V0.1.xml');
+  const requestBody = JSON.stringify({
+    "eiXmlName": eidXmlName
+  })
 
   const addXmlConfig = {
     method: 'post',
     maxBodyLength: Infinity,
-    url: 'http://localhost:8080/eiXml/SGr_00_0016_dddd_Siemens_PAC2200_ModbusTCP_V0.1.xml',
+    url: `${baseURL}/eiXml/sgr-library`,
     headers: {
-      ...xmlFormData.getHeaders()
+      'Content-Type': 'application/json'
     },
-    data: xmlFormData
+    data: requestBody
   };
 
   try {
@@ -46,9 +45,9 @@ async function addXmlFile() {
 }
 
 async function addDevice() {
-  let deviceData = JSON.stringify({
+  const requestBody = JSON.stringify({
     "name": "Siemens-PAC2200-1",
-    "eiXmlName": "SGr_00_0016_dddd_Siemens_PAC2200_ModbusTCP_V0.1.xml",
+    "eiXmlName": eidXmlName,
     "configurationValues": [
       {
         "name": "tcp_port",
@@ -60,19 +59,19 @@ async function addDevice() {
       },
       {
         "name": "slave_id",
-        "val": "1"
+        "val": 1
       }
     ]
   });
 
-  let addDeviceConfig = {
+  const addDeviceConfig = {
     method: 'post',
     maxBodyLength: Infinity,
-    url: 'http://localhost:8080/device',
+    url: `${baseURL}/device`,
     headers: {
       'Content-Type': 'application/json'
     },
-    data : deviceData
+    data : requestBody
   };
 
   try {
@@ -86,11 +85,9 @@ async function addDevice() {
 await addXmlFile();
 await addDevice();
 
-
 const L1 = await fetchData("Siemens-PAC2200-1", "VoltageAC", "VoltageACL1_N")
 const L2 = await fetchData("Siemens-PAC2200-1", "VoltageAC", "VoltageACL2_N")
 const L3 = await fetchData("Siemens-PAC2200-1", "VoltageAC", "VoltageACL3_N")
-
 
 console.log("VoltageACL1_N: ", L1);
 console.log("VoltageACL2_N: ", L2);

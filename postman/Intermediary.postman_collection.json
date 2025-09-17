@@ -16,7 +16,7 @@
 					"formdata": [
 						{
 							"key": "eiXmlName",
-							"value": "SGr_04_0014_0000_WAGO_SmartMeterV0.2.3.xml",
+							"value": "SGr_00_0014_0000_WAGO_SmartMeterV0.3.xml",
 							"type": "text"
 						}
 					]
@@ -46,7 +46,7 @@
 					"formdata": [
 						{
 							"key": "eiXmlName",
-							"value": "SGr_02_0018_CLEMAP_EIcloudEnergyMonitor_V1.0.0.xml",
+							"value": "SGr_00_0018_CLEMAP_EnergyMonitor_RestAPICloud_V1.1.xml",
 							"type": "text"
 						}
 					]
@@ -77,7 +77,7 @@
 						{
 							"key": "file",
 							"type": "file",
-							"src": "/C:/Development/SmartGridready/SmartGridready_v200/SGrJava/CommHandler/src/test/resources/SGr_XX_HiveMQ_MQTT_Cloud.xml"
+							"src": "SGr_XX_HiveMQ_MQTT_Cloud.xml"
 						}
 					]
 				},
@@ -174,7 +174,7 @@
 						},
 						{
 							"key": "uri",
-							"value": "https://library.smartgridready.ch/SGr_00_mmmm_dddd_Shelly_Pro3EM_RestAPICloud_V1.0.xml?viewDevice",
+							"value": "https://library.smartgridready.ch/prodx/SGr_00_mmmm_dddd_Shelly_Pro3EM_RestAPICloud_V1.0.xml",
 							"type": "text"
 						}
 					]
@@ -200,7 +200,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/eiXml/SGr_04_0014_0000_WAGO_SmartMeterV0.2.3.xml",
+					"raw": "http://localhost:8080/eiXml/SGr_00_0014_0000_WAGO_SmartMeterV0.3.xml",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -208,7 +208,7 @@
 					"port": "8080",
 					"path": [
 						"eiXml",
-						"SGr_04_0014_0000_WAGO_SmartMeterV0.2.3.xml"
+						"SGr_00_0014_0000_WAGO_SmartMeterV0.3.xml"
 					]
 				}
 			},
@@ -240,7 +240,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"Wago-Meter-800\",\n    \"eiXmlName\" : \"SGr_04_0014_0000_WAGO_SmartMeterV0.2.3.xml\",\n    \"configurationValues\" : [\n        {\n            \"name\" : \"serial_port\",\n            \"val\"  : \"COM3\"\n        },\n        {\n            \"name\":\"serial_baudrate\",\n            \"val\":19200\n        },\n        {\n            \"name\":\"slave_id\",\n            \"val\": \"1\"\n        },\n        {\n            \"name\":\"serial_databits\",\n            \"val\":\"8\"        \n        },\n        {\n            \"name\":\"serial_parity\",\n            \"val\": \"EVEN\"\n        },\n        {\n            \"name\":\"serial_stopbits\",\n            \"val\":\"1\"\n        }\n    ]\n}",
+					"raw": "{\n    \"name\": \"Wago-Meter-800\",\n    \"eiXmlName\" : \"SGr_00_0014_0000_WAGO_SmartMeterV0.3.xml\",\n    \"configurationValues\" : [\n        {\n            \"name\" : \"serial_port\",\n            \"val\"  : \"COM3\"\n        },\n        {\n            \"name\":\"serial_baudrate\",\n            \"val\":19200\n        },\n        {\n            \"name\":\"slave_id\",\n            \"val\": \"1\"\n        },\n        {\n            \"name\":\"serial_databits\",\n            \"val\":\"8\"        \n        },\n        {\n            \"name\":\"serial_parity\",\n            \"val\": \"EVEN\"\n        },\n        {\n            \"name\":\"serial_stopbits\",\n            \"val\":\"1\"\n        }\n    ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -268,7 +268,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"Clemap-1\",\n    \"eiXmlName\" : \"SGr_02_0018_CLEMAP_EIcloudEnergyMonitor_V1.0.0.xml\",\n    \"configurationValues\" : [\n        {\n            \"name\" : \"baseUri\",\n            \"val\" :  \"https://cloud.clemap.com:3032\"\n        },\n        {\n            \"name\" : \"sensor_id\",\n            \"val\"  : \"63343431ecf2cf013a1e5a9f\"\n        },\n        {\n            \"name\" : \"username\",\n            \"val\"  : \"hfurrer@ergonomics.ch\"\n        },\n        {\n            \"name\" : \"password\",\n            \"val\" :  \"Holdrio99\"\n        }\n    ]\n}",
+					"raw": "{\n    \"name\": \"Clemap-1\",\n    \"eiXmlName\" : \"SGr_00_0018_CLEMAP_EnergyMonitor_RestAPICloud_V1.1.xml\",\n    \"configurationValues\" : [\n        {\n            \"name\" : \"baseUri\",\n            \"val\" :  \"https://cloud.clemap.com:3032\"\n        },\n        {\n            \"name\" : \"sensor_id\",\n            \"val\"  : \"63343431ecf2cf013a1e5a9f\"\n        },\n        {\n            \"name\" : \"username\",\n            \"val\"  : \"hfurrer@ergonomics.ch\"\n        },\n        {\n            \"name\" : \"password\",\n            \"val\" :  \"Holdrio99\"\n        }\n    ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"

@@ -1,11 +1,11 @@
-# SmartGridready (SGr) Intermediary - Dynamic Tariff Retrieval using Python
+# SmartGridready (SGr) Intermediary - Dynamic Tariff Retrieval using Node.js
 
-This project demonstrates how to use the SGr Intermediary to retrieve dynamic tariff data using a Python script. The process involves setting up a Docker container for the intermediary service, downloading an EID XML file, and configuring a "device" to fetch the dynamic tariffs.
+This project demonstrates how to use the SGr Intermediary to retrieve dynamic tariff data using Node.js. The process involves setting up a Docker container for the intermediary service, downloading an EID XML file, and configuring a "device" to fetch the dynamic tariffs.
 
 ## Prerequisites
 
 - [Docker](https://docs.docker.com/get-docker/) installed.
-- [Python 3.x](https://www.python.org/downloads/) installed.
+- [Node.js](https://nodejs.org/en/download) installed.
 
 ## Setup
 
@@ -23,7 +23,7 @@ This project demonstrates how to use the SGr Intermediary to retrieve dynamic ta
 
    The SGr Intermediary service will be accessible at `http://localhost:8080`.
 
-### Step 2: Clone the Repository and Run the Python Script
+### Step 2: Clone the Repository and Run Node.js
 
 1. Clone this repository:
    ```bash
@@ -31,9 +31,10 @@ This project demonstrates how to use the SGr Intermediary to retrieve dynamic ta
    cd SGrJavaIntermediary/examples/python
    ```
 
-2. **Run the Python script** to retrieve the dynamic tariffs:
+2. **Install dependencies and run Node.js** to retrieve the dynamic tariffs:
    ```bash
-   python sgr-intermediary-python-example.py
+   npm i
+   npm start
    ```
 
    The script performs the following steps:
@@ -44,7 +45,7 @@ This project demonstrates how to use the SGr Intermediary to retrieve dynamic ta
 
 ## Code Overview
 
-- **EID XML file and device configuration**: Configured within the Python script, specifying parameters such as device name and time intervals.
+- **EID XML file and device configuration**: Configured within the JS script, specifying parameters such as device name and time intervals.
 - **Endpoints**: The script utilizes endpoints like `/eiXml` for loading EID XML files and `/value` to request tariff data.
 
 ## Troubleshooting
