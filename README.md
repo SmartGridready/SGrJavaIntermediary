@@ -3,10 +3,10 @@
 ## Index
 
 - [Introduction](#introduction)
-- [Examples](#examples)
-- [Postman Collection](#postman-collection)
-- [API Documentation](#api-documentation)
 - [Installation and Operation](#installation-and-operation)
+- [API Documentation](#api-documentation)
+- [Postman Collection](#postman-collection)
+- [Examples](#examples)
 - [Development](#development)
 
 ## Introduction
@@ -31,13 +31,64 @@ Adding a new device follows in two steps:
 1. Add the device-specific EI-XML (that exists in the GitHub repository) if it does not already exist.
 2. Add the device itself with an arbitrary device name, a reference to the EI-XML and the device specific configuration.
 
+## Installation and Operation
+
+The recommended installation method is to use the `sgr-intermediary` Docker image.
+
+- Install Docker e.g. Docker desktop on your machine.
+  - see [Docker Desktop Windows](https://docs.docker.com/desktop/install/windows-install/)
+  - see [Docker Desktop Mac](https://docs.docker.com/desktop/install/mac-install/)
+  - see [Docker Desktop Linux](https://docs.docker.com/desktop/install/linux/)
+
+- Go to the shell/cmd terminal and pull the smartgridready/sgr-intermediary docker image from the github registry:
+  - `docker pull ghcr.io/smartgridready/sgr-intermediary:master`
+
+- Then run the Docker image:
+  - `docker run -d -p 8080:8080 --name sgr-intermediary ghcr.io/smartgridready/sgr-intermediary:master`
+
+- Check if the `sgr-intermediary` container is running:
+  - `docker container ls -f name=sgr-intermediary`
+
+See [examples](./examples/docker/README.md) for more information on how to use Docker to run the _Intermediary_.
+
+## API Documentation
+
+The REST API provides a management API for EI-XML files and devices. You can add, update and delete EI-XML and devices.
+A documentation of the complete REST API is available as OpenAPI-based HTML documentation within the project sources.
+See [OpenAPI Docs](./openapi/index.html)
+
+If you have a running a Docker container or running the _Intermediary_ on your local machine you can open
+the Swagger UI to get documentation test the API: [Swagger Docs](http://localhost:8080/swagger-ui.html)
+
+## Postman Collection
+
+Within the `<project-root>/postman` folder you find a Postman collection that contains
+samples on on how to use the API described above.
+
+See [Postman](https://www.postman.com/downloads/) to get it.
+
+**Instructions**:
+
+1. Make sure the _Intermediary_ is running on port 8080.
+2. Open Postman.
+3. Create a new workspace.
+4. Import the _collection_. It provides a list of example API requests.
+5. Duplicate a request and modify it according to your needs.
+6. Execute the request.
+
 ## Examples
+
+### Overview
 
 You can add EI-XML from different repositories:
 
-- From official SmartGridready declaration library
-- From an arbitrary web resource/URI
-- From a local file
+- From official SmartGridready declaration library: `http://localhost:8080/eiXml/sgr-library`
+- From an arbitrary web resource/URI: `http://localhost:8080/eiXml/web-resource`
+- From a local file: `http://localhost:8080/eiXml/local-file`
+
+You can read (GET) and write (PUT) data of devices:
+
+- `http://localhost:8080/value/<deviceName>/<functionalProfileName>/<dataPointName>`
 
 ### Adding an EI-XML for a WAGO smart meter from the official SGr declaration library
 
@@ -166,6 +217,17 @@ with the following JSON in the body:
 }
 ```
 
+### Adding a dynamic tariff source
+
+Example using _curl_:
+
+```bash
+curl -X POST http://localhost:8080/eiXml/sgr-library --data-urlencode "eiXmlName=SGr_05_mmmm_dddd_Dynamic_Tariffs_GroupeE_V1.0.xml"
+curl -X POST http://localhost:8080/device \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Groupe-Tariff","eiXmlName":"SGr_05_mmmm_dddd_Dynamic_Tariffs_GroupeE_V1.0.xml","configurationValues":[]}'
+```
+
 ### Reading a voltage from WAGO-Smartmeter-1
 
 Request format:
@@ -176,50 +238,57 @@ Example:
 
 `HTTP GET: http://localhost:8080/value/WAGO-Smartmeter-1/VoltageAC/VoltageACL1_N`
 
-## Postman Collection
+Example using _curl_:
 
-Within the `<project-root>/postman` folder you find a Postman collection that contains
-samples on on how to use the API described above.
+```bash
+curl -X GET http://localhost:8080/value/WAGO-Smartmeter-1/VoltageAC/VoltageACL1_N
+```
 
-See [Postman](https://www.postman.com/downloads/) to get it.
+Should return a JSON value like this:
 
-**Instructions**:
+```json
+234.0
+```
 
-1. Make sure the _Intermediary_ is running on port 8080.
-2. Open Postman.
-3. Create a new workspace.
-4. Import the _collection_. It provides a list of example API requests.
-5. Duplicate a request and modify it according to your needs.
-6. Execute the request.
+### Reading dynamic tariff data
 
-## API Documentation
+Reading dynamic tariff data requires the query parameters `start_timestamp` and `end_timestamp`
+specified in each request.
 
-The REST API provides a management API for EI-XML files and devices. You can add, update and delete EI-XML and devices.
-A documentation of the complete REST API is available as OpenAPI-based HTML documentation within the project sources.
-See [OpenAPI Docs](./openapi/index.html)
+Example using _curl_:
 
-If you have a running a Docker container or running the _Intermediary_ on your local machine you can open
-the Swagger UI to get documentation test the API: [Swagger Docs](http://localhost:8080/swagger-ui.html)
+```bash
+curl -X GET http://localhost:8080/value/Groupe-Tariff/DynamicTariff/TariffSupply \
+  --data-urlencode "start_timestamp=2025-01-01T00:00:00+01:00" --data-urlencode "end_timestamp=2025-01-02T00:00:00+01:00"
+```
 
-## Installation and Operation
+Should return a JSON value like this:
 
-The recommended installation method is to use the `sgr-intermediary` Docker image.
-
-- Install Docker e.g. Docker desktop on your machine.
-  - see [Docker Desktop Windows](https://docs.docker.com/desktop/install/windows-install/)
-  - see [Docker Desktop Mac](https://docs.docker.com/desktop/install/mac-install/)
-  - see [Docker Desktop Linux](https://docs.docker.com/desktop/install/linux/)
-
-- Go to the shell/cmd terminal and pull the smartgridready/sgr-intermediary docker image from the github registry:
-  - `docker pull ghcr.io/smartgridready/sgr-intermediary:master`
-
-- Then run the Docker image:
-  - `docker run -d -p 8080:8080 --name sgr-intermediary ghcr.io/smartgridready/sgr-intermediary:master`
-
-- Check if the `sgr-intermediary` container is running:
-  - `docker container ls -f name=sgr-intermediary`
-
-See [examples](./examples/docker/README.md) for more information on how to use Docker to run the _Intermediary_.
+```json
+[
+  {
+    "start_timestamp": "2025-01-01T00:00:00+01:00",
+    "end_timestamp": "2025-01-01T00:15:00+01:00",
+    "integrated": [
+      {
+        "value": 10.88,
+        "unit": "Rp./kWh"
+      }
+    ]
+  },
+  {
+    "start_timestamp": "2025-01-01T00:15:00+01:00",
+    "end_timestamp": "2025-01-01T00:30:00+01:00",
+    "integrated": [
+      {
+        "value": 10.91,
+        "unit": "Rp./kWh"
+      }
+    ]
+  },
+  ...
+]
+```
 
 ## Development
 
