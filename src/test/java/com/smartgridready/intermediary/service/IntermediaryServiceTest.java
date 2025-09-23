@@ -78,9 +78,9 @@ class IntermediaryServiceTest
     private GenDriverAPI4Modbus genDriverAPI4Modbus;
     @Mock 
     private UriLoader uriLoader;
-    
+
     private boolean loadFromGitHubShouldFail;
-    
+
     private IntermediaryService testee;
 
     @BeforeEach
@@ -147,7 +147,6 @@ class IntermediaryServiceTest
         {
             throw new ExtIfXmlNotFoundException( e );
         }
-
     }
     
     @Test
@@ -226,7 +225,6 @@ class IntermediaryServiceTest
         {
             loadFromGitHubShouldFail = false;
         }
-
     }
     
     /**
@@ -514,7 +512,7 @@ class IntermediaryServiceTest
      * The tests for getVal() and setVal() aren't very exhausting, as most code is mocked.
      * But as they just call through to the device, this is probably good enough here.
      */
-    
+
     @Test
     void testGetValSuccess()
     {
@@ -526,7 +524,7 @@ class IntermediaryServiceTest
         // check
         assertNotNull( val );
     }
-    
+
     @Test
     void testGetValNoDevice()
     {
@@ -538,7 +536,7 @@ class IntermediaryServiceTest
                                            DATA_POINT_NAME,
                                            properties ) );
     }
-    
+
     @Test
     void testSetValSuccess()
     {
@@ -599,5 +597,4 @@ class IntermediaryServiceTest
         // call testee
         assertDoesNotThrow(() -> testee.beforeTermination());
     }
-
 }

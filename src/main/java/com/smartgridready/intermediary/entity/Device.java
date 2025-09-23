@@ -50,7 +50,7 @@ public class Device
     @Override
     public String toString()
     {
-        return "id='" + id + "', name='" + name + "', eiXml.name='" + eiXml.getName() 
+        return "db-id='" + id + "', name='" + name + "', eiXml.name='" + eiXml.getName() 
                 + "', configurationValues=" + configurationValues;
     }
 }

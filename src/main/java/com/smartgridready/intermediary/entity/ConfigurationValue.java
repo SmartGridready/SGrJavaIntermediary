@@ -46,6 +46,6 @@ public class ConfigurationValue
     @Override
     public String toString()
     {
-        return "id='" + id + "', name='" + name + "', val='" + val + "'";
+        return "db-id='" + id + "', name='" + name + "', val='" + val + "'";
     }
 }
