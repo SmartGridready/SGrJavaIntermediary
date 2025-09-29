@@ -103,7 +103,13 @@ eiXmlName=SGr_00_0014_0000_WAGO_SmartMeter_V0.3.xml
 Example using _curl_:
 
 ```bash
-curl -X POST http://localhost:8080/eiXml/sgr-library --data-urlencode "eiXmlName=SGr_00_0014_0000_WAGO_SmartMeter_V0.3.xml"
+curl -X POST http://localhost:8080/eiXml/sgr-library -F "eiXmlName=SGr_00_0014_0000_WAGO_SmartMeter_V0.3.xml"
+```
+
+Example using _PowerShell_ (tested with version 7.5):
+
+```bash
+Invoke-Webrequest -Uri "http://localhost:8080/eiXml/sgr-library" -Method POST -Form @{ eiXmlName = "SGr_00_0014_0000_WAGO_SmartMeter_V0.3.xml" }
 ```
 
 ### Adding an EI-XML from a custom URI
@@ -120,7 +126,13 @@ using the form-data as query parameters:
 Example using _curl_:
 
 ```bash
-curl -X POST http://localhost:8080/eiXml/web-resource --data-urlencode "eiXmlName=SGr_00_0014_0000_WAGO_SmartMeter_V0.3.xml" --data-urlencode "uri=https://raw.githubusercontent.com/SmartGridready/SGrSpecifications/refs/heads/master/XMLInstances/ExtInterfaces/SGr_00_0014_0000_WAGO_SmartMeter_V0.3.xml"
+curl -X POST http://localhost:8080/eiXml/web-resource -F "eiXmlName=SGr_00_0014_0000_WAGO_SmartMeter_V0.3.xml" -F "uri=https://raw.githubusercontent.com/SmartGridready/SGrSpecifications/refs/heads/master/XMLInstances/ExtInterfaces/SGr_00_0014_0000_WAGO_SmartMeter_V0.3.xml"
+```
+
+Example using _PowerShell_ (tested with version 7.5):
+
+```bash
+Invoke-Webrequest -Uri "http://localhost:8080/eiXml/web-resource" -Method POST -Form @{ eiXmlName = "SGr_00_0014_0000_WAGO_SmartMeter_V0.3.xml"; uri = "https://raw.githubusercontent.com/SmartGridready/SGrSpecifications/refs/heads/master/XMLInstances/ExtInterfaces/SGr_00_0014_0000_WAGO_SmartMeter_V0.3.xml" }
 ```
 
 ### Adding an EI-XML from a local file
@@ -137,6 +149,12 @@ Example using _curl_:
 
 ```bash
 curl -X POST http://localhost:8080/eiXml/local-file -F "file=@path/to/your/eid.xml"
+```
+
+Example using _PowerShell_ (tested with version 7.5):
+
+```bash
+Invoke-Webrequest -Uri "http://localhost:8080/eiXml/local-file" -Method POST -ContentType "multipart/form-data" -Form @{ file = Get-Item -Path "C:\path\to\your\eid.xml" }
 ```
 
 ### Adding a first WAGO device
@@ -222,10 +240,17 @@ with the following JSON in the body:
 Example using _curl_:
 
 ```bash
-curl -X POST http://localhost:8080/eiXml/sgr-library --data-urlencode "eiXmlName=SGr_05_mmmm_dddd_Dynamic_Tariffs_GroupeE_V1.0.xml"
+curl -X POST http://localhost:8080/eiXml/sgr-library -F "eiXmlName=SGr_05_mmmm_dddd_Dynamic_Tariffs_GroupeE_V1.0.xml"
 curl -X POST http://localhost:8080/device \
   -H 'Content-Type: application/json' \
   -d '{"name":"Groupe-Tariff","eiXmlName":"SGr_05_mmmm_dddd_Dynamic_Tariffs_GroupeE_V1.0.xml","configurationValues":[]}'
+```
+
+Example using _PowerShell_ (tested with version 7.5):
+
+```bash
+Invoke-Webrequest -Uri "http://localhost:8080/eiXml/sgr-library" -Method POST -Form @{ eiXmlName = "SGr_05_mmmm_dddd_Dynamic_Tariffs_GroupeE_V1.0.xml" }
+Invoke-Webrequest -Uri "http://localhost:8080/device" -Method POST -ContentType "application/json" -Body '{"name":"Groupe-Tariff","eiXmlName":"SGr_05_mmmm_dddd_Dynamic_Tariffs_GroupeE_V1.0.xml","configurationValues":[]}'
 ```
 
 ### Reading a voltage from WAGO-Smartmeter-1
@@ -244,7 +269,13 @@ Example using _curl_:
 curl -X GET http://localhost:8080/value/WAGO-Smartmeter-1/VoltageAC/VoltageACL1_N
 ```
 
-Should return a JSON value like this:
+Example using _PowerShell_ (tested with version 7.5):
+
+```bash
+Invoke-Webrequest -Uri "http://localhost:8080/value/WAGO-Smartmeter-1/VoltageAC/VoltageACL1_N" -Method GET
+```
+
+The returned JSON value should look like this:
 
 ```json
 234.0
@@ -259,10 +290,16 @@ Example using _curl_:
 
 ```bash
 curl -X GET http://localhost:8080/value/Groupe-Tariff/DynamicTariff/TariffSupply \
-  --data-urlencode "start_timestamp=2025-01-01T00:00:00+01:00" --data-urlencode "end_timestamp=2025-01-02T00:00:00+01:00"
+  -F "start_timestamp=2025-01-01T00:00:00+01:00" -F "end_timestamp=2025-01-02T00:00:00+01:00"
 ```
 
-Should return a JSON value like this:
+Example using _PowerShell_ (tested with version 7.5):
+
+```bash
+Invoke-Webrequest -Uri "http://localhost:8080/value/Groupe-Tariff/DynamicTariff/TariffSupply" -Method GET -Form @{ start_timestamp = "2025-01-01T00:00:00+01:00"; end_timestamp = "2025-01-02T00:00:00+01:00" }
+```
+
+The returned JSON value should look like this:
 
 ```json
 [
