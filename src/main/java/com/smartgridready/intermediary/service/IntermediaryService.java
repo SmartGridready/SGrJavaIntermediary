@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.smartgridready.communicator.common.api.GenDeviceApi;
+import com.smartgridready.communicator.common.api.SGrDeclarationLibrary;
 import com.smartgridready.communicator.common.api.SGrDeviceBuilder;
 import com.smartgridready.communicator.common.api.dto.DataPoint;
 import com.smartgridready.communicator.common.api.values.ArrayValue;
@@ -107,6 +108,34 @@ public class IntermediaryService
         this.uriLoader = uriLoader;
     }
 
+    /**
+     * Saves the given EI-XML by looking it up from any Web resource URI and saves it ib the local DB.
+     * @param eiXmlName The name of the EI-XML (referenced by the device entities)
+     * @param uri The URI of the EI-XML
+     * @return {@code ExternalInterfaceXml}
+     */
+    public ExternalInterfaceXml loadEiXmlFromDeclarationLibrary(String eiXmlName) {
+        try {
+            // load EI-XML file from declaration library
+            final var eiXmlContents = new SGrDeclarationLibrary().getProductEidXml(eiXmlName);
+
+            // update or create EI-XML
+            final var eiXmlList = eiXmlRepository.findByName( eiXmlName );
+            final var eiXml = eiXmlList.stream()
+                    .findFirst()
+                    .orElseGet( () -> new ExternalInterfaceXml( eiXmlName, eiXmlContents ) );
+            eiXml.setXml( eiXmlContents ); // overwrite XML
+            final var newEiXml = eiXmlRepository.save( eiXml );
+
+            // reload all devices that are based on this EI-XML file
+            deviceRepository.findByEiXmlName( eiXmlName ).forEach( this::loadDevice );
+
+            LOG.debug( "loadEiXmlFromDeclarationLibrary() with ExternalInterfaceXml.name='{}' done.", newEiXml.getName() );
+            return newEiXml;
+        } catch (IOException e) {
+            throw new ExtIfXmlNotFoundException(eiXmlName, e);
+        }
+    }
 
     /**
      * Saves the given EI-XML by looking it up from any Web resource URI and saves it ib the local DB.
@@ -116,7 +145,7 @@ public class IntermediaryService
      */
     public ExternalInterfaceXml loadEiXmlFromUri(String eiXmlName, String uri) {
 
-        // load EI-XML file from GitHub
+        // load EI-XML file from URI, e.g. GitHub
         final var eiXmlContents = uriLoader.loadExternalInterface( uri );
 
         // update or create EI-XML
