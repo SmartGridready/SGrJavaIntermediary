@@ -45,8 +45,6 @@ public class ExternalInterfaceXmlController
     private static final String SGR_GITHUB_EI_XML_BASE_URI =
             "https://raw.githubusercontent.com/SmartGridready/SGrSpecifications/refs/heads/master/XMLInstances/ExtInterfaces/";
 
-    private static final String SGR_LIBRARY_EI_XML_BASE_URI = "https://library.smartgridready.ch/prodx/";
-
     private final IntermediaryService intermediaryService;
 
     public ExternalInterfaceXmlController( IntermediaryService intermediaryService )
@@ -117,7 +115,7 @@ public class ExternalInterfaceXmlController
             String eiXmlName)
     {
         return ResponseEntity.ok(
-            intermediaryService.loadEiXmlFromUri( eiXmlName, SGR_LIBRARY_EI_XML_BASE_URI + eiXmlName)
+            intermediaryService.loadEiXmlFromDeclarationLibrary( eiXmlName )
         );
     }
 
