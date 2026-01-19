@@ -3,7 +3,7 @@
 # creates openapi/index.html using openapi-generator-cli
 
 echo building OpenAPI
-./mvnw -Dmaven.test.skip=true package
+./gradlew -x test bootJar
 
 if [ "$?" == "0" ]; then
   docker compose -f ./generate-openapi-html.yml run --rm generator

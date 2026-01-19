@@ -32,8 +32,6 @@ import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.smartgridready.communicator.modbus.api.ModbusGateway;
 import com.smartgridready.communicator.modbus.api.ModbusGatewayRegistry;
 import com.smartgridready.driver.api.common.GenDriverException;
-import com.smartgridready.driver.api.http.GenHttpClientFactory;
-import com.smartgridready.driver.api.messaging.GenMessagingClientFactory;
 import com.smartgridready.driver.api.modbus.GenDriverAPI4Modbus;
 import com.smartgridready.intermediary.entity.Device;
 import com.smartgridready.intermediary.entity.ExternalInterfaceXml;
@@ -66,10 +64,6 @@ class IntermediaryServiceTest
     private ExternalInterfaceXmlRepository eiXmlRepository;
     @Mock
     private ConfigurationValueRepository configurationValueRepository;
-    @Mock
-    private GenMessagingClientFactory messagingClientFactory;
-    @Mock
-    private GenHttpClientFactory httpRequestFactory;
     @Mock
     private ModbusGatewayRegistry modbusGatewayRegistry;
     @Mock
@@ -120,8 +114,6 @@ class IntermediaryServiceTest
         testee = new IntermediaryService( deviceRepository,
                                           eiXmlRepository,
                                           configurationValueRepository,
-                                          messagingClientFactory,
-                                          httpRequestFactory,
                                           modbusGatewayRegistry,
                                           uriLoader);
     }

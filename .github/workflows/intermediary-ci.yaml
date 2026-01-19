@@ -47,18 +47,17 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Restore Maven cache
-        uses: skjolber/maven-cache-github-action@v3.1.2
+      - name: Read Gradle Properties
+        id: gradle_properties
+        uses: christian-draeger/read-properties@1.1.1
         with:
-          step: restore
+          path: ./gradle.properties
+          properties: 'version'
 
-      - name: Run the Maven install phase
-        run: mvn --batch-mode --update-snapshots install
-
-      - name: Save Maven cache
-        uses: skjolber/maven-cache-github-action@v3.1.2
-        with:
-          step: save
+      - name: Run Gradle Tests and Build
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean test bootJar --no-daemon
 
       # Uses the `docker/login-action` action to log in to the Container registry registry using the account and password that will publish the packages. Once published, the packages are scoped to the account defined here.
       - name: Log in to the Container registry

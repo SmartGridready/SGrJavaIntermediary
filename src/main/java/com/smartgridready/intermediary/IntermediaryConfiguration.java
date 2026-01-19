@@ -14,10 +14,6 @@ import org.springframework.context.annotation.Configuration;
 
 import com.smartgridready.communicator.modbus.api.ModbusGatewayRegistry;
 import com.smartgridready.communicator.modbus.impl.SGrModbusGatewayRegistry;
-import com.smartgridready.driver.apachehttp.ApacheHttpClientFactory;
-import com.smartgridready.driver.api.http.GenHttpClientFactory;
-import com.smartgridready.driver.api.messaging.GenMessagingClientFactory;
-import com.smartgridready.driver.hivemq.HiveMqtt5MessagingClientFactory;
 import com.smartgridready.intermediary.service.UriLoader;
 
 
@@ -27,18 +23,6 @@ import com.smartgridready.intermediary.service.UriLoader;
 @Configuration
 public class IntermediaryConfiguration
 {
-    @Bean
-    GenHttpClientFactory httpRequestFactory()
-    {
-        return new ApacheHttpClientFactory();
-    }
-
-    @Bean
-    GenMessagingClientFactory messagingClientFactory()
-    {
-        return new HiveMqtt5MessagingClientFactory();
-    }
-
     @Bean
     ModbusGatewayRegistry modbusGatewayRegistry()
     {

@@ -334,7 +334,11 @@ The returned JSON value should look like this:
 Navigate to the checked out repository and run
 
 ```bash
-./mvnw spring-boot:run -D"spring-boot.run.profiles=dev"
+# On Linux call
+./gradlew bootRun --args="--spring.profiles.active=dev"
+
+# On Windows call
+.\gradlew.bat bootRun --args="--spring.profiles.active=dev"
 ```
 
 This will run the Intermediary locally, using an in-memory database.
@@ -344,7 +348,11 @@ This will run the Intermediary locally, using an in-memory database.
 Navigate to the checked out repository and run
 
 ```bash
+# On Linux call
 ./generate-openapi-html.sh
+
+# On Windows call
+.\generate-openapi-html.ps1
 ```
 
 This will build the Intermediary Docker image, start a container and use the openapi-generator Docker image to

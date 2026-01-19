@@ -18,7 +18,6 @@ import lombok.*;
  * Entity for external interface.
  */
 @NoArgsConstructor
-@ToString
 @Getter
 @Setter
 @EqualsAndHashCode

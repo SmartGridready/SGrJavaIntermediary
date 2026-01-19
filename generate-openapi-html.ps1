@@ -1,7 +1,7 @@
 # creates openapi/index.html using openapi-generator-cli
 
 Write-Host "building OpenAPI"
-.\mvnw.cmd "-Dmaven.test.skip=true" package
+.\gradlew.bat -x test bootJar
 
 if ($?) {
   docker compose -f .\generate-openapi-html.yml run --rm generator
