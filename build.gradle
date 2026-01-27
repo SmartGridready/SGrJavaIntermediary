@@ -82,7 +82,3 @@ dependencies {
 test {
     useJUnitPlatform()
 }
-
-dependencyLocking {
-    lockAllConfigurations()
-}
