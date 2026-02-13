@@ -1,7 +1,8 @@
 # CI pipeline of Intermediary
 name: Create and publish a Docker image
 
-# Configures this workflow to run every time a change is pushed to the master branch or a tag.
+# Configures this workflow to run every time a change is pushed to a branch or a tag.
+# Docker image is only created when a tag is given.
 on:
   workflow_dispatch:
     inputs:
@@ -36,23 +37,16 @@ jobs:
         run: |
           echo "github_ref='${{ github.ref }}'"
           echo "inputs_tag='${{ inputs.tag }}'"
-          echo "docker_image=${{ (github.ref == 'refs/heads/master') || startsWith(github.ref, 'refs/tags/') || (inputs.tag != '') }}" >> "$GITHUB_OUTPUT"
+          echo "docker_image=${{ startsWith(github.ref, 'refs/tags/') || (inputs.tag != '') }}" >> "$GITHUB_OUTPUT"
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install Java 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
-
-      - name: Read Gradle Properties
-        id: gradle_properties
-        uses: christian-draeger/read-properties@1.1.1
-        with:
-          path: ./gradle.properties
-          properties: 'version'
 
       - name: Run Gradle Tests and Build
         run: |
@@ -76,7 +70,6 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=branch,enable=${{ (inputs.tag == '') }}
             type=ref,event=tag,enable=${{ (inputs.tag == '') }}
             type=raw,enable=${{ (inputs.tag != '') }},value=${{ inputs.tag }}
 
