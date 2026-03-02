@@ -33,8 +33,6 @@ import com.smartgridready.communicator.common.helper.DeviceDescriptionLoader;
 import com.smartgridready.communicator.modbus.api.ModbusGatewayRegistry;
 import com.smartgridready.communicator.rest.exception.RestApiAuthenticationException;
 import com.smartgridready.driver.api.common.GenDriverException;
-import com.smartgridready.driver.api.http.GenHttpClientFactory;
-import com.smartgridready.driver.api.messaging.GenMessagingClientFactory;
 import com.smartgridready.driver.api.messaging.model.MessagingPlatformType;
 import com.smartgridready.intermediary.cache.CacheKey;
 import com.smartgridready.intermediary.cache.DataPointValueCache;
@@ -67,8 +65,6 @@ public class IntermediaryService
     private final DeviceRepository deviceRepository;
     private final ExternalInterfaceXmlRepository eiXmlRepository;
     private final ConfigurationValueRepository configurationValueRepository;
-    private final GenMessagingClientFactory messagingClientFactory;
-    private final GenHttpClientFactory httpRequestFactory;
     private final ModbusGatewayRegistry sharedModbusGatewayRegistry;
     private final UriLoader uriLoader;
     
@@ -94,16 +90,12 @@ public class IntermediaryService
     public IntermediaryService( DeviceRepository deviceRepository,
                                 ExternalInterfaceXmlRepository eiXmlRepository,
                                 ConfigurationValueRepository configurationValueRepository,
-                                GenMessagingClientFactory messagingClientFactory,
-                                GenHttpClientFactory httpRequestFactory,
                                 ModbusGatewayRegistry modbusGatewayRegistry,
                                 UriLoader uriLoader)
     {
         this.deviceRepository = deviceRepository;
         this.eiXmlRepository = eiXmlRepository;
         this.configurationValueRepository = configurationValueRepository;
-        this.messagingClientFactory = messagingClientFactory;
-        this.httpRequestFactory = httpRequestFactory;
         this.sharedModbusGatewayRegistry = modbusGatewayRegistry;
         this.uriLoader = uriLoader;
     }
@@ -280,8 +272,6 @@ public class IntermediaryService
             var deviceInstance = new SGrDeviceBuilder()
                     .properties( properties )
                     .eid( device.getEiXml().getXml() )
-                    .useMessagingClientFactory( messagingClientFactory, MessagingPlatformType.MQTT5 )
-                    .useRestServiceClientFactory( httpRequestFactory )
                     .useSharedModbusGatewayRegistry( sharedModbusGatewayRegistry )
                     .useSharedModbusRtu( true )
                     .build();

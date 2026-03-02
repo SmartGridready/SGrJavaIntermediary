@@ -1,0 +1,84 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+    id 'com.github.ben-manes.versions'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+
+    maven {
+        url = "https://nexus.library.smartgridready.ch/repository/maven-releases/"
+        mavenContent {
+            releasesOnly()
+        }
+    }
+    maven {
+        url = "https://nexus.library.smartgridready.ch/repository/maven-snapshots/"
+        mavenContent {
+            snapshotsOnly()
+        }
+    }
+}
+
+group = 'com.smartgridready'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+defaultTasks "bootRun"
+
+springBoot {
+    mainClass = 'com.smartgridready.intermediary.IntermediaryApplication'
+}
+
+bootJar {
+    // hardcoded jar name due to CMD in Dockerfile
+    archiveFileName = "sgr-intermediary.jar"
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+dependencies {
+    // Spring
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    // Code generation
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Spring Development
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // Testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // Swagger / OpenAPI
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}"
+
+    // DBMS drivers
+    runtimeOnly 'com.h2database:h2'
+
+    // SmartGridready
+    implementation "com.smartgridready:sgr-specification:${sgrSpecVersion}"
+    implementation "com.smartgridready:sgr-driver-api:${sgrApiVersion}"
+    implementation "com.smartgridready:sgr-commhandler:${sgrJavaVersion}"
+    runtimeOnly "com.smartgridready:sgr-driver-j2mod:${sgrModbusVersion}"
+    runtimeOnly "com.smartgridready:sgr-driver-apachehttp:${sgrRestVersion}"
+    runtimeOnly "com.smartgridready:sgr-driver-hivemq:${sgrMessagingVersion}"
+}
+
+test {
+    useJUnitPlatform()
+}
