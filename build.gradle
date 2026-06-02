@@ -26,8 +26,8 @@ repositories {
 group = 'com.smartgridready'
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 defaultTasks "bootRun"
@@ -50,8 +50,10 @@ configurations {
 
 dependencies {
     // Spring
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // jackson2 compatibility required, because commhandler depends on it
+    implementation 'org.springframework.boot:spring-boot-jackson2'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
     // Code generation
@@ -62,6 +64,7 @@ dependencies {
 
     // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // Swagger / OpenAPI
