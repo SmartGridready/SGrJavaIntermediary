@@ -7,7 +7,7 @@ volumes:
 
 services:
   intermediary:
-    image: ghcr.io/smartgridready/sgr-intermediary:master
+    image: ghcr.io/smartgridready/sgr-intermediary:latest
     restart: unless-stopped
     user: "0:0"
     volumes:

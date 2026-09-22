@@ -873,7 +873,8 @@ ul.nav-tabs {
       "description" : "The allowed values of the data type (min./max. value for numeric types, a list of allowed values for enum or bitmap types)",
       "items" : {
         "type" : "string"
-      }
+      },
+      "default" : null
     },
     "minValue" : {
       "type" : "number",
@@ -907,14 +908,16 @@ ul.nav-tabs {
       "description" : "The generic attributes, defined by EI-XML",
       "items" : {
         "$ref" : "#/components/schemas/GenericAttributeDto"
-      }
+      },
+      "default" : null
     },
     "dynamicParameters" : {
       "type" : "array",
       "description" : "The dynamic parameters, defined by EI-XML",
       "items" : {
         "$ref" : "#/components/schemas/ParameterDto"
-      }
+      },
+      "default" : null
     }
   },
   "description" : "Represents functional profile's data point."
@@ -934,7 +937,8 @@ ul.nav-tabs {
       "description" : "The device configuration values",
       "items" : {
         "$ref" : "#/components/schemas/ConfigurationValue"
-      }
+      },
+      "default" : null
     }
   },
   "description" : "Represents device configuration."
@@ -958,7 +962,8 @@ ul.nav-tabs {
       "description" : "The functional profiles",
       "items" : {
         "$ref" : "#/components/schemas/FunctionalProfileDto"
-      }
+      },
+      "default" : null
     }
   },
   "description" : "Represents device information for introspection"
@@ -978,7 +983,8 @@ ul.nav-tabs {
       "description" : "The device configuration values",
       "items" : {
         "$ref" : "#/components/schemas/ConfigurationValue"
-      }
+      },
+      "default" : null
     },
     "status" : {
       "type" : "string",
@@ -1002,7 +1008,8 @@ ul.nav-tabs {
       "description" : "The allowed values of the data type (min./max. value for numeric types, a list of allowed values for enum or bitmap types)",
       "items" : {
         "$ref" : "#/components/schemas/ParameterDto"
-      }
+      },
+      "default" : null
     }
   },
   "description" : "Represents information of an EI-XML."
@@ -1049,14 +1056,16 @@ ul.nav-tabs {
       "description" : "The data points, defined by EI-XML",
       "items" : {
         "$ref" : "#/components/schemas/DataPointDto"
-      }
+      },
+      "default" : null
     },
     "genericAttributes" : {
       "type" : "array",
       "description" : "The generic attributes, defined by EI-XML",
       "items" : {
         "$ref" : "#/components/schemas/GenericAttributeDto"
-      }
+      },
+      "default" : null
     }
   },
   "description" : "Represents a functional profile."
@@ -1079,7 +1088,14 @@ ul.nav-tabs {
       "type" : "string",
       "description" : "The attribute value data type"
     },
-    "children" : { }
+    "children" : {
+      "type" : "array",
+      "description" : "The sub-attributes (optional)",
+      "items" : {
+        "$ref" : "#/components/schemas/GenericAttributeDto"
+      },
+      "default" : null
+    }
   },
   "description" : "Represents a generic attribute of a data point."
 };
@@ -1098,7 +1114,8 @@ ul.nav-tabs {
       "description" : "The allowed values of the data type (min./max. value for numeric types, a list of allowed values for enum or bitmap types)",
       "items" : {
         "type" : "string"
-      }
+      },
+      "default" : null
     },
     "defaultValue" : {
       "type" : "string",
@@ -4300,7 +4317,8 @@ pub fn main() {
         "type" : "array",
         "items" : {
           "$ref" : "#/components/schemas/DeviceStatusDto"
-        }
+        },
+        "default" : null
       }
     }
   }
@@ -4983,11 +5001,11 @@ The device name
   &quot;name&quot; : &quot;name&quot;,
   &quot;eiXmlName&quot; : &quot;eiXmlName&quot;,
   &quot;configurationValues&quot; : [ {
-    &quot;val&quot; : &quot;val&quot;,
-    &quot;name&quot; : &quot;name&quot;
+    &quot;name&quot; : &quot;name&quot;,
+    &quot;val&quot; : &quot;val&quot;
   }, {
-    &quot;val&quot; : &quot;val&quot;,
-    &quot;name&quot; : &quot;name&quot;
+    &quot;name&quot; : &quot;name&quot;,
+    &quot;val&quot; : &quot;val&quot;
   } ]
 }'
 </code></pre>
@@ -6663,7 +6681,8 @@ pub fn main() {
         "type" : "array",
         "items" : {
           "$ref" : "#/components/schemas/ExternalInterfaceXml"
-        }
+        },
+        "default" : null
       }
     }
   }
